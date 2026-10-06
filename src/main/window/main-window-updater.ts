@@ -20,6 +20,7 @@ import {
   type UpdateInstallMode,
   type UpdaterSetupOptions
 } from '../updater'
+import { isForkBuild, checkForkUpdate, syncAndBuild, installForkUpdate } from '../fork-update'
 
 const UPDATER_SETUP_FALLBACK_MS = 15_000
 
@@ -142,11 +143,24 @@ export function registerUpdaterHandlers(_store: Store): void {
   ipcMain.handle('updater:getStatus', () => getUpdateStatus())
   ipcMain.handle('updater:getVersion', () => app.getVersion())
   ipcMain.handle('updater:check', (_event, options?: UpdateCheckOptions) => {
+    if (isForkBuild()) {
+      return checkForkUpdate()
+    }
     ensureAutoUpdaterConfigured()
     return checkForUpdatesFromMenu(options)
   })
-  ipcMain.handle('updater:download', () => downloadUpdate())
-  ipcMain.handle('updater:quitAndInstall', () => quitAndInstall())
+  ipcMain.handle('updater:download', () => {
+    if (isForkBuild()) {
+      return syncAndBuild()
+    }
+    return downloadUpdate()
+  })
+  ipcMain.handle('updater:quitAndInstall', () => {
+    if (isForkBuild()) {
+      return installForkUpdate()
+    }
+    return quitAndInstall()
+  })
   ipcMain.handle('updater:dismissNudge', () => dismissNudge())
   ipcMain.handle('updater:dismissAvailableUpdate', () => dismissAvailableUpdate())
   // Why: the response carries a local package path and the reveal touches the native desktop, so
