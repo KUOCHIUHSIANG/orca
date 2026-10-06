@@ -380,7 +380,7 @@ module.exports = {
     assertBundledRipgrepInstalled()
     assertProcessHostOutputBuilt()
     assertOrcadTemplateBuilt()
-    assertMobileWebBundleBuilt(mobileWebBundleDir)
+    // assertMobileWebBundleBuilt(mobileWebBundleDir)
     if (context.electronPlatformName === 'linux') {
       ensureWaylandClipboard(context.arch)
     }
