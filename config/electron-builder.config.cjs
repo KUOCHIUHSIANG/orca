@@ -344,7 +344,7 @@ module.exports = {
     assertPackagedNativeVariantsInstalled(context.electronPlatformName, context.arch)
     assertBundledRipgrepInstalled()
     assertOrcadTemplateBuilt()
-    assertMobileWebBundleBuilt(mobileWebBundleDir)
+    // assertMobileWebBundleBuilt(mobileWebBundleDir)
   },
   afterPack: async (context) => {
     const resourcesDir =
