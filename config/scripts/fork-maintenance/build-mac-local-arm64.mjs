@@ -24,7 +24,13 @@ function run(command, args, env = process.env) {
   execFileSync(command, args, { cwd: repoRoot, stdio: 'inherit', env })
 }
 
-run('pnpm', ['run', 'build:desktop'])
+// build:desktop without build:mobile-web (mobile deps not installed locally)
+run('pnpm', ['run', 'typecheck'])
+run('pnpm', ['run', 'build:relay'])
+run('pnpm', ['run', 'build:cli'])
+run('pnpm', ['run', 'build:electron-vite'])
+run('pnpm', ['run', 'verify:built-skills-cli'])
+run('pnpm', ['run', 'build:web-from-renderer'])
 run('node', ['config/scripts/build-computer-macos.mjs'])
 run('node', ['config/scripts/build-keyboard-layout-macos.mjs', '--single-arch'])
 run('node', ['config/scripts/build-notification-status-macos.mjs', '--single-arch'])
