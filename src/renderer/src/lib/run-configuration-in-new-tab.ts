@@ -1,5 +1,6 @@
 import { useAppStore } from '@/store'
 import { reconcileTabOrder } from '@/components/tab-bar/reconcile-order'
+import { activateTabAndFocusPane } from '@/lib/activate-tab-and-focus-pane'
 import type { RunConfiguration } from '../../../shared/run-configuration-types'
 
 export function runConfigurationInNewTab({
@@ -41,4 +42,27 @@ export function runConfigurationInNewTab({
   fresh.setTabBarOrder(worktreeId, order)
 
   return { tabId: tab.id }
+}
+
+/** Types the command into an idle run tab's shell; false when the tab has no live PTY. */
+export function rerunConfigurationInTab({
+  config,
+  tabId
+}: {
+  config: RunConfiguration
+  tabId: string
+}): boolean {
+  const ptyId = useAppStore.getState().ptyIdsByTabId[tabId]?.[0]
+  if (!ptyId || !config.command.trim()) {
+    return false
+  }
+  window.api.pty.write(ptyId, `${config.command}\r`, 'launch')
+  activateTabAndFocusPane(tabId, null)
+  return true
+}
+
+export function stopRunTab(tabId: string): void {
+  for (const ptyId of useAppStore.getState().ptyIdsByTabId[tabId] ?? []) {
+    window.api.pty.write(ptyId, '\x03', 'driving')
+  }
 }
