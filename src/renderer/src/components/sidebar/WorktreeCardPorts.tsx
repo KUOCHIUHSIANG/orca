@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Plug, Copy, ExternalLink, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppStore } from '@/store'
@@ -15,6 +15,12 @@ import {
 } from '@/lib/workspace-port-actions'
 import { useLocalhostLabelRouteForPort } from '@/lib/workspace-port-localhost-label-selector'
 import { addressForPort } from '@/lib/workspace-port-urls'
+import {
+  addressFamilyTag,
+  formatBindAddress,
+  groupWorkspacePortListeners,
+  type WorkspacePortListener
+} from '@/lib/workspace-port-listener-groups'
 import type { WorkspacePort } from '../../../../shared/workspace-ports'
 import {
   WorktreeCardDetailSection,
@@ -30,6 +36,7 @@ export function WorktreeCardPortsTrigger({
   ports
 }: WorktreeCardPortsProps): React.JSX.Element | null {
   const recordFeatureInteraction = useAppStore((s) => s.recordFeatureInteraction)
+  const rowCount = useMemo(() => groupWorkspacePortListeners(ports).length, [ports])
 
   if (ports.length === 0) {
     return null
@@ -42,7 +49,7 @@ export function WorktreeCardPortsTrigger({
       aria-label={translate(
         'auto.components.sidebar.WorktreeCardPorts.fed49903c9',
         '{{value0}} live {{value1}}',
-        { value0: ports.length, value1: ports.length === 1 ? 'port' : 'ports' }
+        { value0: rowCount, value1: rowCount === 1 ? 'port' : 'ports' }
       )}
       onClick={(event) => {
         event.stopPropagation()
@@ -97,7 +104,13 @@ function PortAction({
 }
 
 /** One port row on a sidebar worktree card, with open/copy/stop actions on its owner host. */
-function WorktreePortRow({ port }: { port: WorkspacePort }): React.JSX.Element {
+function WorktreePortRow({
+  port,
+  listeners
+}: {
+  port: WorkspacePort
+  listeners: readonly WorkspacePortListener[]
+}): React.JSX.Element {
   const settings = useAppStore((s) => s.settings)
   const localhostLabelRoute = useLocalhostLabelRouteForPort(port)
 
@@ -112,6 +125,7 @@ function WorktreePortRow({ port }: { port: WorkspacePort }): React.JSX.Element {
   const processLabel = port.processName ?? (port.pid ? `PID ${port.pid}` : 'Unknown process')
   const address = addressForPort(port)
   const canStop = canStopWorkspacePort(port)
+  const familyTag = addressFamilyTag(listeners)
   const openBrowserLabel = translate(
     'auto.components.sidebar.WorktreeCardPorts.33bc7d7495',
     'Open in Browser'
@@ -240,6 +254,11 @@ function WorktreePortRow({ port }: { port: WorkspacePort }): React.JSX.Element {
               <span className="min-w-0 flex-[1.1] truncate text-muted-foreground/70">
                 {address}
               </span>
+              {familyTag ? (
+                <span className="shrink-0 self-center rounded border border-border/60 px-1 text-[10px] leading-[14px] text-muted-foreground/80">
+                  {familyTag}
+                </span>
+              ) : null}
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" sideOffset={4}>
@@ -248,6 +267,15 @@ function WorktreePortRow({ port }: { port: WorkspacePort }): React.JSX.Element {
               <span className="text-muted-foreground/60">-</span>
               <span>{address}</span>
             </span>
+            {/* Why: merged rows hide which loopback addresses listen; list each bind here. */}
+            {familyTag
+              ? listeners.map((listener) => (
+                  <span key={listener.bindHost} className="flex items-center gap-1.5 font-mono">
+                    <span className="w-8 text-muted-foreground/60">{listener.family ?? '—'}</span>
+                    <span>{formatBindAddress(listener.bindHost, port.port)}</span>
+                  </span>
+                ))
+              : null}
           </TooltipContent>
         </Tooltip>
         <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 rounded-md border border-border/40 bg-popover/95 px-0.5 can-hover:opacity-0 shadow-xs transition-opacity group-hover/port:opacity-100 group-focus-within/port:opacity-100">
@@ -287,7 +315,9 @@ function WorktreePortRow({ port }: { port: WorkspacePort }): React.JSX.Element {
 export function WorktreeCardPortsDetails({
   ports
 }: WorktreeCardPortsProps): React.JSX.Element | null {
-  if (ports.length === 0) {
+  const groups = useMemo(() => groupWorkspacePortListeners(ports), [ports])
+
+  if (groups.length === 0) {
     return null
   }
 
@@ -300,13 +330,13 @@ export function WorktreeCardPortsDetails({
         <span>
           {translate('auto.components.sidebar.WorktreeCardPorts.3240f320d7', 'Live Ports')}{' '}
           <span className="font-normal tabular-nums text-muted-foreground/70">
-            ({ports.length})
+            ({groups.length})
           </span>
         </span>
       </div>
       <WorktreeCardDetailSectionContent className="space-y-0.5">
-        {ports.map((port) => (
-          <WorktreePortRow key={port.id} port={port} />
+        {groups.map((group) => (
+          <WorktreePortRow key={group.key} port={group.port} listeners={group.listeners} />
         ))}
       </WorktreeCardDetailSectionContent>
     </WorktreeCardDetailSection>

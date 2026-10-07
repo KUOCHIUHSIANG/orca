@@ -7,6 +7,10 @@ export type RunConfiguration = {
   label: string
   /** Shell command to execute, e.g. "dotnet run --project path/to/X.csproj" */
   command: string
+  /** Secondary text, e.g. a launch profile's application URL */
+  detail?: string
+  /** Submenu shared with sibling configs, e.g. { label: "EcommerceApi", itemLabel: "https" } */
+  group?: { label: string; itemLabel: string }
   /** Absolute path to .csproj or package.json */
   projectPath: string
   /** Whether this was auto-detected or manually added */

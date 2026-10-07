@@ -1,5 +1,6 @@
 import { basename, dirname, joinPath } from '@/lib/path'
 import { relativePathInsideRoot } from '../../../shared/cross-platform-path'
+import { parseDotnetLaunchProfiles } from './dotnet-launch-profiles'
 import type {
   RunConfiguration,
   RunConfigurationType
@@ -119,28 +120,65 @@ function formatFrameworkLabel(framework: string | null): string {
   return ` (${framework})`
 }
 
+// Test projects run through `dotnet test`, not `dotnet run`.
+const TEST_PROJECT_RE = /Microsoft\.NET\.Test\.Sdk|<IsTestProject>\s*true\s*<\/IsTestProject>/i
+
 async function detectDotnetConfigs(repoPath: string): Promise<RunConfiguration[]> {
   const csprojFiles = await findFilesByName(repoPath, (name) => name.endsWith('.csproj'), 4)
   const configs: RunConfiguration[] = []
 
   for (const filePath of csprojFiles) {
     const content = await readFileSafe(filePath)
+    if (content && TEST_PROJECT_RE.test(content)) {
+      continue
+    }
     const framework = content ? extractTargetFramework(content) : null
     const projectName = stripExtension(basename(filePath), '.csproj')
     const relativePath = getRelativePath(repoPath, filePath)
-    const dotnetBin = dotnetBinaryForFramework(framework)
+    const baseCommand = `${dotnetBinaryForFramework(framework)} run --project ${JSON.stringify(relativePath)}`
+    const launchSettings = await readFileSafe(
+      joinPath(joinPath(dirname(filePath), 'Properties'), 'launchSettings.json')
+    )
+    const profiles = launchSettings ? parseDotnetLaunchProfiles(launchSettings) : []
+    const projectLabel = `${projectName}${formatFrameworkLabel(framework)}`
 
-    configs.push({
-      id: makeId('dotnet', filePath),
-      type: 'dotnet' as const,
-      label: `${projectName}${formatFrameworkLabel(framework)}`,
-      command: `${dotnetBin} run --project ${JSON.stringify(relativePath)}`,
-      projectPath: filePath,
-      isAutoDetected: true
-    })
+    if (profiles.length === 0) {
+      configs.push({
+        id: makeId('dotnet', filePath),
+        type: 'dotnet' as const,
+        label: projectLabel,
+        command: baseCommand,
+        projectPath: filePath,
+        isAutoDetected: true
+      })
+      continue
+    }
+
+    for (const profile of profiles) {
+      configs.push({
+        id: makeId('dotnet', filePath, profile.name),
+        type: 'dotnet' as const,
+        label: `${projectName}: ${profile.name}`,
+        command: `${baseCommand} --launch-profile ${JSON.stringify(profile.name)}`,
+        detail: profile.applicationUrl ?? undefined,
+        group: { label: projectLabel, itemLabel: profile.name },
+        projectPath: filePath,
+        isAutoDetected: true
+      })
+    }
   }
 
   return configs
+}
+
+const BUILD_SCRIPT_RE = /^build(:|$)/
+
+// Only launchers belong in the run menu; `start` stands in for `dev` in CRA-style packages.
+function selectRunnableScripts(scriptNames: string[]): string[] {
+  const hasDev = scriptNames.includes('dev')
+  return scriptNames.filter(
+    (name) => name === 'dev' || BUILD_SCRIPT_RE.test(name) || (!hasDev && name === 'start')
+  )
 }
 
 async function detectNpmConfigs(repoPath: string): Promise<RunConfiguration[]> {
@@ -172,13 +210,17 @@ async function detectNpmConfigs(repoPath: string): Promise<RunConfiguration[]> {
     const isRoot = dirPath === repoPath
     const packageName = typeof parsed['name'] === 'string' ? parsed['name'] : basename(dirPath)
 
-    for (const scriptName of Object.keys(scripts)) {
+    const labelPrefix = isRoot ? '' : `${packageName}: `
+    for (const scriptName of selectRunnableScripts(Object.keys(scripts))) {
       const prefix = isRoot ? '' : ` --prefix ${JSON.stringify(getRelativePath(repoPath, dirPath))}`
       configs.push({
         id: makeId('npm', filePath, scriptName),
         type: 'npm' as const,
-        label: isRoot ? scriptName : `${packageName}: ${scriptName}`,
+        label: `${labelPrefix}${scriptName}`,
         command: `npm run ${scriptName}${prefix}`,
+        group: BUILD_SCRIPT_RE.test(scriptName)
+          ? { label: `${labelPrefix}build`, itemLabel: scriptName }
+          : undefined,
         projectPath: filePath,
         isAutoDetected: true
       })
