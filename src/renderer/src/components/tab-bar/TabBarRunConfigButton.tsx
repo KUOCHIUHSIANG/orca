@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ChevronDown, Play, Square, TerminalSquare } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
@@ -14,7 +13,22 @@ import { getRepoIdFromWorktreeId } from '../../../../shared/worktree/id'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
 import type { RunConfiguration } from '../../../../shared/run-configuration-types'
 import { detectRunConfigurations } from '@/lib/run-configuration-detection'
-import { runConfigurationInNewTab } from '@/lib/run-configuration-in-new-tab'
+import {
+  rerunConfigurationInTab,
+  runConfigurationInNewTab,
+  stopRunTab
+} from '@/lib/run-configuration-in-new-tab'
+import {
+  findReusableRunTab,
+  findRunningTabIds,
+  resolvePrimaryRunTarget
+} from '@/lib/run-configuration-tabs'
+import {
+  RunConfigSectionHeader,
+  TabBarRunConfigMenuEntries,
+  TabBarRunConfigRunningSection
+} from './TabBarRunConfigMenuEntries'
+import { useRunConfigurationTabs } from './use-run-configuration-tabs'
 
 type TabBarRunConfigButtonProps = {
   worktreeId: string
@@ -38,38 +52,19 @@ function DotnetIcon({ className }: { className?: string }): React.JSX.Element {
   )
 }
 
-function SectionHeader({
-  icon,
-  label
-}: {
-  icon: React.ReactNode
-  label: string
-}): React.JSX.Element {
-  return (
-    <div className="flex items-center gap-1.5 px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-      {icon}
-      {label}
-    </div>
-  )
-}
-
-const POLL_INTERVAL_MS = 2000
-
 export function TabBarRunConfigButton({
   worktreeId,
   groupId
 }: TabBarRunConfigButtonProps): React.JSX.Element | null {
   const repos = useAppStore((s) => s.repos)
-  const ptyIdsByTabId = useAppStore((s) => s.ptyIdsByTabId)
   const [menuOpen, setMenuOpen] = useState(false)
   const [configs, setConfigs] = useState<RunConfiguration[]>([])
   const [loading, setLoading] = useState(false)
   const [recentConfigId, setRecentConfigId] = useState<string | null>(null)
-  const [configTabMap, setConfigTabMap] = useState<Map<string, string>>(new Map())
-  const [runningSet, setRunningSet] = useState<Set<string>>(new Set())
-
-  const ptyIdsByTabIdRef = useRef(ptyIdsByTabId)
-  ptyIdsByTabIdRef.current = ptyIdsByTabId
+  const { runTabs, runningTabIds, activeTerminalTabId } = useRunConfigurationTabs(
+    worktreeId,
+    groupId
+  )
 
   const repoId = useMemo(() => {
     if (worktreeId === FLOATING_TERMINAL_WORKTREE_ID) {
@@ -113,88 +108,67 @@ export function TabBarRunConfigButton({
     [runDetection]
   )
 
-  useEffect(() => {
-    if (configTabMap.size === 0) {
-      setRunningSet(new Set())
-      return
-    }
-
-    const check = async (): Promise<void> => {
-      const running = new Set<string>()
-      for (const [configId, tabId] of configTabMap) {
-        const ptyIds = ptyIdsByTabIdRef.current[tabId] ?? []
-        if (ptyIds.length === 0) {
-          continue
-        }
-        try {
-          const has = await window.api.pty.hasChildProcesses(ptyIds[0])
-          if (has) {
-            running.add(configId)
-          }
-        } catch {
-          // pty gone
-        }
-      }
-      setRunningSet(running)
-    }
-
-    const id = setInterval(() => void check(), POLL_INTERVAL_MS)
-    void check()
-    return () => clearInterval(id)
-  }, [configTabMap])
-
   const dotnetConfigs = useMemo(() => configs.filter((c) => c.type === 'dotnet'), [configs])
   const npmConfigs = useMemo(() => configs.filter((c) => c.type === 'npm'), [configs])
 
-  const mostRecent = useMemo(() => {
-    if (recentConfigId) {
-      return configs.find((c) => c.id === recentConfigId) ?? configs[0] ?? null
-    }
-    return configs[0] ?? null
-  }, [configs, recentConfigId])
+  const runningConfigIds = useMemo(() => {
+    const runningLabels = new Set(
+      runTabs.filter((t) => runningTabIds.has(t.tabId)).map((t) => t.label)
+    )
+    return new Set(configs.filter((c) => runningLabels.has(c.label)).map((c) => c.id))
+  }, [configs, runTabs, runningTabIds])
 
-  const isMostRecentRunning = mostRecent ? runningSet.has(mostRecent.id) : false
+  const primary = useMemo(
+    () =>
+      resolvePrimaryRunTarget({
+        configs,
+        runTabs,
+        runningTabIds,
+        activeTerminalTabId,
+        recentConfigId
+      }),
+    [configs, runTabs, runningTabIds, activeTerminalTabId, recentConfigId]
+  )
 
-  const stopConfig = useCallback(
-    (configId: string) => {
-      const tabId = configTabMap.get(configId)
-      if (!tabId) {
+  const runConfig = useCallback(
+    (config: RunConfiguration, preferredTabId: string | null = null) => {
+      setRecentConfigId(config.id)
+      const reuseTabId =
+        preferredTabId ?? findReusableRunTab(runTabs, config.label, runningTabIds)?.tabId
+      if (reuseTabId && rerunConfigurationInTab({ config, tabId: reuseTabId })) {
         return
       }
-      const ptyIds = ptyIdsByTabIdRef.current[tabId] ?? []
-      for (const ptyId of ptyIds) {
-        window.api.pty.write(ptyId, '\x03', 'driving')
-      }
+      runConfigurationInNewTab({ config, worktreeId, groupId })
     },
-    [configTabMap]
+    [runTabs, runningTabIds, worktreeId, groupId]
   )
 
   const handleConfigAction = useCallback(
     (config: RunConfiguration) => {
       setMenuOpen(false)
-      if (runningSet.has(config.id)) {
-        stopConfig(config.id)
+      const runningIds = findRunningTabIds(runTabs, config.label, runningTabIds)
+      if (runningIds.length > 0) {
+        runningIds.forEach(stopRunTab)
         return
       }
-      setRecentConfigId(config.id)
-      const result = runConfigurationInNewTab({ config, worktreeId, groupId })
-      if (result) {
-        setConfigTabMap((prev) => new Map(prev).set(config.id, result.tabId))
-      }
+      runConfig(config)
     },
-    [worktreeId, groupId, runningSet, stopConfig]
+    [runTabs, runningTabIds, runConfig]
   )
 
   const handlePrimaryClick = useCallback(() => {
-    if (!mostRecent) {
+    if (!primary) {
       return
     }
-    if (isMostRecentRunning) {
-      stopConfig(mostRecent.id)
-    } else {
-      handleConfigAction(mostRecent)
+    if (primary.running) {
+      const tabIds = primary.tabId
+        ? [primary.tabId]
+        : findRunningTabIds(runTabs, primary.label, runningTabIds)
+      tabIds.forEach(stopRunTab)
+    } else if (primary.config) {
+      runConfig(primary.config, primary.tabId)
     }
-  }, [mostRecent, isMostRecentRunning, stopConfig, handleConfigAction])
+  }, [primary, runTabs, runningTabIds, runConfig])
 
   if (!repoId) {
     return null
@@ -235,33 +209,29 @@ export function TabBarRunConfigButton({
           <button
             type="button"
             onClick={handlePrimaryClick}
-            disabled={!mostRecent}
+            disabled={!primary}
             className={cn(innerButtonBase, 'gap-1.5 rounded-l-md rounded-r-none px-1.5')}
             aria-label={
-              isMostRecentRunning
-                ? `Stop: ${mostRecent?.label}`
-                : mostRecent
-                  ? `Run: ${mostRecent.label}`
-                  : 'Run configuration'
+              primary
+                ? `${primary.running ? 'Stop' : 'Run'}: ${primary.label}`
+                : 'Run configuration'
             }
           >
-            {isMostRecentRunning ? (
+            {primary?.running ? (
               <Square className="size-3 shrink-0" fill="currentColor" strokeWidth={0} />
             ) : (
               <Play className="size-3 shrink-0" fill="currentColor" strokeWidth={0} />
             )}
             {/* Why: every split strip mounts this now, so narrow strips go icon-only by width. */}
             <span className="max-w-[160px] truncate text-[12px] font-medium @max-[480px]/tab-strip:hidden">
-              {mostRecent?.label ?? 'Run'}
+              {primary?.label ?? 'Run'}
             </span>
           </button>
         </TooltipTrigger>
         <TooltipContent side="bottom" sideOffset={6}>
-          {isMostRecentRunning
-            ? `Stop: ${mostRecent?.command}`
-            : mostRecent
-              ? `Run: ${mostRecent.command}`
-              : 'Run configuration'}
+          {primary
+            ? `${primary.running ? 'Stop' : 'Run'}: ${primary.command ?? primary.label}`
+            : 'Run configuration'}
         </TooltipContent>
       </Tooltip>
       <DropdownMenu modal={false} open={menuOpen} onOpenChange={handleOpenChange}>
@@ -279,6 +249,11 @@ export function TabBarRunConfigButton({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="bottom" sideOffset={6} className="w-80">
           <div className="max-h-80 overflow-y-auto scrollbar-sleek">
+            <TabBarRunConfigRunningSection
+              runTabs={runTabs}
+              runningTabIds={runningTabIds}
+              onStop={stopRunTab}
+            />
             {loading && configs.length === 0 ? (
               <div className="px-2 py-4 text-center text-xs text-muted-foreground">
                 Detecting configurations...
@@ -286,53 +261,31 @@ export function TabBarRunConfigButton({
             ) : null}
             {dotnetConfigs.length > 0 ? (
               <>
-                <SectionHeader icon={<DotnetIcon className="size-3" />} label=".NET Projects" />
-                {dotnetConfigs.map((config) => {
-                  const running = runningSet.has(config.id)
-                  return (
-                    <DropdownMenuItem key={config.id} onSelect={() => handleConfigAction(config)}>
-                      {running ? (
-                        <Square
-                          className="size-3 shrink-0 text-muted-foreground"
-                          fill="currentColor"
-                          strokeWidth={0}
-                        />
-                      ) : (
-                        <DotnetIcon className="size-3 shrink-0 text-muted-foreground" />
-                      )}
-                      <span className="min-w-0 flex-1 truncate">{config.label}</span>
-                      {running ? (
-                        <span className="text-[10px] text-muted-foreground">Running</span>
-                      ) : null}
-                    </DropdownMenuItem>
-                  )
-                })}
+                <RunConfigSectionHeader
+                  icon={<DotnetIcon className="size-3" />}
+                  label=".NET Projects"
+                />
+                <TabBarRunConfigMenuEntries
+                  configs={dotnetConfigs}
+                  Icon={DotnetIcon}
+                  runningSet={runningConfigIds}
+                  onSelect={handleConfigAction}
+                />
               </>
             ) : null}
             {dotnetConfigs.length > 0 && npmConfigs.length > 0 ? <DropdownMenuSeparator /> : null}
             {npmConfigs.length > 0 ? (
               <>
-                <SectionHeader icon={<TerminalSquare className="size-3" />} label="npm Scripts" />
-                {npmConfigs.map((config) => {
-                  const running = runningSet.has(config.id)
-                  return (
-                    <DropdownMenuItem key={config.id} onSelect={() => handleConfigAction(config)}>
-                      {running ? (
-                        <Square
-                          className="size-3 shrink-0 text-muted-foreground"
-                          fill="currentColor"
-                          strokeWidth={0}
-                        />
-                      ) : (
-                        <TerminalSquare className="size-3 shrink-0 text-muted-foreground" />
-                      )}
-                      <span className="min-w-0 flex-1 truncate">{config.label}</span>
-                      {running ? (
-                        <span className="text-[10px] text-muted-foreground">Running</span>
-                      ) : null}
-                    </DropdownMenuItem>
-                  )
-                })}
+                <RunConfigSectionHeader
+                  icon={<TerminalSquare className="size-3" />}
+                  label="npm Scripts"
+                />
+                <TabBarRunConfigMenuEntries
+                  configs={npmConfigs}
+                  Icon={TerminalSquare}
+                  runningSet={runningConfigIds}
+                  onSelect={handleConfigAction}
+                />
               </>
             ) : null}
             {!loading && configs.length === 0 ? (
