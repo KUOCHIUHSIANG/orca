@@ -22,6 +22,8 @@ function shouldUseCssAnchorPositioning(): boolean {
 type RetainedPaneHostProps = {
   groupId: string | undefined
   isVisible: boolean
+  /** The group lives in the full-width bottom panel, outside the workspace's clipping ancestors. */
+  docked?: boolean
   measureWhileHidden?: boolean
   fitTerminal?: boolean
   /** Unfocused side of a split: overlays sit outside the group's DOM, so they take its dim here. */
@@ -35,6 +37,7 @@ type RetainedPaneHostProps = {
 export function RetainedPaneHost({
   groupId,
   isVisible,
+  docked = false,
   measureWhileHidden = false,
   fitTerminal = false,
   dimmed = false,
@@ -51,7 +54,7 @@ export function RetainedPaneHost({
   // Measure before mounting child xterms: child layout effects run first and would fit a placeholder rectangle.
   const [awaitsFirstFallbackRect, setAwaitsFirstFallbackRect] = useState(measuresFallbackRect)
   useLayoutEffect(() => {
-    const container = overlayRef.current?.parentElement
+    const container = docked ? document.documentElement : overlayRef.current?.parentElement
     if (!measuresFallbackRect || groupId === undefined || !container) {
       setAwaitsFirstFallbackRect(false)
       return
@@ -60,7 +63,7 @@ export function RetainedPaneHost({
       setMeasuredFallbackRect(rect)
       setAwaitsFirstFallbackRect(false)
     })
-  }, [groupId, measuresFallbackRect])
+  }, [docked, groupId, measuresFallbackRect])
 
   useLayoutEffect(() => {
     if (!fitTerminal || !isVisible || !anchorName) {
@@ -93,14 +96,15 @@ export function RetainedPaneHost({
       window.clearTimeout(retryId)
       window.clearTimeout(settledRetryId)
     }
-  }, [anchorName, fitTerminal, isVisible, measuredFallbackRect])
+  }, [anchorName, docked, fitTerminal, isVisible, measuredFallbackRect])
 
   const visibleOpacity = dimmed ? UNFOCUSED_SPLIT_GROUP_OPACITY : 1
   const style: React.CSSProperties = useMemo(
     () =>
       anchorName && shouldUseCssAnchorPositioning()
         ? {
-            position: 'absolute',
+            // Why fixed: the viewport is the only containing block that reaches the bottom panel's anchor.
+            position: docked ? 'fixed' : 'absolute',
             positionAnchor: anchorName,
             // An unresolved anchor must stay clipped instead of painting a content-sized pane.
             top: `anchor(${anchorName} top, 0px)`,
@@ -114,7 +118,7 @@ export function RetainedPaneHost({
         : anchorName
           ? {
               // Without CSS anchors, measure the group body so terminals fit real geometry without covering its tab strip.
-              position: 'absolute',
+              position: docked ? 'fixed' : 'absolute',
               top: measuredFallbackRect?.top ?? 32,
               left: measuredFallbackRect?.left ?? 0,
               width: measuredFallbackRect?.width ?? '100%',
@@ -132,7 +136,7 @@ export function RetainedPaneHost({
               display: 'none',
               pointerEvents: 'none'
             },
-    [anchorName, isVisible, measuredFallbackRect, measureWhileHidden, visibleOpacity]
+    [anchorName, docked, isVisible, measuredFallbackRect, measureWhileHidden, visibleOpacity]
   )
   const focusGroup = useCallback(() => {
     if (groupId !== undefined && onFocusOwningGroup) {

@@ -6,14 +6,29 @@ export function buildSplitNode(
   direction: 'horizontal' | 'vertical',
   position: 'first' | 'second'
 ): TabGroupLayoutNode {
-  const existingLeaf: TabGroupLayoutNode = { type: 'leaf', groupId: existingGroupId }
+  return wrapLayoutInSplit(
+    { type: 'leaf', groupId: existingGroupId },
+    newGroupId,
+    direction,
+    position
+  )
+}
+
+/** Pairs a new group with an entire subtree, so splitting the root gives it a full-width edge. */
+export function wrapLayoutInSplit(
+  existing: TabGroupLayoutNode,
+  newGroupId: string,
+  direction: 'horizontal' | 'vertical',
+  position: 'first' | 'second',
+  ratio = 0.5
+): TabGroupLayoutNode {
   const newLeaf: TabGroupLayoutNode = { type: 'leaf', groupId: newGroupId }
   return {
     type: 'split',
     direction,
-    first: position === 'first' ? newLeaf : existingLeaf,
-    second: position === 'second' ? newLeaf : existingLeaf,
-    ratio: 0.5
+    first: position === 'first' ? newLeaf : existing,
+    second: position === 'second' ? newLeaf : existing,
+    ratio
   }
 }
 
