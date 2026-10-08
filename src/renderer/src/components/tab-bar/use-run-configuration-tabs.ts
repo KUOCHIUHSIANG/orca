@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAppStore } from '@/store'
 import { listRunTabs, type RunTab } from '@/lib/run-configuration-tabs'
+import { findDockedGroupId } from '@/store/slices/tabs/tab-group-dock'
+import type { Tab, TabGroup } from '../../../../shared/tab-types'
 
 const POLL_INTERVAL_MS = 2000
 const EMPTY_TAB_IDS: ReadonlySet<string> = new Set()
+const EMPTY_GROUPS: readonly TabGroup[] = []
+const EMPTY_TABS: readonly Tab[] = []
 
 function sameTabIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
   return a.size === b.size && [...a].every((id) => b.has(id))
@@ -20,10 +24,12 @@ export function useRunConfigurationTabs(
 } {
   const terminalTabs = useAppStore((s) => s.tabsByWorktree[worktreeId])
   const activeTerminalTabId = useAppStore((s) => {
-    const group = s.groupsByWorktree[worktreeId]?.find((g) => g.id === groupId)
-    const tab = group?.activeTabId
-      ? s.unifiedTabsByWorktree[worktreeId]?.find((t) => t.id === group.activeTabId)
-      : undefined
+    const groups = s.groupsByWorktree[worktreeId] ?? EMPTY_GROUPS
+    const tabs = s.unifiedTabsByWorktree[worktreeId] ?? EMPTY_TABS
+    // Why: the Run widget is pinned top-right, so it follows the bottom panel's selected tab.
+    const sourceGroupId = findDockedGroupId(groups) ?? groupId
+    const group = groups.find((g) => g.id === sourceGroupId)
+    const tab = group?.activeTabId ? tabs.find((t) => t.id === group.activeTabId) : undefined
     return tab?.contentType === 'terminal' ? tab.entityId : null
   })
   const ptyIdsByTabId = useAppStore((s) => s.ptyIdsByTabId)

@@ -65,14 +65,14 @@ export function TabBarRunConfigRunningSection({
               onStop(tab.tabId)
             }}
           >
-            <Square className="size-3" fill="currentColor" strokeWidth={0} />
+            <Square className="size-3 text-destructive" fill="currentColor" strokeWidth={0} />
           </Button>
         </DropdownMenuItem>
       ))}
       {running.length > 1 ? (
         <DropdownMenuItem onSelect={() => running.forEach((tab) => onStop(tab.tabId))}>
           <Square
-            className="size-3 shrink-0 text-muted-foreground"
+            className="size-3 shrink-0 text-destructive"
             fill="currentColor"
             strokeWidth={0}
           />
@@ -92,7 +92,7 @@ function RunStateIcon({
   running: boolean
 }): React.JSX.Element {
   return running ? (
-    <Square className="size-3 shrink-0 text-muted-foreground" fill="currentColor" strokeWidth={0} />
+    <Square className="size-3 shrink-0 text-destructive" fill="currentColor" strokeWidth={0} />
   ) : (
     <Icon className="size-3 shrink-0 text-muted-foreground" />
   )

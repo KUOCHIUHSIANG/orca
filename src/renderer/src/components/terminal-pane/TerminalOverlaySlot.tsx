@@ -15,6 +15,7 @@ type TerminalOverlaySlotProps = {
   worktreePath: string
   startupCwd: string | undefined
   groupId: string | undefined
+  docked?: boolean
   isWorktreeActive: boolean
   isVisible: boolean
   isActive: boolean
@@ -32,6 +33,7 @@ export const TerminalOverlaySlot = memo(function TerminalOverlaySlot({
   worktreePath,
   startupCwd,
   groupId,
+  docked = false,
   isWorktreeActive,
   isVisible,
   isActive,
@@ -103,6 +105,7 @@ export const TerminalOverlaySlot = memo(function TerminalOverlaySlot({
   return (
     <RetainedPaneHost
       groupId={groupId}
+      docked={docked}
       isVisible={isVisible}
       measureWhileHidden={shouldMeasureHiddenStartup}
       fitTerminal

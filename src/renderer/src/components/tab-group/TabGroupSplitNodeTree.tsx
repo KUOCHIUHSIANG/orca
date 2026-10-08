@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { TabGroupLayoutNode } from '../../../../shared/tab-types'
+import type { TabGroup, TabGroupLayoutNode } from '../../../../shared/tab-types'
 import { useAppStore } from '../../store'
+import { isDockedGroup, withoutDockedGroups } from '../../store/slices/tabs/tab-group-dock'
+import { TabGroupEmptyCenter } from './TabGroupEmptyCenter'
 import TabGroupPanel, { type TabGroupPanelTabStrip } from './TabGroupPanel'
 import type { HoveredTabInsertion } from './useTabDragSplit'
 import { ORCA_LAYOUT_OWNER_IS_MAIN } from '../../../../shared/layout-owner-switch'
@@ -8,6 +10,7 @@ import { setGroupRatioThroughLayoutOwner } from './tab-group-layout-owner-comman
 
 const MIN_RATIO = 0.15
 const MAX_RATIO = 0.85
+const EMPTY_GROUPS: readonly TabGroup[] = []
 
 function ResizeHandle({
   direction,
@@ -156,7 +159,8 @@ function SplitNode({
   suppressRightBorder,
   suppressBottomBorder,
   isTabDragActive,
-  hoveredTabInsertion
+  hoveredTabInsertion,
+  dockedGroupIds
 }: {
   node: TabGroupLayoutNode
   nodePath: string
@@ -175,6 +179,7 @@ function SplitNode({
   suppressBottomBorder: boolean
   isTabDragActive: boolean
   hoveredTabInsertion: HoveredTabInsertion | null
+  dockedGroupIds: ReadonlySet<string>
 }): React.JSX.Element {
   const setTabGroupSplitRatio = useAppStore((state) => state.setTabGroupSplitRatio)
   const recordFeatureInteraction = useAppStore((state) => state.recordFeatureInteraction)
@@ -209,6 +214,40 @@ function SplitNode({
     )
   }
 
+  // Why: docked groups render in the bottom panel; skip their side but keep the full-tree nodePath
+  // so ratio writes still target the right split.
+  const dockedSide =
+    node.second.type === 'leaf' && dockedGroupIds.has(node.second.groupId)
+      ? 'second'
+      : node.first.type === 'leaf' && dockedGroupIds.has(node.first.groupId)
+        ? 'first'
+        : null
+  if (dockedSide) {
+    const keptSide = dockedSide === 'second' ? 'first' : 'second'
+    return (
+      <SplitNode
+        node={node[keptSide]}
+        nodePath={nodePath.length > 0 ? `${nodePath}.${keptSide}` : keptSide}
+        worktreeId={worktreeId}
+        focusedGroupId={focusedGroupId}
+        isWorktreeActive={isWorktreeActive}
+        hasSplitGroups={hasSplitGroups}
+        tabStrip={tabStrip}
+        markdownAnnotationsEnabled={markdownAnnotationsEnabled}
+        touchesTopEdge={touchesTopEdge}
+        touchesRightEdge={touchesRightEdge}
+        touchesLeftEdge={touchesLeftEdge}
+        touchesBottomEdge={touchesBottomEdge}
+        suppressLeftBorder={suppressLeftBorder}
+        suppressRightBorder={suppressRightBorder}
+        suppressBottomBorder={suppressBottomBorder}
+        isTabDragActive={isTabDragActive}
+        hoveredTabInsertion={hoveredTabInsertion}
+        dockedGroupIds={dockedGroupIds}
+      />
+    )
+  }
+
   const isHorizontal = node.direction === 'horizontal'
   const ratio = node.ratio ?? 0.5
 
@@ -238,6 +277,7 @@ function SplitNode({
           suppressBottomBorder={isHorizontal ? suppressBottomBorder : true}
           isTabDragActive={isTabDragActive}
           hoveredTabInsertion={hoveredTabInsertion}
+          dockedGroupIds={dockedGroupIds}
         />
       </div>
       <ResizeHandle
@@ -269,6 +309,7 @@ function SplitNode({
           suppressBottomBorder={suppressBottomBorder}
           isTabDragActive={isTabDragActive}
           hoveredTabInsertion={hoveredTabInsertion}
+          dockedGroupIds={dockedGroupIds}
         />
       </div>
     </div>
@@ -306,6 +347,13 @@ export function TabGroupSplitNodeTree({
   /** True when the host's own chrome bounds the tree's bottom edge (no border-b to paint). */
   rootTouchesBottomEdge?: boolean
 }): React.JSX.Element {
+  const groups = useAppStore((state) => state.groupsByWorktree?.[worktreeId] ?? EMPTY_GROUPS)
+  // Cheap per render; this root stays hook-light because tests invoke it directly.
+  const dockedGroupIds = new Set(groups.filter(isDockedGroup).map((group) => group.id))
+  const centerLayout = withoutDockedGroups(layout, groups)
+  if (!centerLayout) {
+    return <TabGroupEmptyCenter worktreeId={worktreeId} />
+  }
   return (
     <SplitNode
       node={layout}
@@ -313,7 +361,7 @@ export function TabGroupSplitNodeTree({
       worktreeId={worktreeId}
       focusedGroupId={focusedGroupId}
       isWorktreeActive={isWorktreeActive}
-      hasSplitGroups={layout.type === 'split'}
+      hasSplitGroups={centerLayout.type === 'split'}
       tabStrip={tabStrip}
       markdownAnnotationsEnabled={markdownAnnotationsEnabled}
       touchesTopEdge={true}
@@ -325,6 +373,7 @@ export function TabGroupSplitNodeTree({
       suppressBottomBorder={false}
       isTabDragActive={isTabDragActive}
       hoveredTabInsertion={hoveredTabInsertion}
+      dockedGroupIds={dockedGroupIds}
     />
   )
 }

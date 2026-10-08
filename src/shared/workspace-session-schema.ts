@@ -144,7 +144,9 @@ const tabGroupSchema = z.object({
   worktreeId: z.string(),
   activeTabId: z.string().nullable(),
   tabOrder: z.array(z.string()),
-  recentTabIds: z.array(z.string()).optional()
+  recentTabIds: z.array(z.string()).optional(),
+  // Why: an unknown future dock value must degrade to a normal split group, not drop the session.
+  dock: z.literal('bottom').optional().catch(undefined)
 })
 
 const tabGroupSplitDirectionSchema = z.enum(['horizontal', 'vertical'])

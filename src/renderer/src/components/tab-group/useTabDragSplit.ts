@@ -59,7 +59,7 @@ export function canDropTabForPaneColumnSplit(args: {
   })
 }
 
-const collisionDetection: CollisionDetection = (args) => {
+export const collisionDetection: CollisionDetection = (args) => {
   const pointerCollisions = pointerWithin(args)
   return pointerCollisions.length > 0 ? pointerCollisions : closestCenter(args)
 }

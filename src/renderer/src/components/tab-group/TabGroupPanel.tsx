@@ -4,7 +4,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { useAppStore } from '../../store'
 import TabBar from '../tab-bar/TabBar'
 
-import { TabBarRunConfigButton } from '../tab-bar/TabBarRunConfigButton'
+import { TabBarRunControls } from '../tab-bar/TabBarRunControls'
 import { TabGroupPaneActionsMenu } from './TabGroupPaneActionsMenu'
 import { useTabGroupWorkspaceModel } from './useTabGroupWorkspaceModel'
 import { closeTerminalTab } from '../terminal/terminal-tab-actions'
@@ -295,7 +295,7 @@ export default function TabGroupPanel({
               className={actionChromeClassName}
               style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             >
-              <TabBarRunConfigButton worktreeId={worktreeId} groupId={groupId} />
+              <TabBarRunControls worktreeId={worktreeId} groupId={groupId} />
               {hasSplitGroups ? (
                 <TabGroupPaneActionsMenu isFocused={isFocused} onCloseGroup={commands.closeGroup} />
               ) : null}

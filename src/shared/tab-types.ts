@@ -91,4 +91,6 @@ export type TabGroup = {
    *  sessions persisted before this field was added still hydrate cleanly —
    *  hydration seeds from activeTabId. */
   recentTabIds?: string[]
+  /** Docked groups render in the full-width bottom panel instead of the split layout. */
+  dock?: 'bottom'
 }

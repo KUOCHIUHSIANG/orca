@@ -5,7 +5,8 @@ import type { TabGroup } from '../../../../../shared/tab-types'
 import {
   buildSplitNode,
   collapseGroupLayout,
-  replaceLeaf
+  replaceLeaf,
+  wrapLayoutInSplit
 } from '../../../../../shared/workspace-layout/tab-group-layout-tree'
 import { workspaceRootGroupId } from '../../../../../shared/workspace-layout/workspace-layout-minted-ids'
 import { insertTabIdIntoOrder } from '../../../../../shared/workspace-layout/tab-order'
@@ -17,22 +18,32 @@ type SplitGroupState = Pick<
   'groupsByWorktree' | 'layoutByWorktree' | 'activeGroupIdByWorktree'
 >
 
+type SplitGroupPlacement = TabSplitTarget & {
+  /** Split the worktree's whole layout instead of only the source group. */
+  wholeLayout?: boolean
+  ratio?: number
+}
+
 /** Places `newGroup` beside the target's source group; callers that fill it do so in the same update. */
 export function insertSplitGroup(
   state: SplitGroupState,
   worktreeId: string,
-  target: TabSplitTarget,
+  target: SplitGroupPlacement,
   newGroup: TabGroup
 ): SplitGroupState {
   const { sourceGroupId, splitDirection } = target
   const currentLayout =
     state.layoutByWorktree[worktreeId] ?? ({ type: 'leaf', groupId: sourceGroupId } as const)
-  const replacement = buildSplitNode(
-    sourceGroupId,
-    newGroup.id,
-    splitDirection === 'left' || splitDirection === 'right' ? 'horizontal' : 'vertical',
-    splitDirection === 'left' || splitDirection === 'up' ? 'first' : 'second'
-  )
+  const direction =
+    splitDirection === 'left' || splitDirection === 'right' ? 'horizontal' : 'vertical'
+  const position = splitDirection === 'left' || splitDirection === 'up' ? 'first' : 'second'
+  const nextLayout = target.wholeLayout
+    ? wrapLayoutInSplit(currentLayout, newGroup.id, direction, position, target.ratio)
+    : replaceLeaf(
+        currentLayout,
+        sourceGroupId,
+        buildSplitNode(sourceGroupId, newGroup.id, direction, position)
+      )
   return {
     groupsByWorktree: {
       ...state.groupsByWorktree,
@@ -40,7 +51,7 @@ export function insertSplitGroup(
     },
     layoutByWorktree: {
       ...state.layoutByWorktree,
-      [worktreeId]: replaceLeaf(currentLayout, sourceGroupId, replacement)
+      [worktreeId]: nextLayout
     },
     activeGroupIdByWorktree:
       target.activate === false
@@ -49,8 +60,12 @@ export function insertSplitGroup(
   }
 }
 
-export function emptySplitGroup(worktreeId: string, groupId: string): TabGroup {
-  return { id: groupId, worktreeId, activeTabId: null, tabOrder: [] }
+export function emptySplitGroup(
+  worktreeId: string,
+  groupId: string,
+  dock?: TabGroup['dock']
+): TabGroup {
+  return { id: groupId, worktreeId, activeTabId: null, tabOrder: [], ...(dock ? { dock } : {}) }
 }
 
 export function createTabsGroupActions(
@@ -223,8 +238,14 @@ export function createTabsGroupActions(
         insertSplitGroup(
           state,
           worktreeId,
-          { sourceGroupId, splitDirection: direction, activate: opts?.activate },
-          emptySplitGroup(worktreeId, newGroupId)
+          {
+            sourceGroupId,
+            splitDirection: direction,
+            activate: opts?.activate,
+            wholeLayout: opts?.wholeLayout,
+            ratio: opts?.ratio
+          },
+          emptySplitGroup(worktreeId, newGroupId, opts?.dock)
         )
       )
       get().recordFeatureInteraction?.('terminal-panes')
