@@ -82,4 +82,6 @@ export type TabGroup = {
   /** Per-group MRU, newest last, restores the previous tab on close instead of a visual neighbor.
    * Legacy sessions omit it; hydration seeds from activeTabId so split groups keep independent histories. */
   recentTabIds?: string[]
+  /** Docked groups render in the full-width bottom panel instead of the split layout. */
+  dock?: 'bottom'
 }

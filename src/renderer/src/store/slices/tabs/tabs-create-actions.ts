@@ -16,6 +16,7 @@ import {
 } from '../../../../../shared/workspace-layout/tab-order'
 import { resolveUnifiedTabCreatePlacement } from './tabs-create-placement'
 import { emptySplitGroup, insertSplitGroup, splitGroupEntries } from './tabs-group-actions'
+import { ensureCenterGroupId, targetsDockedGroup } from './tab-group-dock'
 import { folderWorkspaceToWorktree } from '../../../../../shared/folder-workspaces/folder-workspace-worktree'
 import { createdTabPreviewFlag } from './tab-preview-flag'
 import { selectFolderWorkspaces } from '../../workspaces/catalog/workspace-record-fields'
@@ -28,6 +29,22 @@ export function createTabsCreateActions(
   return {
     createUnifiedTab: (worktreeId, contentType, init) => {
       const id = init?.id ?? createBrowserUuid()
+      // Why: the bottom panel only hosts terminals; editors, browsers and agent chats stay in the split layout.
+      const afterTabId = init?.afterTabId
+      const anchorGroupId = afterTabId
+        ? get().unifiedTabsByWorktree[worktreeId]?.find((tab) => tab.id === afterTabId)?.groupId
+        : undefined
+      if (
+        contentType !== 'terminal' &&
+        !init?.split &&
+        targetsDockedGroup(get(), worktreeId, init?.targetGroupId ?? anchorGroupId)
+      ) {
+        init = {
+          ...init,
+          targetGroupId: ensureCenterGroupId(get, worktreeId),
+          afterTabId: undefined
+        }
+      }
       const splitGroupId = init?.split ? createBrowserUuid() : undefined
       let replacedEditorId: string | undefined
       let created!: Tab

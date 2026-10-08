@@ -156,7 +156,15 @@ export type TabsSlice = {
     worktreeId: string,
     sourceGroupId: string,
     direction: TabSplitDirection,
-    opts?: { activate?: boolean; landing?: boolean }
+    opts?: {
+      activate?: boolean
+      landing?: boolean
+      /** Split the worktree's whole layout instead of only the source group. */
+      wholeLayout?: boolean
+      /** Share of the first child (0–1); defaults to 0.5. */
+      ratio?: number
+      dock?: TabGroup['dock']
+    }
   ) => string | null
   moveUnifiedTabToGroup: (
     tabId: string,

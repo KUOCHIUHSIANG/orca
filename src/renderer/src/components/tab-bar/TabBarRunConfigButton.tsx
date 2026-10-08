@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { ChevronDown, Play, Square, TerminalSquare } from 'lucide-react'
 import {
   DropdownMenu,
@@ -7,12 +7,8 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { useAppStore } from '@/store'
 import { cn } from '@/lib/utils'
-import { getRepoIdFromWorktreeId } from '../../../../shared/worktree/id'
-import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
 import type { RunConfiguration } from '../../../../shared/run-configuration-types'
-import { detectRunConfigurations } from '@/lib/run-configuration-detection'
 import {
   rerunConfigurationInTab,
   runConfigurationInNewTab,
@@ -29,6 +25,7 @@ import {
   TabBarRunConfigRunningSection
 } from './TabBarRunConfigMenuEntries'
 import { useRunConfigurationTabs } from './use-run-configuration-tabs'
+import { useDetectedRunConfigurations } from './use-detected-run-configurations'
 
 type TabBarRunConfigButtonProps = {
   worktreeId: string
@@ -56,47 +53,18 @@ export function TabBarRunConfigButton({
   worktreeId,
   groupId
 }: TabBarRunConfigButtonProps): React.JSX.Element | null {
-  const repos = useAppStore((s) => s.repos)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [configs, setConfigs] = useState<RunConfiguration[]>([])
-  const [loading, setLoading] = useState(false)
   const [recentConfigId, setRecentConfigId] = useState<string | null>(null)
+  const {
+    repoId,
+    configs,
+    loading,
+    refresh: runDetection
+  } = useDetectedRunConfigurations(worktreeId)
   const { runTabs, runningTabIds, activeTerminalTabId } = useRunConfigurationTabs(
     worktreeId,
     groupId
   )
-
-  const repoId = useMemo(() => {
-    if (worktreeId === FLOATING_TERMINAL_WORKTREE_ID) {
-      return null
-    }
-    const candidate = getRepoIdFromWorktreeId(worktreeId)
-    return repos.some((r) => r.id === candidate) ? candidate : null
-  }, [worktreeId, repos])
-
-  const repoPath = useMemo(() => {
-    if (!repoId) {
-      return null
-    }
-    return repos.find((r) => r.id === repoId)?.path ?? null
-  }, [repoId, repos])
-
-  const runDetection = useCallback(async () => {
-    if (!repoPath) {
-      return
-    }
-    setLoading(true)
-    try {
-      const detected = await detectRunConfigurations(repoPath)
-      setConfigs(detected)
-    } finally {
-      setLoading(false)
-    }
-  }, [repoPath])
-
-  useEffect(() => {
-    void runDetection()
-  }, [runDetection])
 
   const handleOpenChange = useCallback(
     (next: boolean) => {
@@ -135,12 +103,12 @@ export function TabBarRunConfigButton({
       setRecentConfigId(config.id)
       const reuseTabId =
         preferredTabId ?? findReusableRunTab(runTabs, config.label, runningTabIds)?.tabId
-      if (reuseTabId && rerunConfigurationInTab({ config, tabId: reuseTabId })) {
+      if (reuseTabId && rerunConfigurationInTab({ config, tabId: reuseTabId, worktreeId })) {
         return
       }
-      runConfigurationInNewTab({ config, worktreeId, groupId })
+      runConfigurationInNewTab({ config, worktreeId })
     },
-    [runTabs, runningTabIds, worktreeId, groupId]
+    [runTabs, runningTabIds, worktreeId]
   )
 
   const handleConfigAction = useCallback(
@@ -191,7 +159,7 @@ export function TabBarRunConfigButton({
             className="my-auto flex h-7 shrink-0 items-center gap-1 rounded-md px-1.5 text-muted-foreground hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             aria-label="Run configuration"
           >
-            <Play className="size-3.5" />
+            <Play className="size-3.5 text-status-success" />
             <span className="text-[12px] font-medium @max-[480px]/tab-strip:hidden">Run</span>
           </button>
         </TooltipTrigger>
@@ -218,9 +186,17 @@ export function TabBarRunConfigButton({
             }
           >
             {primary?.running ? (
-              <Square className="size-3 shrink-0" fill="currentColor" strokeWidth={0} />
+              <Square
+                className="size-3 shrink-0 text-destructive"
+                fill="currentColor"
+                strokeWidth={0}
+              />
             ) : (
-              <Play className="size-3 shrink-0" fill="currentColor" strokeWidth={0} />
+              <Play
+                className="size-3 shrink-0 text-status-success"
+                fill="currentColor"
+                strokeWidth={0}
+              />
             )}
             {/* Why: every split strip mounts this now, so narrow strips go icon-only by width. */}
             <span className="max-w-[160px] truncate text-[12px] font-medium @max-[480px]/tab-strip:hidden">

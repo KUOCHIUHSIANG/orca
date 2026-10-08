@@ -12,6 +12,8 @@ import type { HiddenTerminalPrewarm } from '../controller/terminal-pane-types'
 import { shouldMountBackgroundWorktreeTab } from '../../terminal/background-terminal-worktree-mount'
 import { useNativeChatToggleShortcut } from '../../native-chat/pane/routing/use-native-chat-toggle-shortcut'
 import { RetainedPaneHost } from '../../tab-group/RetainedPaneHost'
+import { findDockedGroupId } from '../../../store/slices/tabs/tab-group-dock'
+import { useBottomPanelState } from '@/lib/bottom-panel-state'
 import { TerminalOverlaySlot } from './TerminalOverlaySlot'
 import { captureWorkspaceEmptiedReaction } from '../../tab-group/workspace-emptied-reaction'
 import { TerminalRestoringPlaceholder } from './TerminalRestoringPlaceholder'
@@ -66,6 +68,8 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
       activeGroupId: state.activeGroupIdByWorktree[worktreeId]
     }))
   )
+  const bottomPanelOpen = useBottomPanelState((state) => state.open)
+  const dockedGroupId = useMemo(() => findDockedGroupId(groups), [groups])
   const focusGroup = useAppStore((state) => state.focusGroup)
   const consumeSuppressedPtyExit = useAppStore((state) => state.consumeSuppressedPtyExit)
 
@@ -138,13 +142,18 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
     <>
       {terminalTabs.map((terminalTab) => {
         const assignment = assignments.get(terminalTab.id)
-        const isVisible = Boolean(isWorktreeActive && assignment?.isActiveInGroup)
+        const docked = dockedGroupId !== null && assignment?.groupId === dockedGroupId
+        // Why: a closed bottom panel has no anchor, so its terminals hide but keep running.
+        const isVisible = Boolean(
+          isWorktreeActive && assignment?.isActiveInGroup && (!docked || bottomPanelOpen)
+        )
         if (!shouldMountBackgroundWorktreeTab(backgroundMountTabIds, terminalTab.id)) {
           // Only startup holds remain visible here; other visible deferred tabs are admitted in this render.
           return isVisible ? (
             <RetainedPaneHost
               key={terminalTab.id}
               groupId={assignment?.groupId}
+              docked={docked}
               isVisible
               onFocusOwningGroup={focusOwningGroup}
             >
@@ -169,6 +178,7 @@ const TerminalPaneOverlayLayer = memo(function TerminalPaneOverlayLayer({
             worktreePath={worktreePath}
             startupCwd={terminalTab.startupCwd}
             groupId={assignment?.groupId}
+            docked={docked}
             isWorktreeActive={isWorktreeActive}
             isVisible={isVisible}
             isActive={isActive}

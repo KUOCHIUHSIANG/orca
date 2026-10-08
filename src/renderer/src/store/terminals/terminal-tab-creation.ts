@@ -22,6 +22,7 @@ import { dedupeTabOrder } from '../../../../shared/workspace-layout/tab-order'
 import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 import { emptySplitGroup, splitGroupEntries } from '../slices/tabs/tabs-group-actions'
 import { ownsGlobalSelection } from '../workspaces/selection/global-selection-owner'
+import { ensureCenterGroupId, targetsDockedGroup } from '../slices/tabs/tab-group-dock'
 import { ORCA_LAYOUT_OWNER_IS_MAIN } from '../../../../shared/layout-owner-switch'
 import {
   recordCreatedTerminalTabInLayoutOwner,
@@ -44,6 +45,10 @@ export function createTerminalTabCreationActions(
     createTab: (worktreeId, targetGroupId, shellOverride, options) => {
       let tab!: TerminalTab
       const split = options?.split
+      // Why: agents belong in the split layout; the bottom panel is for service output.
+      if (!split && options?.launchAgent && targetsDockedGroup(get(), worktreeId, targetGroupId)) {
+        targetGroupId = ensureCenterGroupId(get, worktreeId)
+      }
       const splitGroupId = split ? createBrowserUuid() : undefined
       set((current) => {
         const s = current

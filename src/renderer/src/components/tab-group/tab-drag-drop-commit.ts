@@ -2,7 +2,7 @@ import type { RefObject } from 'react'
 import type { DragEndEvent } from '@dnd-kit/core'
 import { useAppStore } from '../../store'
 import { mirrorWebRuntimeTabMove } from '../tab-bar/web-runtime-tab-move-mirror'
-import { resolveTabInsertion } from './tab-insertion'
+import { reorderTabOrderForInsertion, resolveTabInsertion } from './tab-insertion'
 import { resolveSourceGroupRestoreOnDrop } from './tab-drag-preview-target'
 import { getDragPointer } from './tab-drag-pointer'
 import {
@@ -118,12 +118,13 @@ export function commitTabDragDrop({
     const rawInsertIndex = overIndex + (insertion.side === 'right' ? 1 : 0)
 
     if (activeData.groupId === overData.groupId) {
-      const oldIndex = targetGroup.tabOrder.indexOf(activeData.unifiedTabId)
-      // Adjust forward insertion after removing the source tab so the target slot does not shift left.
-      const nextIndex = oldIndex < rawInsertIndex ? rawInsertIndex - 1 : rawInsertIndex
-      if (oldIndex !== -1 && oldIndex !== nextIndex) {
-        const nextOrder = targetGroup.tabOrder.filter((id) => id !== activeData.unifiedTabId)
-        nextOrder.splice(nextIndex, 0, activeData.unifiedTabId)
+      const nextOrder = reorderTabOrderForInsertion(
+        targetGroup.tabOrder,
+        activeData.unifiedTabId,
+        overData.unifiedTabId,
+        insertion.side
+      )
+      if (nextOrder) {
         if (
           ORCA_LAYOUT_OWNER_IS_MAIN &&
           dropTabThroughLayoutOwner(worktreeId, {
