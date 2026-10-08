@@ -18,6 +18,7 @@ import {
   insertTabIdIntoOrder
 } from './tabs-tab-order'
 import { resolveUnifiedTabCreatePlacement } from './tabs-create-placement'
+import { ensureCenterGroupId, targetsDockedGroup } from './tab-group-dock'
 import { folderWorkspaceToWorktree } from '../../../../../shared/folder-workspace-worktree'
 
 export function createTabsCreateActions(
@@ -27,6 +28,21 @@ export function createTabsCreateActions(
   return {
     createUnifiedTab: (worktreeId, contentType, init) => {
       const id = init?.id ?? createBrowserUuid()
+      // Why: the bottom panel only hosts terminals; editors, browsers and agent chats stay in the split layout.
+      const afterTabId = init?.afterTabId
+      const anchorGroupId = afterTabId
+        ? get().unifiedTabsByWorktree[worktreeId]?.find((tab) => tab.id === afterTabId)?.groupId
+        : undefined
+      if (
+        contentType !== 'terminal' &&
+        targetsDockedGroup(get(), worktreeId, init?.targetGroupId ?? anchorGroupId)
+      ) {
+        init = {
+          ...init,
+          targetGroupId: ensureCenterGroupId(get, worktreeId),
+          afterTabId: undefined
+        }
+      }
       let created!: Tab
       set((state) => {
         const existingTabs = state.unifiedTabsByWorktree[worktreeId] ?? []

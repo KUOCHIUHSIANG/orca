@@ -12,7 +12,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import TabBar from '../tab-bar/TabBar'
 
-import { TabBarRunConfigButton } from '../tab-bar/TabBarRunConfigButton'
+import { TabBarRunControls } from '../tab-bar/TabBarRunControls'
 import { useTabGroupWorkspaceModel } from './useTabGroupWorkspaceModel'
 import { closeTerminalTab } from '../terminal/terminal-tab-actions'
 import { resolveGroupTabFromVisibleId } from './tab-group-visible-id'
@@ -298,10 +298,8 @@ export default function TabGroupPanel({
               className="ml-1.5 flex shrink-0 items-center gap-0.5"
               style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             >
+              <TabBarRunControls worktreeId={worktreeId} groupId={groupId} />
               <div className={focusedActionChromeClassName}>
-                {isFocused ? (
-                  <TabBarRunConfigButton worktreeId={worktreeId} groupId={groupId} />
-                ) : null}
                 {isFocused && hasSplitGroups ? (
                   <Tooltip>
                     <DropdownMenu modal={false}>

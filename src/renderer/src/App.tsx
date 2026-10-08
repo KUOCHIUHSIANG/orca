@@ -13,6 +13,7 @@ import { useUnreadDockBadge } from './hooks/useUnreadDockBadge'
 import { AppBackgroundServices } from './app-shell/AppBackgroundServices'
 import { AppRootSurfaces } from './app-shell/AppRootSurfaces'
 import { AppWorkspaceShell } from './app-shell/AppWorkspaceShell'
+import { WorkspaceBottomPanel } from './components/bottom-panel/WorkspaceBottomPanel'
 import { WindowControls } from './app-shell/WindowControls'
 import {
   MAC_TRAFFIC_LIGHTS_WIDTH,
@@ -94,6 +95,7 @@ function App(): React.JSX.Element {
           <LinkRoutingPreferenceDialogProvider>
             <AppBackgroundServices />
             <AppWorkspaceShell layout={layout} floatingWorkspace={floatingWorkspace} />
+            <WorkspaceBottomPanel />
             <AppRootSurfaces
               floatingWorkspace={floatingWorkspace}
               onboardingGate={onboardingGate}

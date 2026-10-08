@@ -2,7 +2,7 @@ import { createBrowserUuid } from '@/lib/browser-uuid'
 import type { TabGroup } from '../../../../../shared/tab-types'
 import type { TabsSlice, TabsSliceGet, TabsSliceSet } from './tabs-slice-contract'
 import { activeSurfacePatchMatchesState, buildActiveSurfacePatch } from './tabs-surface'
-import { buildSplitNode, collapseGroupLayout, replaceLeaf } from './tabs-layout'
+import { buildSplitNode, collapseGroupLayout, replaceLeaf, wrapLayoutInSplit } from './tabs-layout'
 import { ownsGlobalSelection } from '../../global-selection-owner'
 
 export function createTabsGroupActions(
@@ -160,24 +160,29 @@ export function createTabsGroupActions(
         id: newGroupId,
         worktreeId,
         activeTabId: null,
-        tabOrder: []
+        tabOrder: [],
+        ...(opts?.dock ? { dock: opts.dock } : {})
       }
       const shouldActivate = opts?.activate !== false
       set((state) => {
         const existing = state.groupsByWorktree[worktreeId] ?? []
         const currentLayout =
           state.layoutByWorktree[worktreeId] ?? ({ type: 'leaf', groupId: sourceGroupId } as const)
-        const replacement = buildSplitNode(
-          sourceGroupId,
-          newGroupId,
-          direction === 'left' || direction === 'right' ? 'horizontal' : 'vertical',
-          direction === 'left' || direction === 'up' ? 'first' : 'second'
-        )
+        const splitDirection =
+          direction === 'left' || direction === 'right' ? 'horizontal' : 'vertical'
+        const position = direction === 'left' || direction === 'up' ? 'first' : 'second'
+        const nextLayout = opts?.wholeLayout
+          ? wrapLayoutInSplit(currentLayout, newGroupId, splitDirection, position, opts.ratio)
+          : replaceLeaf(
+              currentLayout,
+              sourceGroupId,
+              buildSplitNode(sourceGroupId, newGroupId, splitDirection, position)
+            )
         return {
           groupsByWorktree: { ...state.groupsByWorktree, [worktreeId]: [...existing, newGroup] },
           layoutByWorktree: {
             ...state.layoutByWorktree,
-            [worktreeId]: replaceLeaf(currentLayout, sourceGroupId, replacement)
+            [worktreeId]: nextLayout
           },
           ...(shouldActivate
             ? {

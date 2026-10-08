@@ -21,6 +21,8 @@ function shouldUseCssAnchorPositioning(): boolean {
 type RetainedPaneHostProps = {
   groupId: string | undefined
   isVisible: boolean
+  /** The group lives in the full-width bottom panel, outside the workspace's clipping ancestors. */
+  docked?: boolean
   measureWhileHidden?: boolean
   fitTerminal?: boolean
   onFocusOwningGroup?: (groupId: string) => void
@@ -32,6 +34,7 @@ type RetainedPaneHostProps = {
 export function RetainedPaneHost({
   groupId,
   isVisible,
+  docked = false,
   measureWhileHidden = false,
   fitTerminal = false,
   onFocusOwningGroup,
@@ -45,12 +48,12 @@ export function RetainedPaneHost({
   const measuresFallbackRect =
     groupId !== undefined && !shouldUseCssAnchorPositioning() && (isVisible || measureWhileHidden)
   useLayoutEffect(() => {
-    const container = overlayRef.current?.parentElement
+    const container = docked ? document.documentElement : overlayRef.current?.parentElement
     if (!measuresFallbackRect || groupId === undefined || !container) {
       return
     }
     return subscribeTabGroupBodyRect(groupId, container, setMeasuredFallbackRect)
-  }, [groupId, measuresFallbackRect])
+  }, [docked, groupId, measuresFallbackRect])
 
   useLayoutEffect(() => {
     if (!fitTerminal || !isVisible || !anchorName) {
@@ -85,13 +88,14 @@ export function RetainedPaneHost({
       window.clearTimeout(retryId)
       window.clearTimeout(settledRetryId)
     }
-  }, [anchorName, fitTerminal, isVisible, measuredFallbackRect])
+  }, [anchorName, docked, fitTerminal, isVisible, measuredFallbackRect])
 
   const style: React.CSSProperties = useMemo(
     () =>
       anchorName && shouldUseCssAnchorPositioning()
         ? {
-            position: 'absolute',
+            // Why fixed: the viewport is the only containing block that reaches the bottom panel's anchor.
+            position: docked ? 'fixed' : 'absolute',
             positionAnchor: anchorName,
             top: `anchor(${anchorName} top)`,
             left: `anchor(${anchorName} left)`,
@@ -106,7 +110,7 @@ export function RetainedPaneHost({
               // Why: Chrome builds without CSS anchor positioning otherwise
               // mount the terminal into a 0x0 overlay. Measure the tab-group
               // body so the fallback does not cover the tab strip.
-              position: 'absolute',
+              position: docked ? 'fixed' : 'absolute',
               top: measuredFallbackRect?.top ?? 32,
               left: measuredFallbackRect?.left ?? 0,
               width: measuredFallbackRect?.width ?? '100%',
@@ -124,7 +128,7 @@ export function RetainedPaneHost({
               display: 'none',
               pointerEvents: 'none'
             },
-    [anchorName, isVisible, measuredFallbackRect, measureWhileHidden]
+    [anchorName, docked, isVisible, measuredFallbackRect, measureWhileHidden]
   )
   const focusGroup = useCallback(() => {
     if (groupId !== undefined && onFocusOwningGroup) {

@@ -18,6 +18,7 @@ import {
 } from '../slices/tab-group-state'
 import { createBrowserUuid } from '@/lib/browser-uuid'
 import { ownsGlobalSelection } from '../global-selection-owner'
+import { ensureCenterGroupId, targetsDockedGroup } from '../slices/tabs/tab-group-dock'
 import { getLocalProjectExecutionRuntimeContext } from '@/lib/local-preflight-context'
 import type { TerminalSlice, TerminalStoreGet, TerminalStoreSet } from './terminal-state'
 import {
@@ -61,6 +62,10 @@ export function createTerminalTabCreationActions(
   return {
     createTab: (worktreeId, targetGroupId, shellOverride, options) => {
       let tab!: TerminalTab
+      // Why: agents belong in the split layout; the bottom panel is for service output.
+      if (options?.launchAgent && targetsDockedGroup(get(), worktreeId, targetGroupId)) {
+        targetGroupId = ensureCenterGroupId(get, worktreeId)
+      }
       set((s) => {
         const orphanTerminalIds = getOrphanTerminalIds(s, worktreeId)
         const orphanCleanupPatch = buildOrphanTerminalCleanupPatch(s, worktreeId, orphanTerminalIds)
