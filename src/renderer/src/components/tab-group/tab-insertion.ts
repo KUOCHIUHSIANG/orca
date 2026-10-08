@@ -75,6 +75,25 @@ function equal(a: HoveredTabInsertion | null, b: HoveredTabInsertion | null): bo
   )
 }
 
+/** The group's tab order after dropping `movedTabId` beside `overTabId`; null when nothing moves. */
+export function reorderTabOrderForInsertion(
+  tabOrder: readonly string[],
+  movedTabId: string,
+  overTabId: string,
+  side: HoveredTabInsertion['side']
+): string[] | null {
+  const rawInsertIndex = tabOrder.indexOf(overTabId) + (side === 'right' ? 1 : 0)
+  const oldIndex = tabOrder.indexOf(movedTabId)
+  // Adjust forward insertion after removing the source tab so the target slot does not shift left.
+  const nextIndex = oldIndex < rawInsertIndex ? rawInsertIndex - 1 : rawInsertIndex
+  if (oldIndex === -1 || oldIndex === nextIndex) {
+    return null
+  }
+  const nextOrder = tabOrder.filter((id) => id !== movedTabId)
+  nextOrder.splice(nextIndex, 0, movedTabId)
+  return nextOrder
+}
+
 export function useHoveredTabInsertion(
   isTabDragData: (value: unknown) => value is TabDragItemData,
   getDragCenter: (event: DragMoveEvent | DragOverEvent) => { x: number; y: number } | null
