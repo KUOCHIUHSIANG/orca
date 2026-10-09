@@ -4,10 +4,11 @@
 //   node config/scripts/fork-maintenance/sync-upstream.mjs v1.4.221 [--push] [--build]
 //                                                          [--auto-worktree] [--events]
 //
-// Steps: fetch upstream tags → back up the branch → rebase --onto <new> <old> → install deps →
-// typecheck. --push force-with-lease pushes the branch and fast-forwards origin main to upstream
+// Steps: fetch upstream tags → back up the branch → rebase the fork's own commits onto <new> →
+// install deps → typecheck. --push force-with-lease pushes the branch and fast-forwards origin main to upstream
 // main; --build then produces the local arm64 app.
-// On a rebase conflict it stops and prints how to continue; rerere replays resolutions it has seen.
+// On a rebase conflict it stops and prints how to continue; rerere replays resolutions it has seen
+// and the rebase continues on its own when they cover every conflict.
 //
 // App mode (Orca's "sync and update" button):
 //   --auto-worktree  run in whichever worktree has custom checked out, creating a dedicated
@@ -20,12 +21,17 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
+import { resolveRebaseBase } from './rebase-base.mjs'
+
+// Why: Orca runs this script through its own binary as Node; the build's Electron children must not inherit that.
+delete process.env.ELECTRON_RUN_AS_NODE
 
 const UPSTREAM_REMOTE = 'upstream'
 const FORK_REMOTE = 'origin'
 const CUSTOM_BRANCH = 'custom'
 const RELEASE_TAG = /^v\d+\.\d+\.\d+$/
 const CONFLICT_EXIT_CODE = 2
+const RERERE = ['-c', 'rerere.enabled=true', '-c', 'rerere.autoUpdate=true']
 
 const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..')
 const scriptRelativePath = path.relative(repoRoot, import.meta.filename)
@@ -47,9 +53,18 @@ function stage(name) {
   emit({ type: 'stage', stage: name })
 }
 
-function run(command, commandArgs, cwd = repoRoot) {
+function run(command, commandArgs, cwd = repoRoot, env = process.env) {
   console.log(`\n$ ${command} ${commandArgs.join(' ')}`)
-  execFileSync(command, commandArgs, { cwd, stdio: 'inherit' })
+  execFileSync(command, commandArgs, { cwd, stdio: 'inherit', env })
+}
+
+function succeeds(command, commandArgs, env) {
+  try {
+    run(command, commandArgs, repoRoot, env)
+    return true
+  } catch {
+    return false
+  }
 }
 
 function git(...gitArgs) {
@@ -59,16 +74,6 @@ function git(...gitArgs) {
 function fail(message) {
   console.error(`\n[sync-upstream] ${message}`)
   process.exit(1)
-}
-
-function compareReleaseTags(a, b) {
-  const [pa, pb] = [a, b].map((tag) => tag.slice(1).split('.').map(Number))
-  for (let i = 0; i < 3; i += 1) {
-    if (pa[i] !== pb[i]) {
-      return pa[i] - pb[i]
-    }
-  }
-  return 0
 }
 
 /** Worktree path that has CUSTOM_BRANCH checked out, or null. */
@@ -134,18 +139,38 @@ function previewConflictCommits(currentBase) {
   }
 }
 
+function rebaseInProgress() {
+  return existsSync(path.resolve(repoRoot, git('rev-parse', '--git-path', 'rebase-merge')))
+}
+
 function rebaseOnto(currentBase) {
   const ownCommits = git('log', '--oneline', `${currentBase}..HEAD`)
+  const baseLabel = git('describe', '--tags', '--always', currentBase)
   console.log(
-    `\n[sync-upstream] Moving these commits from ${currentBase} to ${targetTag}:\n${ownCommits}`
+    `\n[sync-upstream] Moving these commits from ${baseLabel} to ${targetTag}:\n${ownCommits}`
   )
-  const backupBranch = `backup/${CUSTOM_BRANCH}-${currentBase}`
+  const backupBranch = `backup/${CUSTOM_BRANCH}-before-${targetTag}`
   run('git', ['branch', '-f', backupBranch, 'HEAD'])
   console.log(`[sync-upstream] Backup saved as ${backupBranch}.`)
 
-  try {
-    run('git', ['rebase', '--onto', targetTag, currentBase, CUSTOM_BRANCH])
-  } catch {
+  let rebased = succeeds('git', [
+    ...RERERE,
+    'rebase',
+    '--onto',
+    targetTag,
+    currentBase,
+    CUSTOM_BRANCH
+  ])
+  // Each stop rerere fully resolved (nothing left unmerged) only needs --continue; bounded per commit.
+  let stopsLeft = ownCommits.split('\n').length
+  while (!rebased && stopsLeft > 0 && rebaseInProgress() && conflictedFiles().length === 0) {
+    stopsLeft -= 1
+    rebased = succeeds('git', [...RERERE, 'rebase', '--continue'], {
+      ...process.env,
+      GIT_EDITOR: 'true'
+    })
+  }
+  if (!rebased) {
     if (eventsMode) {
       const files = conflictedFiles()
       const commitSubject = stoppedCommitSubject()
@@ -154,7 +179,7 @@ function rebaseOnto(currentBase) {
       emit({
         type: 'conflict',
         worktree: repoRoot,
-        baseTag: currentBase,
+        base: currentBase,
         files,
         commitSubject,
         ...(conflictCommits ? { conflictCommits } : {})
@@ -195,25 +220,22 @@ try {
   fail(`Tag ${targetTag} does not exist on ${UPSTREAM_REMOTE}.`)
 }
 
-const currentBase = git(
-  'describe',
-  '--tags',
-  '--abbrev=0',
-  '--match',
-  'v*',
-  '--exclude',
-  '*-*',
-  'HEAD'
-)
-const comparison = compareReleaseTags(targetTag, currentBase)
-if (comparison < 0) {
-  fail(`${CUSTOM_BRANCH} is based on ${currentBase}; ${targetTag} is older.`)
+const plan = resolveRebaseBase({
+  cwd: repoRoot,
+  branch: 'HEAD',
+  targetTag,
+  upstreamMain: `${UPSTREAM_REMOTE}/main`
+})
+if (plan.kind === 'target-predates-fork') {
+  fail(
+    `${targetTag} predates ${git('describe', '--tags', '--always', plan.forkPoint)}, the upstream commit ${CUSTOM_BRANCH} builds on. Pick a newer tag.`
+  )
 }
-if (comparison === 0) {
+if (plan.kind === 'already-based') {
   console.log(`\n[sync-upstream] Already based on ${targetTag}; verifying only.`)
 } else {
   stage('rebase')
-  rebaseOnto(currentBase)
+  rebaseOnto(plan.base)
 }
 
 stage('install')
