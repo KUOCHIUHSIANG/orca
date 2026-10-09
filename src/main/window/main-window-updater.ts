@@ -26,7 +26,14 @@ import type {
   UpdateInstallMode
 } from '../updater/lifecycle/updater-state'
 import type { UpdaterSetupOptions } from '../updater/lifecycle/updater-setup'
-import { isForkBuild, checkForkUpdate, syncAndBuild, installForkUpdate } from '../fork-update'
+import {
+  isForkBuild,
+  checkForkUpdate,
+  getForkUpdateStatus,
+  installForkUpdate,
+  startForkUpdateChecks,
+  syncAndBuild
+} from '../fork-update'
 
 const UPDATER_SETUP_FALLBACK_MS = 15_000
 
@@ -124,6 +131,12 @@ export function scheduleMainWindowAutoUpdaterSetup(
       return
     }
     updaterSetupDone = true
+    // Why: electron-updater's background checks read the upstream release feed, which a fork build can't install.
+    if (isForkBuild()) {
+      clearDeferredSetup()
+      startForkUpdateChecks()
+      return
+    }
     try {
       setupAutoUpdaterWithAppProxy(mainWindow, store, options)
       logStartupMilestone('updater-setup-done')
@@ -155,7 +168,9 @@ export function registerUpdaterHandlers(_store: Store): void {
   ipcMain.removeHandler('updater:showLinuxPackage')
   ipcMain.removeHandler('updater:listBuilds')
 
-  ipcMain.handle('updater:getStatus', () => getUpdateStatus())
+  ipcMain.handle('updater:getStatus', () =>
+    isForkBuild() ? getForkUpdateStatus() : getUpdateStatus()
+  )
   ipcMain.handle('updater:getVersion', () => app.getVersion())
   ipcMain.handle('updater:check', (_event, options?: UpdateCheckOptions) => {
     if (isForkBuild()) {
