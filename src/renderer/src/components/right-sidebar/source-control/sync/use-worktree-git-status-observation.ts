@@ -15,6 +15,7 @@ import {
 import { takeRecentWorkspaceSwitchWake } from '@/lib/workspace/activation/workspace-switch-user-act'
 import { useRefreshOnHostContact } from './use-refresh-on-host-contact'
 import { useGitStatusWindowPresence } from './use-git-status-window-presence'
+import { useBottomPanelState } from '@/lib/bottom-panel-state'
 import {
   hasInteractiveActiveGitStatusConsumer,
   shouldPollActiveGitStatus
@@ -71,6 +72,7 @@ export function useWorktreeGitStatusObservation(
   const rightSidebarOpen = useAppStore((s) => s.rightSidebarOpen)
   const rightSidebarTab = useAppStore((s) => s.rightSidebarTab)
   const rightSidebarExplorerView = useAppStore((s) => s.rightSidebarExplorerView)
+  const bottomPanelGitVisible = useBottomPanelState((s) => s.open && s.tab === 'git')
   const pollingAllowed = useAppStore((s) =>
     owner
       ? options.enabled === true
@@ -80,7 +82,8 @@ export function useWorktreeGitStatusObservation(
           rightSidebarOpen: s.rightSidebarOpen,
           rightSidebarTab: s.rightSidebarTab,
           rightSidebarExplorerView: s.rightSidebarExplorerView,
-          openFiles: s.openFiles
+          openFiles: s.openFiles,
+          bottomPanelGitVisible
         })
   )
   const interactiveConsumerVisible = useAppStore((s) =>
@@ -92,7 +95,8 @@ export function useWorktreeGitStatusObservation(
           rightSidebarOpen: s.rightSidebarOpen,
           rightSidebarTab: s.rightSidebarTab,
           rightSidebarExplorerView: s.rightSidebarExplorerView,
-          openFiles: s.openFiles
+          openFiles: s.openFiles,
+          bottomPanelGitVisible
         })
   )
 

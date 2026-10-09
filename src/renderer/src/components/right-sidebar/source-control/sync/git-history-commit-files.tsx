@@ -10,6 +10,7 @@ import {
 } from '../listing/split-open'
 import { FileTypeIcon } from '@/components/FileTypeIcon'
 import { basename, dirname } from '@/lib/path'
+import { cn } from '@/lib/utils'
 import { useIntlLocale, useTranslate } from '@/i18n/use-translate'
 import { formatGitHistoryTimestamp } from './git-history-format'
 import type { GitBranchChangeEntry } from '../../../../../../shared/git/diff/git-diff-compare-types'
@@ -20,12 +21,14 @@ export type GitHistoryCommitFilesState =
   | { status: 'error'; error: string }
   | { status: 'ready'; entries: GitBranchChangeEntry[] }
 
-function CommitFileRow({
+export function CommitFileRow({
   entry,
-  onOpen
+  onOpen,
+  className
 }: {
   entry: GitBranchChangeEntry
   onOpen: (entry: GitBranchChangeEntry, event: SourceControlRowOpenEvent) => void
+  className?: string
 }): React.JSX.Element {
   const status = entry.status as GitFileStatus
   const fileName = basename(entry.path)
@@ -35,7 +38,10 @@ function CommitFileRow({
   return (
     <button
       type="button"
-      className="group flex w-full min-w-0 cursor-pointer items-center gap-1 py-1 pl-9 pr-3 text-left text-xs transition-colors hover:bg-accent/40"
+      className={cn(
+        'group flex w-full min-w-0 cursor-pointer items-center gap-1 py-1 pl-9 pr-3 text-left text-xs transition-colors hover:bg-accent/40',
+        className
+      )}
       title={entry.path}
       data-testid="git-history-commit-file"
       onClick={(event) => onOpen(entry, toSourceControlRowOpenEvent(event))}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useAppStore } from '@/store/index'
 import { shouldPollActiveGitStatus } from '@/app-shell/platform/passive-macos-app-data-access'
 import { isWindowVisible } from '@/lib/window-activity/window-visibility-interval'
+import { useBottomPanelState } from '@/lib/bottom-panel-state'
 import { runtimeEnvironmentIdOrLocalUnlessTwin } from '@/lib/workspace/ownership/worktree-runtime-owner'
 import {
   normalizeRuntimePathForComparison,
@@ -80,6 +81,7 @@ export function useGitStatusFileWatchRefresh({
   )
   const fetchStatusRef = useRef(fetchStatus)
   fetchStatusRef.current = fetchStatus
+  const bottomPanelGitVisible = useBottomPanelState((s) => s.open && s.tab === 'git')
   const shouldSubscribe =
     enabled &&
     !!activeWorktreeId &&
@@ -91,7 +93,8 @@ export function useGitStatusFileWatchRefresh({
       rightSidebarOpen,
       rightSidebarTab,
       rightSidebarExplorerView,
-      openFiles
+      openFiles,
+      bottomPanelGitVisible
     }) &&
     isConnectionReady(activeConnectionId) &&
     !gitStatusHugeByWorktree?.[activeWorktreeId]

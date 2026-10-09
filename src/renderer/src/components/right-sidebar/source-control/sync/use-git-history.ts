@@ -23,7 +23,9 @@ export function useSourceControlGitHistory({
   isBranchVisible,
   isGitHistoryExpanded,
   isGitHistoryVisible,
-  worktreeMap
+  worktreeMap,
+  limit = 50,
+  refs
 }: {
   activeRepoTarget: RuntimeClientTarget | null
   activeWorktreeId: string | null
@@ -35,6 +37,9 @@ export function useSourceControlGitHistory({
   isGitHistoryExpanded: boolean
   isGitHistoryVisible: boolean
   worktreeMap: ReadonlyMap<string, unknown>
+  limit?: number
+  /** Revisions to list instead of HEAD alone. */
+  refs?: readonly string[]
 }): {
   gitHistoryState: GitHistoryPanelState
   refreshGitHistory: (options?: HistoryRefresh) => Promise<void>
@@ -52,6 +57,8 @@ export function useSourceControlGitHistory({
   // Use stable owner identity so settings-object replacement cannot refetch history.
   const ownerHostKey =
     activeRepoTarget?.kind === 'environment' ? activeRepoTarget.environmentId : ''
+  // Why: a string key keeps a fresh refs array from re-firing the load; ref names cannot hold newlines.
+  const refsKey = refs?.join('\n') ?? ''
 
   useEffect(() => {
     setGitHistoryByWorktree((prev) => {
@@ -109,8 +116,9 @@ export function useSourceControlGitHistory({
             connectionId
           },
           {
-            limit: 50,
+            limit,
             baseRef: compareBaseRef,
+            ...(refsKey ? { refs: refsKey.split('\n') } : {}),
             ...(options?.wakeWslDistro ? { wakeWslDistro: true } : {})
           }
         )
@@ -146,6 +154,8 @@ export function useSourceControlGitHistory({
       isFolder,
       isGitHistoryExpanded,
       isGitHistoryVisible,
+      limit,
+      refsKey,
       worktreePath
     ]
   )
@@ -183,8 +193,10 @@ export function useSourceControlGitHistory({
     isFolder,
     isGitHistoryExpanded,
     isGitHistoryVisible,
+    limit,
     // Owner changes can occur without worktree/path changes; refetch rather than retain another host’s commits.
     ownerHostKey,
+    refsKey,
     worktreePath
   ])
 
