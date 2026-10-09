@@ -22,6 +22,7 @@ export const GIT_HISTORY_LANE_COLORS: readonly GitHistoryGraphColorId[] = [
 
 export const GIT_HISTORY_DEFAULT_LIMIT = 50
 export const GIT_HISTORY_MAX_LIMIT = 200
+export const GIT_HISTORY_MAX_REFS = 4
 
 export type GitHistoryRefCategory = 'branches' | 'remote branches' | 'tags' | 'commits'
 
@@ -62,6 +63,8 @@ export type GitHistoryOptions = {
   /** List only commits on HEAD that baseRef lacks, with statistics and pushed state. */
   branchOnly?: boolean
   skip?: number
+  /** Revisions to list instead of HEAD alone; unresolvable ones are dropped. */
+  refs?: string[]
 }
 
 export type GitHistoryBranchRange = {

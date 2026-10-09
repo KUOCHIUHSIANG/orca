@@ -7,6 +7,7 @@ import { refreshGitStatusForWorktree } from './git-status-refresh'
 import { isWindowVisible } from '@/lib/window-visibility-interval'
 import { takeRecentWorkspaceSwitchWake } from '@/lib/workspace-switch-user-act'
 import { useRefreshOnHostContact } from './use-refresh-on-host-contact'
+import { useBottomPanelState } from '@/lib/bottom-panel-state'
 import {
   hasInteractiveActiveGitStatusConsumer,
   shouldPollActiveGitStatus
@@ -62,6 +63,7 @@ export function useGitStatusPolling(options: { enabled?: boolean } = {}): void {
   const rightSidebarTab = useAppStore((s) => s.rightSidebarTab)
   const rightSidebarExplorerView = useAppStore((s) => s.rightSidebarExplorerView)
   const openFiles = useAppStore((s) => s.openFiles)
+  const bottomPanelGitVisible = useBottomPanelState((s) => s.open && s.tab === 'git')
   const repoMap = useRepoMap()
 
   const worktreePath = activeWorktree?.path ?? null
@@ -81,7 +83,8 @@ export function useGitStatusPolling(options: { enabled?: boolean } = {}): void {
     rightSidebarOpen,
     rightSidebarTab,
     rightSidebarExplorerView,
-    openFiles
+    openFiles,
+    bottomPanelGitVisible
   }
   const isActiveConnectionReady = isConnectionReady(activeConnectionId)
   const canFetchActiveWorktreeGitStatus =

@@ -15,7 +15,8 @@ export function CommitMessageComposer({
   onCancelGenerate,
   isGenerateDisabled,
   onGenerate,
-  generateTooltip
+  generateTooltip,
+  fillHeight = false
 }: {
   rows: number
   commitMessage: string
@@ -28,9 +29,11 @@ export function CommitMessageComposer({
   isGenerateDisabled: boolean
   onGenerate: () => void
   generateTooltip?: string
+  /** Stretch the field to its container's height instead of sizing by `rows`. */
+  fillHeight?: boolean
 }): React.JSX.Element {
   return (
-    <div className="relative">
+    <div className={cn('relative', fillHeight && 'h-full')}>
       <textarea
         rows={rows}
         value={commitMessage}
@@ -43,9 +46,11 @@ export function CommitMessageComposer({
         )}
         aria-describedby={describedBy || undefined}
         // Reserve Generate icon space and pin disabled borders so Chromium cannot wash out the field outline.
-        className={`mt-0.5 min-h-14 w-full resize-none appearance-none rounded-md border border-input bg-background shadow-xs px-2 py-1.5 text-xs text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:border-input disabled:bg-background disabled:text-foreground disabled:shadow-xs dark:bg-input/30 dark:disabled:bg-input/30 ${
-          showGenerate ? 'pr-8' : ''
-        }`}
+        className={cn(
+          'mt-0.5 min-h-14 w-full resize-none appearance-none rounded-md border border-input bg-background shadow-xs px-2 py-1.5 text-xs text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:border-input disabled:bg-background disabled:text-foreground disabled:shadow-xs dark:bg-input/30 dark:disabled:bg-input/30',
+          showGenerate && 'pr-8',
+          fillHeight && 'mt-0 h-full min-h-0'
+        )}
       />
       {showGenerate &&
         (isGenerating ? (

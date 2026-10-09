@@ -1050,6 +1050,31 @@ html.native-shell .app-layout {
   background: var(--split-divider-hover);
 }
 
+/* Dense tool-window splitters: a hairline at rest, the shared grip while hovered or dragged. */
+.tab-group-split-resize-handle.is-hairline::after {
+  background: var(--border);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical::after {
+  width: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal::after {
+  height: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-vertical.is-dragging::after {
+  width: 3px;
+  background: var(--tab-group-split-divider-strong);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-horizontal.is-dragging::after {
+  height: 3px;
+  background: var(--tab-group-split-divider-strong);
+}
+
 /* Electron drag hit-testing ignores z-index; every overlapping Radix portal needs explicit no-drag. */
 [data-radix-popper-content-wrapper],
 [data-slot='sheet-overlay'],
