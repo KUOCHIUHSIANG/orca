@@ -99,6 +99,33 @@ describe('resolvePrimaryRunTarget', () => {
     ).toMatchObject({ config: http })
   })
 
+  it('defaults to the remembered .NET launch over tab age, but not over a newer npm tab', () => {
+    const idle = { runningTabIds: new Set<string>(), activeTerminalTabId: null }
+    // No run tabs left (closed, or after a restart): the persisted pick replaces the first config.
+    expect(
+      resolvePrimaryRunTarget({ ...base, ...idle, runTabs: [], rememberedDotnetConfigId: 'https' })
+    ).toMatchObject({ config: https })
+    // https was rerun in its older reused tab, so the newest tab (http) no longer means "last run".
+    expect(
+      resolvePrimaryRunTarget({
+        ...base,
+        ...idle,
+        runTabs: [tab('t1', 'Api: https', 1), tab('t2', 'Api: http', 2)],
+        rememberedDotnetConfigId: 'https'
+      })
+    ).toMatchObject({ config: https })
+    const dev = { ...config('dev', 'dev'), type: 'npm' as const }
+    expect(
+      resolvePrimaryRunTarget({
+        ...base,
+        ...idle,
+        configs: [http, https, dev],
+        runTabs: [tab('t1', 'Api: https', 1), tab('t3', 'dev', 3)],
+        rememberedDotnetConfigId: 'https'
+      })
+    ).toMatchObject({ config: dev })
+  })
+
   it('ignores an idle active tab whose config disappeared', () => {
     expect(
       resolvePrimaryRunTarget({
