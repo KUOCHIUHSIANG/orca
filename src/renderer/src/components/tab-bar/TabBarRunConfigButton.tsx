@@ -23,6 +23,7 @@ import {
   partitionRunConfigurations,
   useRunConfigurationVisibility
 } from '@/lib/run-configuration-visibility'
+import { useRunConfigurationLastRun } from '@/lib/run-configuration-last-run'
 import { TabBarRunConfigRunningSection } from './TabBarRunConfigMenuEntries'
 import { RunConfigHiddenSubmenu, RunConfigSections } from './TabBarRunConfigMenuSections'
 import { useRunConfigurationTabs } from './use-run-configuration-tabs'
@@ -64,6 +65,9 @@ export function TabBarRunConfigButton({
     repoId ? s.overridesByRepo[repoId] : undefined
   )
   const setConfigsHidden = useRunConfigurationVisibility((s) => s.setHidden)
+  const rememberedDotnetConfigId = useRunConfigurationLastRun((s) =>
+    repoId ? (s.lastDotnetByRepo[repoId] ?? null) : null
+  )
   const { visible: visibleConfigs, hidden: hiddenConfigs } = useMemo(
     () => partitionRunConfigurations(configs, visibilityOverrides),
     [configs, visibilityOverrides]
@@ -88,9 +92,17 @@ export function TabBarRunConfigButton({
         runTabs,
         runningTabIds,
         activeTerminalTabId,
-        recentConfigId
+        recentConfigId,
+        rememberedDotnetConfigId
       }),
-    [orderedConfigs, runTabs, runningTabIds, activeTerminalTabId, recentConfigId]
+    [
+      orderedConfigs,
+      runTabs,
+      runningTabIds,
+      activeTerminalTabId,
+      recentConfigId,
+      rememberedDotnetConfigId
+    ]
   )
 
   const runConfig = useCallback(
