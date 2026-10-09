@@ -56,13 +56,16 @@ export function resolvePrimaryRunTarget({
   runTabs,
   runningTabIds,
   activeTerminalTabId,
-  recentConfigId
+  recentConfigId,
+  rememberedDotnetConfigId = null
 }: {
   configs: readonly RunConfiguration[]
   runTabs: readonly RunTab[]
   runningTabIds: ReadonlySet<string>
   activeTerminalTabId: string | null
   recentConfigId: string | null
+  /** Persisted last .NET launch; outlives remounts, restarts and closed tabs. */
+  rememberedDotnetConfigId?: string | null
 }): PrimaryRunTarget | null {
   const activeRunTab = runTabs.find((t) => t.tabId === activeTerminalTabId)
   if (activeRunTab) {
@@ -85,9 +88,16 @@ export function resolvePrimaryRunTarget({
     (newest, tab) => (!newest || tab.createdAt > newest.createdAt ? tab : newest),
     null
   )
+  const newestRunConfig = newestRunTab
+    ? configs.find((c) => c.label === newestRunTab.label)
+    : undefined
+  const rememberedDotnet = rememberedDotnetConfigId
+    ? configs.find((c) => c.id === rememberedDotnetConfigId)
+    : undefined
   const config =
     (recentConfigId ? configs.find((c) => c.id === recentConfigId) : undefined) ??
-    (newestRunTab ? configs.find((c) => c.label === newestRunTab.label) : undefined) ??
+    // Why: tab age misses reruns in reused tabs, so for .NET the last launch wins; npm keeps tab order.
+    (newestRunConfig?.type === 'npm' ? newestRunConfig : (rememberedDotnet ?? newestRunConfig)) ??
     configs[0]
   if (!config) {
     return null
