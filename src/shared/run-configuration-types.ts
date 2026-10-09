@@ -15,4 +15,6 @@ export type RunConfiguration = {
   projectPath: string
   /** Whether this was auto-detected or manually added */
   isAutoDetected: boolean
+  /** Starts in the menu's Hidden submenu until the user shows it, e.g. `lint` or `test` */
+  defaultHidden?: boolean
 }

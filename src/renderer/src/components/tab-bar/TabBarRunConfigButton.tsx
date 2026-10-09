@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { ChevronDown, Play, Square, TerminalSquare } from 'lucide-react'
+import { ChevronDown, Play, Square } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,33 +20,17 @@ import {
   resolvePrimaryRunTarget
 } from '@/lib/run-configuration-tabs'
 import {
-  RunConfigSectionHeader,
-  TabBarRunConfigMenuEntries,
-  TabBarRunConfigRunningSection
-} from './TabBarRunConfigMenuEntries'
+  partitionRunConfigurations,
+  useRunConfigurationVisibility
+} from '@/lib/run-configuration-visibility'
+import { TabBarRunConfigRunningSection } from './TabBarRunConfigMenuEntries'
+import { RunConfigHiddenSubmenu, RunConfigSections } from './TabBarRunConfigMenuSections'
 import { useRunConfigurationTabs } from './use-run-configuration-tabs'
 import { useDetectedRunConfigurations } from './use-detected-run-configurations'
 
 type TabBarRunConfigButtonProps = {
   worktreeId: string
   groupId: string
-}
-
-function DotnetIcon({ className }: { className?: string }): React.JSX.Element {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="1" fill="currentColor" />
-    </svg>
-  )
 }
 
 export function TabBarRunConfigButton({
@@ -76,8 +60,19 @@ export function TabBarRunConfigButton({
     [runDetection]
   )
 
-  const dotnetConfigs = useMemo(() => configs.filter((c) => c.type === 'dotnet'), [configs])
-  const npmConfigs = useMemo(() => configs.filter((c) => c.type === 'npm'), [configs])
+  const visibilityOverrides = useRunConfigurationVisibility((s) =>
+    repoId ? s.overridesByRepo[repoId] : undefined
+  )
+  const setConfigsHidden = useRunConfigurationVisibility((s) => s.setHidden)
+  const { visible: visibleConfigs, hidden: hiddenConfigs } = useMemo(
+    () => partitionRunConfigurations(configs, visibilityOverrides),
+    [configs, visibilityOverrides]
+  )
+  // Why: visible first so the primary button's default prefers a shown config.
+  const orderedConfigs = useMemo(
+    () => [...visibleConfigs, ...hiddenConfigs],
+    [visibleConfigs, hiddenConfigs]
+  )
 
   const runningConfigIds = useMemo(() => {
     const runningLabels = new Set(
@@ -89,13 +84,13 @@ export function TabBarRunConfigButton({
   const primary = useMemo(
     () =>
       resolvePrimaryRunTarget({
-        configs,
+        configs: orderedConfigs,
         runTabs,
         runningTabIds,
         activeTerminalTabId,
         recentConfigId
       }),
-    [configs, runTabs, runningTabIds, activeTerminalTabId, recentConfigId]
+    [orderedConfigs, runTabs, runningTabIds, activeTerminalTabId, recentConfigId]
   )
 
   const runConfig = useCallback(
@@ -122,6 +117,24 @@ export function TabBarRunConfigButton({
       runConfig(config)
     },
     [runTabs, runningTabIds, runConfig]
+  )
+
+  const handleShow = useCallback(
+    (toShow: RunConfiguration[]) => {
+      if (repoId) {
+        setConfigsHidden(repoId, toShow, false)
+      }
+    },
+    [repoId, setConfigsHidden]
+  )
+
+  const handleHide = useCallback(
+    (toHide: RunConfiguration[]) => {
+      if (repoId) {
+        setConfigsHidden(repoId, toHide, true)
+      }
+    },
+    [repoId, setConfigsHidden]
   )
 
   const handlePrimaryClick = useCallback(() => {
@@ -235,32 +248,21 @@ export function TabBarRunConfigButton({
                 Detecting configurations...
               </div>
             ) : null}
-            {dotnetConfigs.length > 0 ? (
+            <RunConfigSections
+              configs={visibleConfigs}
+              runningSet={runningConfigIds}
+              hidden={false}
+              onSelect={handleConfigAction}
+              onToggleVisibility={handleHide}
+            />
+            {hiddenConfigs.length > 0 ? (
               <>
-                <RunConfigSectionHeader
-                  icon={<DotnetIcon className="size-3" />}
-                  label=".NET Projects"
-                />
-                <TabBarRunConfigMenuEntries
-                  configs={dotnetConfigs}
-                  Icon={DotnetIcon}
+                {visibleConfigs.length > 0 ? <DropdownMenuSeparator /> : null}
+                <RunConfigHiddenSubmenu
+                  configs={hiddenConfigs}
                   runningSet={runningConfigIds}
                   onSelect={handleConfigAction}
-                />
-              </>
-            ) : null}
-            {dotnetConfigs.length > 0 && npmConfigs.length > 0 ? <DropdownMenuSeparator /> : null}
-            {npmConfigs.length > 0 ? (
-              <>
-                <RunConfigSectionHeader
-                  icon={<TerminalSquare className="size-3" />}
-                  label="npm Scripts"
-                />
-                <TabBarRunConfigMenuEntries
-                  configs={npmConfigs}
-                  Icon={TerminalSquare}
-                  runningSet={runningConfigIds}
-                  onSelect={handleConfigAction}
+                  onToggleVisibility={handleShow}
                 />
               </>
             ) : null}

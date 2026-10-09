@@ -65,7 +65,7 @@ describe('detectRunConfigurations', () => {
     ])
   })
 
-  it('keeps only dev and build scripts, grouping build variants', async () => {
+  it('shows only launchers by default, hiding other scripts and grouping script families', async () => {
     const scripts = (names: string[]): string =>
       JSON.stringify({ scripts: Object.fromEntries(names.map((n) => [n, n])) })
     stubFileTree({
@@ -76,19 +76,26 @@ describe('detectRunConfigurations', () => {
       }),
       '/repo/legacy/package.json': JSON.stringify({
         name: 'legacy',
-        scripts: { start: 'react-scripts start', test: 't' }
+        scripts: { start: 'react-scripts start', test: 't', 'test:unit': 'u' }
       })
     })
 
     const configs = await detectRunConfigurations('/repo')
 
-    expect(configs.map((c) => [c.label, c.group?.label ?? null])).toEqual([
-      ['dev', null],
-      ['build', 'build'],
-      ['admin: dev', null],
-      ['admin: build:pro', 'admin: build'],
-      ['admin: build:dev', 'admin: build'],
-      ['legacy: start', null]
-    ])
+    expect(configs.map((c) => [c.label, c.group?.label ?? null, c.defaultHidden ?? false])).toEqual(
+      [
+        ['dev', null, false],
+        ['build', null, false],
+        ['start', null, true],
+        ['lint', null, true],
+        ['admin: dev', null, false],
+        ['admin: build:pro', 'admin: build', false],
+        ['admin: build:dev', 'admin: build', false],
+        ['admin: serve:pro', null, true],
+        ['legacy: start', null, false],
+        ['legacy: test', 'legacy: test', true],
+        ['legacy: test:unit', 'legacy: test', true]
+      ]
+    )
   })
 })
