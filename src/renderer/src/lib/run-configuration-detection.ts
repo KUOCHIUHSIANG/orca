@@ -173,12 +173,14 @@ async function detectDotnetConfigs(repoPath: string): Promise<RunConfiguration[]
 
 const BUILD_SCRIPT_RE = /^build(:|$)/
 
-// Only launchers belong in the run menu; `start` stands in for `dev` in CRA-style packages.
-function selectRunnableScripts(scriptNames: string[]): string[] {
-  const hasDev = scriptNames.includes('dev')
-  return scriptNames.filter(
-    (name) => name === 'dev' || BUILD_SCRIPT_RE.test(name) || (!hasDev && name === 'start')
-  )
+// Only launchers show by default; `start` stands in for `dev` in CRA-style packages.
+function isDefaultVisibleScript(name: string, hasDev: boolean): boolean {
+  return name === 'dev' || BUILD_SCRIPT_RE.test(name) || (!hasDev && name === 'start')
+}
+
+/** `build` and `build:mac` share the `build` family. */
+function scriptFamily(name: string): string {
+  return name.split(':')[0]
 }
 
 async function detectNpmConfigs(repoPath: string): Promise<RunConfiguration[]> {
@@ -211,18 +213,27 @@ async function detectNpmConfigs(repoPath: string): Promise<RunConfiguration[]> {
     const packageName = typeof parsed['name'] === 'string' ? parsed['name'] : basename(dirPath)
 
     const labelPrefix = isRoot ? '' : `${packageName}: `
-    for (const scriptName of selectRunnableScripts(Object.keys(scripts))) {
+    const scriptNames = Object.keys(scripts)
+    const hasDev = scriptNames.includes('dev')
+    const familySizes = new Map<string, number>()
+    for (const name of scriptNames) {
+      familySizes.set(scriptFamily(name), (familySizes.get(scriptFamily(name)) ?? 0) + 1)
+    }
+    for (const scriptName of scriptNames) {
       const prefix = isRoot ? '' : ` --prefix ${JSON.stringify(getRelativePath(repoPath, dirPath))}`
+      const family = scriptFamily(scriptName)
       configs.push({
         id: makeId('npm', filePath, scriptName),
         type: 'npm' as const,
         label: `${labelPrefix}${scriptName}`,
         command: `npm run ${scriptName}${prefix}`,
-        group: BUILD_SCRIPT_RE.test(scriptName)
-          ? { label: `${labelPrefix}build`, itemLabel: scriptName }
-          : undefined,
+        group:
+          (familySizes.get(family) ?? 0) > 1
+            ? { label: `${labelPrefix}${family}`, itemLabel: scriptName }
+            : undefined,
         projectPath: filePath,
-        isAutoDetected: true
+        isAutoDetected: true,
+        defaultHidden: isDefaultVisibleScript(scriptName, hasDev) ? undefined : true
       })
     }
   }
