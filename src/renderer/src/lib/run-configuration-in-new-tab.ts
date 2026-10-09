@@ -6,6 +6,7 @@ import {
   moveTabToRunPanel,
   restoreFocusedGroup
 } from '@/lib/run-configuration-panel'
+import { rememberRunConfigurationLaunch } from '@/lib/run-configuration-last-run'
 import type { RunConfiguration } from '../../../shared/run-configuration-types'
 
 /** Opens the run in the bottom run panel, leaving Claude and terminal groups where they are. */
@@ -47,6 +48,7 @@ export function runConfigurationInNewTab({
   order.push(tab.id)
   fresh.setTabBarOrder(worktreeId, order)
   restoreFocusedGroup(worktreeId, focusedGroupId)
+  rememberRunConfigurationLaunch(worktreeId, config)
 
   return { tabId: tab.id }
 }
@@ -71,6 +73,7 @@ export function rerunConfigurationInTab({
   window.api.pty.write(ptyId, `${config.command}\r`, 'launch')
   activateTabAndFocusPane(tabId, null)
   restoreFocusedGroup(worktreeId, focusedGroupId)
+  rememberRunConfigurationLaunch(worktreeId, config)
   return true
 }
 
