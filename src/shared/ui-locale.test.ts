@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { normalizeSupportedUiLocale, resolveUiLocale } from './ui-locale'
 import {
   UI_LANGUAGE_CHINESE,
+  UI_LANGUAGE_CHINESE_TRADITIONAL,
   UI_LANGUAGE_ENGLISH,
   UI_LANGUAGE_FRENCH,
   UI_LANGUAGE_JAPANESE,
@@ -23,10 +24,12 @@ describe('ui-locale', () => {
     expect(normalizeSupportedUiLocale('de-DE')).toBe('en')
   })
 
-  it('does not map Traditional Chinese to Simplified yet', () => {
-    expect(normalizeSupportedUiLocale('zh-TW')).toBe('en')
-    expect(normalizeSupportedUiLocale('zh-HK')).toBe('en')
-    expect(normalizeSupportedUiLocale('zh-Hant')).toBe('en')
+  it('maps Traditional Chinese locales to zh-TW, never Simplified', () => {
+    expect(normalizeSupportedUiLocale('zh-TW')).toBe('zh-TW')
+    expect(normalizeSupportedUiLocale('zh-HK')).toBe('zh-TW')
+    expect(normalizeSupportedUiLocale('zh-MO')).toBe('zh-TW')
+    expect(normalizeSupportedUiLocale('zh-Hant')).toBe('zh-TW')
+    expect(normalizeSupportedUiLocale('zh_Hant_TW')).toBe('zh-TW')
   })
 
   it('resolves explicit English independently of system locale', () => {
@@ -35,6 +38,10 @@ describe('ui-locale', () => {
 
   it('resolves explicit Chinese independently of system locale', () => {
     expect(resolveUiLocale(UI_LANGUAGE_CHINESE, 'en-US')).toBe('zh')
+  })
+
+  it('resolves explicit Traditional Chinese independently of system locale', () => {
+    expect(resolveUiLocale(UI_LANGUAGE_CHINESE_TRADITIONAL, 'zh-CN')).toBe('zh-TW')
   })
 
   it('resolves explicit Korean independently of system locale', () => {
@@ -62,6 +69,7 @@ describe('ui-locale', () => {
   it('maps system locale to the closest supported locale', () => {
     expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'en-GB')).toBe('en')
     expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'zh-CN')).toBe('zh')
+    expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'zh-TW')).toBe('zh-TW')
     expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'ko-KR')).toBe('ko')
     expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'ja-JP')).toBe('ja')
     expect(resolveUiLocale(UI_LANGUAGE_SYSTEM, 'es-MX')).toBe('es')
