@@ -274,6 +274,29 @@ describe('git history loader', () => {
     expect(result.items.map((item) => item.id)).toEqual([HEAD_OID])
   })
 
+  it('lists the requested refs instead of HEAD alone', async () => {
+    const { executor, calls } = createHistoryExecutor()
+
+    await loadGitHistoryFromExecutor(executor, '/repo', {
+      refs: ['HEAD', 'refs/remotes/origin/feature', 'HEAD']
+    })
+
+    const logCall = calls.find((args) => args[0] === 'log')
+    expect(logCall?.slice(-2)).toEqual([HEAD_OID, REMOTE_OID])
+  })
+
+  it('returns no commits without running git log when no requested ref resolves', async () => {
+    const { executor, calls } = createHistoryExecutor()
+
+    const result = await loadGitHistoryFromExecutor(executor, '/repo', {
+      refs: ['missing-branch', '--all']
+    })
+
+    expect(calls.some((args) => args[0] === 'log')).toBe(false)
+    expect(result.items).toEqual([])
+    expect(result.currentRef?.name).toBe('feature')
+  })
+
   it('clamps oversized limits before shelling out to git log', async () => {
     const { executor, calls } = createHistoryExecutor(GIT_HISTORY_MAX_LIMIT + 1)
 

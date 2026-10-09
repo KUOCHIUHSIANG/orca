@@ -10,6 +10,12 @@ import {
   SLOW_GIT_POLL_BACKOFF
 } from './useGitStatusPolling'
 
+// Why: the harness runs the hook outside React, so the panel's zustand hook needs a plain stand-in.
+vi.mock('@/lib/bottom-panel-state', () => ({
+  useBottomPanelState: (selector: (s: { open: boolean; tab: string }) => unknown) =>
+    selector({ open: false, tab: 'run' })
+}))
+
 const worktree = { id: 'repo-1::/repo', repoId: 'repo-1', path: '/repo' }
 const repo = { id: 'repo-1', path: '/repo', kind: 'git', connectionId: null as string | null }
 

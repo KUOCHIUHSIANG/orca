@@ -944,6 +944,31 @@ html.native-shell .app-layout {
   background: var(--tab-group-split-divider-strong);
 }
 
+/* Dense tool-window splitters: a hairline at rest, the shared grip while hovered or dragged. */
+.tab-group-split-resize-handle.is-hairline::after {
+  background: var(--border);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical::after {
+  width: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal::after {
+  height: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-vertical.is-dragging::after {
+  width: 3px;
+  background: var(--tab-group-split-divider-strong);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-horizontal.is-dragging::after {
+  height: 3px;
+  background: var(--tab-group-split-divider-strong);
+}
+
 /* ── Titlebar ────────────────────────────────────────── */
 
 /* Why: Radix portals (dropdowns, popovers, dialogs, sheets) render at the

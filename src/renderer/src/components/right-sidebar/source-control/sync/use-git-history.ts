@@ -24,7 +24,9 @@ export function useSourceControlGitHistory({
   isBranchVisible,
   isGitHistoryExpanded,
   isGitHistoryVisible,
-  worktreeMap
+  worktreeMap,
+  limit = 50,
+  refs
 }: {
   activeRepoSettings: RuntimeGitContext['settings']
   activeWorktreeId: string | null
@@ -35,6 +37,9 @@ export function useSourceControlGitHistory({
   isGitHistoryExpanded: boolean
   isGitHistoryVisible: boolean
   worktreeMap: ReadonlyMap<string, unknown>
+  limit?: number
+  /** Revisions to list instead of HEAD alone. */
+  refs?: readonly string[]
 }): {
   gitHistoryState: GitHistoryPanelState
   refreshGitHistory: () => Promise<void>
@@ -50,6 +55,8 @@ export function useSourceControlGitHistory({
     : EMPTY_GIT_HISTORY_STATE
   // Why: the read is routed by owner host, so track it as a stable string — a new settings object alone must not refetch.
   const ownerHostKey = activeRepoSettings?.activeRuntimeEnvironmentId?.trim() ?? ''
+  // Why: a string key keeps a fresh refs array from re-firing the load; ref names cannot hold newlines.
+  const refsKey = refs?.join('\n') ?? ''
 
   useEffect(() => {
     setGitHistoryByWorktree((prev) => {
@@ -105,7 +112,7 @@ export function useSourceControlGitHistory({
           worktreePath,
           connectionId
         },
-        { limit: 50, baseRef: compareBaseRef }
+        { limit, baseRef: compareBaseRef, ...(refsKey ? { refs: refsKey.split('\n') } : {}) }
       )
       if (gitHistoryRequestByWorktreeRef.current[worktreeId] !== requestId) {
         return
@@ -137,6 +144,8 @@ export function useSourceControlGitHistory({
     isFolder,
     isGitHistoryExpanded,
     isGitHistoryVisible,
+    limit,
+    refsKey,
     worktreePath
   ])
   const refreshGitHistoryRef = useRef(refreshGitHistory)
@@ -159,8 +168,10 @@ export function useSourceControlGitHistory({
     isFolder,
     isGitHistoryExpanded,
     isGitHistoryVisible,
+    limit,
     // Why: same worktree + path can switch owner host; without this the panel keeps the previous host's commits.
     ownerHostKey,
+    refsKey,
     worktreePath
   ])
 
