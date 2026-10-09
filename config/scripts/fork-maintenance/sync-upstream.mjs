@@ -5,7 +5,7 @@
 //                                                          [--auto-worktree] [--events]
 //
 // Steps: fetch upstream tags → back up the branch → rebase the fork's own commits onto <new> →
-// install deps → typecheck. --push force-with-lease pushes the branch and fast-forwards origin main to upstream
+// install deps → regenerate (and commit) zh-TW.json → typecheck. --push force-with-lease pushes the branch and fast-forwards origin main to upstream
 // main; --build then produces the local arm64 app.
 // On a rebase conflict it stops and prints how to continue; rerere replays resolutions it has seen
 // and the rebase continues on its own when they cover every conflict.
@@ -32,6 +32,7 @@ const CUSTOM_BRANCH = 'custom'
 const RELEASE_TAG = /^v\d+\.\d+\.\d+$/
 const CONFLICT_EXIT_CODE = 2
 const RERERE = ['-c', 'rerere.enabled=true', '-c', 'rerere.autoUpdate=true']
+const ZH_TW_CATALOG = 'src/renderer/src/i18n/locales/zh-TW.json'
 
 const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..')
 const scriptRelativePath = path.relative(repoRoot, import.meta.filename)
@@ -240,6 +241,11 @@ if (plan.kind === 'already-based') {
 
 stage('install')
 run('pnpm', ['install', '--frozen-lockfile'])
+// zh-TW.json is derived from upstream's zh.json, so refresh it after every rebase.
+run('node', [path.join('config', 'scripts', 'fork-maintenance', 'generate-zh-tw-locale.mjs')])
+if (git('status', '--porcelain', '--', ZH_TW_CATALOG)) {
+  run('git', ['commit', '-m', 'chore: 依上游 zh.json 重新產生繁體中文翻譯', '--', ZH_TW_CATALOG])
+}
 stage('verify')
 run('pnpm', ['tc'])
 

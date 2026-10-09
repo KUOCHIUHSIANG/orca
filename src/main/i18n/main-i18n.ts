@@ -21,7 +21,8 @@ const LAZY_LOCALE_LOADERS: Record<
   ru: () => import('../../renderer/src/i18n/locales/ru.json'),
   tr: () => import('../../renderer/src/i18n/locales/tr.json'),
   zh: () => import('../../renderer/src/i18n/locales/zh.json'),
-  'zh-Hant': () => import('../../renderer/src/i18n/locales/zh-Hant.json')
+  // Fork: zh-Hant serves the generated zh-TW.json, which also carries fork-only strings.
+  'zh-Hant': () => import('../../renderer/src/i18n/locales/zh-TW.json')
 }
 const LAZY_LOCALE_LOADER_MAP = new Map<string, () => Promise<{ default: Record<string, unknown> }>>(
   Object.entries(LAZY_LOCALE_LOADERS)
