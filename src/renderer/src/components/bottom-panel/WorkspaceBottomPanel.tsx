@@ -1,16 +1,23 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { DndContext, DragOverlay } from '@dnd-kit/core'
+import { GitBranch, Minus, Play } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAppStore } from '@/store'
 import { cn } from '@/lib/utils'
-import { findDockedGroupId } from '@/store/slices/tabs/tab-group-dock'
+import { findDockedGroupId, pickCenterGroupId } from '@/store/slices/tabs/tab-group-dock'
 import type { TabGroup } from '../../../../shared/tab-types'
 import TabGroupPanel from '../tab-group/TabGroupPanel'
 import TabDragPreview from '../tab-bar/TabDragPreview'
 import { useBottomPanelTabDrag } from './use-bottom-panel-tab-drag'
+import { GitToolWindow } from './git/GitToolWindow'
+import { PaneResizeHandle } from './pane-resize-handle'
 import {
   MAX_BOTTOM_PANEL_HEIGHT_RATIO,
   MIN_BOTTOM_PANEL_HEIGHT,
-  useBottomPanelState
+  useBottomPanelState,
+  type BottomPanelTab
 } from '@/lib/bottom-panel-state'
 
 const EMPTY_GROUPS: readonly TabGroup[] = []
@@ -21,48 +28,15 @@ function BottomPanelResizeHandle({
   panelRef: React.RefObject<HTMLDivElement | null>
 }): React.JSX.Element {
   const setHeight = useBottomPanelState((state) => state.setHeight)
-  const [dragging, setDragging] = useState(false)
-
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>): void => {
-    const panel = panelRef.current
-    if (!panel || dragging) {
-      return
-    }
-    event.preventDefault()
-    const handle = event.currentTarget
-    handle.setPointerCapture(event.pointerId)
-    setDragging(true)
-    const startY = event.clientY
-    const startHeight = panel.getBoundingClientRect().height
-    let nextHeight = startHeight
-    // Why: write the DOM during the drag and commit once, so the panel store isn't hit per pointermove.
-    const onPointerMove = (moveEvent: PointerEvent): void => {
-      const maxHeight = window.innerHeight * MAX_BOTTOM_PANEL_HEIGHT_RATIO
-      nextHeight = Math.min(
-        maxHeight,
-        Math.max(MIN_BOTTOM_PANEL_HEIGHT, startHeight + startY - moveEvent.clientY)
-      )
-      panel.style.height = `${nextHeight}px`
-    }
-    const onPointerEnd = (): void => {
-      handle.removeEventListener('pointermove', onPointerMove)
-      handle.removeEventListener('pointerup', onPointerEnd)
-      handle.removeEventListener('pointercancel', onPointerEnd)
-      setDragging(false)
-      setHeight(nextHeight)
-    }
-    handle.addEventListener('pointermove', onPointerMove)
-    handle.addEventListener('pointerup', onPointerEnd)
-    handle.addEventListener('pointercancel', onPointerEnd)
-  }
-
   return (
-    <div
-      role="separator"
-      aria-orientation="horizontal"
-      aria-label="Resize bottom panel"
-      className={cn('tab-group-split-resize-handle is-horizontal', dragging && 'is-dragging')}
-      onPointerDown={onPointerDown}
+    <PaneResizeHandle
+      axis="y"
+      paneRef={panelRef}
+      placement="before"
+      label="Resize bottom panel"
+      min={MIN_BOTTOM_PANEL_HEIGHT}
+      max={() => window.innerHeight * MAX_BOTTOM_PANEL_HEIGHT_RATIO}
+      onResize={setHeight}
     />
   )
 }
@@ -109,10 +83,92 @@ function DockedGroupPanel({
   )
 }
 
-/** Full-width panel under the sidebars and workspace; hosts the worktree's docked tab group. */
+const PANEL_TABS = [
+  { value: 'run', label: 'Run', icon: Play },
+  { value: 'git', label: 'Git', icon: GitBranch }
+] satisfies { value: BottomPanelTab; label: string; icon: typeof Play }[]
+
+/** Vertical tool-window stripe on the panel's left edge, like a JetBrains IDE. */
+function BottomPanelToolStrip({ worktreeId }: { worktreeId: string }): React.JSX.Element {
+  const tab = useBottomPanelState((state) => state.tab)
+  const setTab = useBottomPanelState((state) => state.setTab)
+  const setOpen = useBottomPanelState((state) => state.setOpen)
+
+  const selectTab = (next: string): void => {
+    if (next !== 'run' && next !== 'git') {
+      return
+    }
+    const nextTab: BottomPanelTab = next
+    // Why: a hidden run group must not keep focus, or new tabs and shortcuts land off screen.
+    if (nextTab !== 'run') {
+      const state = useAppStore.getState()
+      const groups = state.groupsByWorktree[worktreeId] ?? EMPTY_GROUPS
+      const activeGroupId = state.activeGroupIdByWorktree[worktreeId]
+      if (activeGroupId && activeGroupId === findDockedGroupId(groups)) {
+        const centerGroupId = pickCenterGroupId(
+          groups,
+          state.unifiedTabsByWorktree[worktreeId] ?? [],
+          activeGroupId
+        )
+        if (centerGroupId) {
+          state.focusGroup(worktreeId, centerGroupId)
+        }
+      }
+    }
+    setTab(nextTab)
+  }
+
+  return (
+    <div className="flex w-10 shrink-0 flex-col items-center border-r border-border py-1">
+      {/* Why toggles: like a JetBrains stripe, clicking the open tool window's icon hides the panel. */}
+      <ToggleGroup
+        type="single"
+        orientation="vertical"
+        spacing={1}
+        className="flex-col"
+        aria-label="Bottom panel"
+        value={tab}
+        onValueChange={(value) => (value ? selectTab(value) : setOpen(false))}
+      >
+        {PANEL_TABS.map(({ value, label, icon: Icon }) => (
+          <Tooltip key={value}>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem value={value} size="sm" aria-label={label}>
+                <Icon className={cn(value !== tab && 'text-muted-foreground')} />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={4}>
+              {label}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </ToggleGroup>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            className="mt-auto"
+            aria-label="Hide bottom panel"
+            onClick={() => setOpen(false)}
+          >
+            <Minus className="size-3.5" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={4}>
+          Hide bottom panel
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  )
+}
+
+/** Full-width panel under the sidebars and workspace; hosts the Run group and the Git tool window. */
 export function WorkspaceBottomPanel(): React.JSX.Element | null {
   const open = useBottomPanelState((state) => state.open)
   const height = useBottomPanelState((state) => state.height)
+  const tab = useBottomPanelState((state) => state.tab)
   const panelRef = useRef<HTMLDivElement | null>(null)
   const worktreeId = useAppStore((state) =>
     state.activeView === 'terminal' ? state.activeWorktreeId : null
@@ -138,13 +194,24 @@ export function WorkspaceBottomPanel(): React.JSX.Element | null {
       data-bottom-panel=""
     >
       <BottomPanelResizeHandle panelRef={panelRef} />
-      {dockedGroupId ? (
-        <DockedGroupPanel worktreeId={worktreeId} groupId={dockedGroupId} isFocused={isFocused} />
-      ) : (
-        <div className="flex flex-1 items-center justify-center border-t border-border text-xs text-muted-foreground">
-          Run a configuration to see its output here.
+      <div className="flex min-h-0 flex-1 border-t border-border">
+        <BottomPanelToolStrip worktreeId={worktreeId} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          {tab === 'git' ? (
+            <GitToolWindow />
+          ) : dockedGroupId ? (
+            <DockedGroupPanel
+              worktreeId={worktreeId}
+              groupId={dockedGroupId}
+              isFocused={isFocused}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
+              Run a configuration to see its output here.
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

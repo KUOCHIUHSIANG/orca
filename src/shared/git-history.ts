@@ -7,6 +7,7 @@ import {
 import {
   GIT_HISTORY_DEFAULT_LIMIT,
   GIT_HISTORY_MAX_LIMIT,
+  GIT_HISTORY_MAX_REFS,
   type GitHistoryExecutor,
   type GitHistoryItemRef,
   type GitHistoryOptions,
@@ -28,10 +29,20 @@ export {
   GIT_HISTORY_DEFAULT_LIMIT,
   GIT_HISTORY_LANE_COLORS,
   GIT_HISTORY_MAX_LIMIT,
+  GIT_HISTORY_MAX_REFS,
   GIT_HISTORY_REF_COLOR,
   GIT_HISTORY_REMOTE_REF_COLOR
 } from './git-history-types'
 export { compareGitHistoryItemRefsByCategory, parseGitHistoryLog } from './git-history-log-parser'
+
+/** Untrusted wire value → the string refs a history request may list. */
+export function normalizeGitHistoryRefs(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined
+  }
+  const refs = value.filter((ref): ref is string => typeof ref === 'string' && ref.length > 0)
+  return refs.length > 0 ? refs.slice(0, GIT_HISTORY_MAX_REFS) : undefined
+}
 
 function clampHistoryLimit(limit: number | undefined): number {
   if (!Number.isFinite(limit)) {
@@ -164,6 +175,15 @@ async function resolveNamedRef(
   return revision ? gitHistoryRefFromFullName(fullName, normalized, revision) : undefined
 }
 
+async function resolveHistoryRevisions(
+  git: GitHistoryExecutor,
+  cwd: string,
+  refs: readonly string[]
+): Promise<string[]> {
+  const oids = await Promise.all(refs.map((ref) => resolveCommit(git, cwd, ref.trim())))
+  return [...new Set(oids.filter((oid): oid is string => oid !== null))]
+}
+
 export async function loadGitHistoryFromExecutor(
   git: GitHistoryExecutor,
   cwd: string,
@@ -194,7 +214,23 @@ export async function loadGitHistoryFromExecutor(
 
   // Why: this panel is scoped to the active workspace. Upstream and base refs
   // stay as comparison metadata so old workspaces do not list newly fetched upstream/base commits.
-  const historyRevisions = [headOid]
+  // Why normalize here: every host funnels untrusted wire params into this loader.
+  const requestedRefs = normalizeGitHistoryRefs(options.refs)
+  const historyRevisions = requestedRefs
+    ? await resolveHistoryRevisions(git, cwd, requestedRefs)
+    : [headOid]
+  if (historyRevisions.length === 0) {
+    return {
+      items: [],
+      currentRef,
+      remoteRef,
+      baseRef,
+      hasIncomingChanges: false,
+      hasOutgoingChanges: false,
+      hasMore: false,
+      limit
+    }
+  }
 
   let mergeBase: string | undefined
   if (remoteRef?.revision && currentRef.revision && remoteRef.revision !== currentRef.revision) {

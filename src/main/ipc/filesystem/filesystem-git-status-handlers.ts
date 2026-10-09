@@ -168,7 +168,8 @@ export function registerFilesystemGitStatusHandlers(context: FilesystemHandlerCo
       _event,
       args: { worktreePath: string; connectionId?: string } & GitHistoryOptions
     ): Promise<GitHistoryResult> => {
-      const options: GitHistoryOptions = { limit: args.limit, baseRef: args.baseRef }
+      const { limit, baseRef, refs } = args
+      const options: GitHistoryOptions = { limit, baseRef, refs }
       requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
       const worktreePath = await resolveRegisteredWorktreePath(args.worktreePath, store)
       const gitOptions = getLocalGitOptionsForRegisteredWorktree(

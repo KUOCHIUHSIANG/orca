@@ -16,7 +16,7 @@ export function findTopRightGroupId(layout: TabGroupLayoutNode): string {
 
 /** Returns the worktree's bottom-panel group, creating it if needed, and opens the panel. */
 export function ensureRunPanelGroup(worktreeId: string): string {
-  useBottomPanelState.getState().setOpen(true)
+  useBottomPanelState.getState().show('run')
   const state = useAppStore.getState()
   const existing = findDockedGroupId(state.groupsByWorktree[worktreeId] ?? [])
   if (existing) {
