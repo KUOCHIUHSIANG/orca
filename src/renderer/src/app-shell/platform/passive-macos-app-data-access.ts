@@ -27,6 +27,8 @@ export type ActiveGitStatusPollingArgs = {
   rightSidebarTab: ActiveRightSidebarTab
   rightSidebarExplorerView?: RightSidebarExplorerView
   openFiles?: OpenFile[]
+  /** The bottom panel's Git tab is on screen. */
+  bottomPanelGitVisible?: boolean
   userAgent?: string
 }
 
@@ -35,6 +37,7 @@ export function hasInteractiveActiveGitStatusConsumer(args: ActiveGitStatusPolli
     return false
   }
   return (
+    args.bottomPanelGitVisible === true ||
     (args.rightSidebarOpen &&
       (args.rightSidebarTab === 'source-control' ||
         (args.rightSidebarTab === 'explorer' && args.rightSidebarExplorerView !== 'search') ||
