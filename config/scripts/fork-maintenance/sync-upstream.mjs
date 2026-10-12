@@ -231,7 +231,14 @@ if (git('status', '--porcelain')) {
 }
 
 stage('fetch')
-run('git', ['fetch', UPSTREAM_REMOTE, '--tags', '--prune'])
+// Why an explicit refspec: upstream has 10k+ branches (pr-assets etc.) that grew .git by GBs.
+run('git', [
+  'fetch',
+  UPSTREAM_REMOTE,
+  '--tags',
+  '--prune',
+  `+refs/heads/main:refs/remotes/${UPSTREAM_REMOTE}/main`
+])
 try {
   git('rev-parse', '--verify', '--quiet', `refs/tags/${targetTag}`)
 } catch {
