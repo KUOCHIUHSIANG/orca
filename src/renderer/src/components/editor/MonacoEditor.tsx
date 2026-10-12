@@ -36,6 +36,7 @@ import {
 } from '@/lib/monaco-languages/plugin-syntax-editor-options'
 import { useMonacoTheme } from '@/hooks/use-monaco-theme'
 import { useEditorModelRekeyCarry } from './model-lifetime/identity/editor-model-rekey-carry'
+import { MonacoInlineBlame } from './inline-blame/MonacoInlineBlame'
 
 type MonacoEditorProps = {
   fileId: string
@@ -57,6 +58,7 @@ type MonacoEditorProps = {
   noteSource?: WorkspaceResource
   markdownAnnotationsEnabled?: boolean
   conflictDecorationsEnabled?: boolean
+  inlineBlameEnabled?: boolean
   readOnly?: boolean
   // Why: shows another tab's record read-only; never moves its cursor line or takes its reveals.
   passiveMirror?: boolean
@@ -82,6 +84,7 @@ export default function MonacoEditor({
   noteSource = NO_RESOURCE_EVIDENCE,
   markdownAnnotationsEnabled = false,
   conflictDecorationsEnabled = false,
+  inlineBlameEnabled = false,
   readOnly = false,
   passiveMirror = false,
   liveTail = false,
@@ -334,6 +337,18 @@ export default function MonacoEditor({
         keepCurrentModel
       />
 
+      {inlineBlameEnabled &&
+        settings?.editorInlineBlame !== false &&
+        mountedEditor &&
+        worktreeId && (
+          <MonacoInlineBlame
+            editorInstance={mountedEditor}
+            fileId={fileId}
+            filePath={filePath}
+            relativePath={relativePath}
+            worktreeId={worktreeId}
+          />
+        )}
       {toastNode}
       <MonacoGutterContextMenu
         open={gutterMenuOpen}

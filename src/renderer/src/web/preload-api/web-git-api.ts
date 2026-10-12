@@ -8,10 +8,8 @@ import { callRuntimeResult } from './web-runtime-calls'
 import { mutateGitPath, mutateGitPaths, resolveGitConflict } from './web-git-mutations'
 import { requireGitStageWorktreeScopeReceipt } from '../../../../shared/git/paths/git-stage-worktree-scope'
 import { requireActiveEnvironment, updateEnvironmentFromResponse } from './web-runtime-session'
-import {
-  resolveRuntimeFilePath,
-  resolveRuntimeWorktreeByPath
-} from './web-runtime-worktree-catalog'
+import { resolveRuntimeWorktreeByPath } from './web-runtime-worktree-catalog'
+import { createGitFileDiffApi } from './web-git-file-diff-api'
 
 export const webGitStatusAbortControllers = new Map<string, AbortController>()
 
@@ -116,16 +114,7 @@ export function createGitApi(): NonNullable<Partial<PreloadApi>['git']> {
         worktree: toRuntimeWorktreeSelector(worktree.id)
       })
     },
-    diff: async ({ worktreePath, filePath, staged, compareAgainstHead, oldPath }) => {
-      const file = await resolveRuntimeFilePath(filePath, worktreePath)
-      return callRuntimeResult('git.diff', {
-        worktree: toRuntimeWorktreeSelector(file.worktree.id),
-        filePath: file.relativePath,
-        staged,
-        compareAgainstHead,
-        ...(oldPath ? { oldPath } : {})
-      })
-    },
+    ...createGitFileDiffApi(),
     branchCompare: async ({ worktreePath, baseRef, admissionTier }) => {
       const worktree = await resolveRuntimeWorktreeByPath(worktreePath)
       return callRuntimeResult('git.branchCompare', {
@@ -193,25 +182,6 @@ export function createGitApi(): NonNullable<Partial<PreloadApi>['git']> {
       await callRuntimeResult('git.rebaseFromBase', {
         worktree: toRuntimeWorktreeSelector(worktree.id),
         baseRef
-      })
-    },
-    branchDiff: async ({ worktreePath, filePath, compare, oldPath }) => {
-      const file = await resolveRuntimeFilePath(filePath, worktreePath)
-      return callRuntimeResult('git.branchDiff', {
-        worktree: toRuntimeWorktreeSelector(file.worktree.id),
-        filePath: file.relativePath,
-        compare,
-        oldPath
-      })
-    },
-    commitDiff: async ({ worktreePath, filePath, commitOid, parentOid, oldPath }) => {
-      const file = await resolveRuntimeFilePath(filePath, worktreePath)
-      return callRuntimeResult('git.commitDiff', {
-        worktree: toRuntimeWorktreeSelector(file.worktree.id),
-        filePath: file.relativePath,
-        commitOid,
-        parentOid,
-        oldPath
       })
     },
     commit: async ({ worktreePath, message }) => {
@@ -293,6 +263,8 @@ export function createGitApi(): NonNullable<Partial<PreloadApi>['git']> {
         worktree: toRuntimeWorktreeSelector(worktree.id),
         sha
       })
-    }
+    },
+    // Why: the browser client has no local gh/glab sign-in; the card falls back to Gravatar.
+    commitAuthorAvatar: async () => null
   }
 }

@@ -1,5 +1,7 @@
 import { ipcMain } from 'electron'
+import type { GitBlameResult } from '../../../shared/git-blame'
 import type { GitDiffResult } from '../../../shared/git/diff/git-diff-compare-types'
+import { getBlame } from '../../git/blame'
 import { getBranchDiff } from '../../git/source-control/branch-diff'
 import { getCommitDiff } from '../../git/source-control/commit-diff'
 import {
@@ -89,6 +91,29 @@ export function registerFilesystemGitDiffHandlers(context: FilesystemHandlerCont
             },
             { ...gitOptions, admissionTier: 'interactive' }
           )
+      )
+    }
+  )
+
+  ipcMain.handle(
+    'git:blame',
+    async (
+      _event,
+      args: { worktreePath: string; filePath: string; contents?: string; connectionId?: string }
+    ): Promise<GitBlameResult> => {
+      const contents = typeof args.contents === 'string' ? args.contents : undefined
+      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      // Why: blame follows cursor moves, a background read that must not boot a stopped distro.
+      return readWorktreeGitUnlessWslStopped(
+        store,
+        args.worktreePath,
+        false,
+        (worktreePath, gitOptions) =>
+          getBlame(worktreePath, validateGitRelativeFilePath(worktreePath, args.filePath), {
+            ...gitOptions,
+            contents,
+            admissionTier: 'interactive'
+          })
       )
     }
   )
