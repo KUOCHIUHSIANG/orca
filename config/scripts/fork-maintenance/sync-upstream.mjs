@@ -14,12 +14,14 @@
 //   --auto-worktree  run in whichever worktree has custom checked out, creating a dedicated
 //                    one beside this checkout if none does, so the checkout you develop in is
 //                    never switched or blocked by uncommitted work.
-//   --events         print `ORCA_SYNC_EVENT <json>` lines (stage / conflict / done) and, on a
-//                    conflict, abort the rebase so the branch is left exactly as before (exit 2);
-//                    the conflict event lists every conflicting commit from a merge-tree dry run.
+//   --events         print `ORCA_SYNC_EVENT <json>` lines (stage / conflict / done). Conflicts
+//                    rerere cannot replay go to headless Claude Code; if it cannot resolve them,
+//                    abort the rebase so the branch is left exactly as before (exit 2) and list
+//                    every conflicting commit from a merge-tree dry run in the conflict event.
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
+import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
 
@@ -162,10 +164,24 @@ function rebaseOnto(currentBase) {
     currentBase,
     CUSTOM_BRANCH
   ])
-  // Each stop rerere fully resolved (nothing left unmerged) only needs --continue; bounded per commit.
+  // A stop rerere fully resolved (nothing left unmerged) only needs --continue; bounded per commit.
   let stopsLeft = ownCommits.split('\n').length
-  while (!rebased && stopsLeft > 0 && rebaseInProgress() && conflictedFiles().length === 0) {
+  let unresolvedReason = null
+  while (!rebased && stopsLeft > 0 && rebaseInProgress()) {
     stopsLeft -= 1
+    const files = conflictedFiles()
+    if (files.length > 0) {
+      // Why app mode only: run by hand, the script stops so whoever runs it resolves the conflict.
+      if (!eventsMode) {
+        break
+      }
+      stage('resolve')
+      const resolution = resolveConflictsWithClaude({ cwd: repoRoot, files, onto: targetTag })
+      if (!resolution.ok) {
+        unresolvedReason = resolution.reason
+        break
+      }
+    }
     rebased = succeeds('git', [...RERERE, 'rebase', '--continue'], {
       ...process.env,
       GIT_EDITOR: 'true'
@@ -183,6 +199,7 @@ function rebaseOnto(currentBase) {
         base: currentBase,
         files,
         commitSubject,
+        ...(unresolvedReason ? { reason: unresolvedReason } : {}),
         ...(conflictCommits ? { conflictCommits } : {})
       })
       process.exit(CONFLICT_EXIT_CODE)
