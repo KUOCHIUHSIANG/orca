@@ -12,6 +12,7 @@ import type {
 } from '../../shared/git-status-types'
 import type { GitPushTarget } from '../../shared/worktree/types'
 import type { GitHistoryOptions, GitHistoryResult } from '../../shared/git-history'
+import type { GitBlameResult } from '../../shared/git-blame'
 import type {
   CommitMessageAgentCapability,
   CommitMessageModelCapability
@@ -115,6 +116,13 @@ export type GitInspectionApi = {
     connectionId?: string
     wakeWslDistro?: boolean
   }) => Promise<GitDiffResult>
+  /** Per-line blame; `contents` blames an unsaved buffer instead of the working-tree file. */
+  blame: (args: {
+    worktreePath: string
+    filePath: string
+    contents?: string
+    connectionId?: string
+  }) => Promise<GitBlameResult>
   discoverCommitMessageModels: (args: {
     agentId: string
     worktreePath?: string
@@ -141,4 +149,6 @@ export type GitInspectionApi = {
     sha: string
     connectionId?: string
   }) => Promise<string | null>
+  /** Avatar URL for a commit's author, looked up with this machine's gh/glab sign-in. */
+  commitAuthorAvatar: (args: { commitUrl: string; email: string }) => Promise<string | null>
 }

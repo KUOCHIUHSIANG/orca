@@ -46,6 +46,7 @@ export function isBackgroundRuntimeMethod(method: string): boolean {
     method === 'github.countWorkItems' ||
     method === 'git.status' ||
     method === 'git.history' ||
+    method === 'git.blame' ||
     method === 'git.conflictOperation' ||
     method === 'git.branchCompare' ||
     method === 'git.upstreamStatus' ||

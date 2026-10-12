@@ -14,6 +14,7 @@ import type { GitStageWorktreeScope } from '../../shared/git-stage-worktree-scop
 import type { RemoveWorktreeResult } from '../../shared/worktree/create-types'
 import type { GitPushTarget, GitWorktreeInfo } from '../../shared/worktree/types'
 import type { GitHistoryOptions, GitHistoryResult } from '../../shared/git-history'
+import type { GitBlameOptions, GitBlameResult } from '../../shared/git-blame'
 import type { CommitMessageDraftContext } from '../../shared/commit-message-generation'
 import type { ConflictResolution } from '../../shared/source-control-entry-actions'
 import type { GitProviderStatusOptions } from './git-provider-status-options'
@@ -90,6 +91,11 @@ export type IGitProvider = {
     worktreePath: string,
     args: { commitOid: string; parentOid?: string | null; filePath: string; oldPath?: string }
   ): Promise<GitDiffResult>
+  getBlame(
+    worktreePath: string,
+    filePath: string,
+    options?: GitBlameOptions
+  ): Promise<GitBlameResult>
   listWorktrees(repoPath: string, options?: { signal?: AbortSignal }): Promise<GitWorktreeInfo[]>
   addWorktree(
     repoPath: string,

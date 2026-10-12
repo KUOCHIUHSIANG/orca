@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useRef } from 'react'
+import { forwardRef, useEffect, useMemo, useRef } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu'
@@ -89,6 +89,7 @@ export function GitLogList({ model }: { model: GitToolWindowModel }): React.JSX.
     gitHistoryState,
     limit,
     loadMore,
+    logRef,
     refreshGitHistoryRef,
     handleCommitAction,
     openHistoryCommitDiff
@@ -98,7 +99,12 @@ export function GitLogList({ model }: { model: GitToolWindowModel }): React.JSX.
     worktreeId ? (state.selectedCommitByWorktree[worktreeId] ?? null) : null
   )
   const setSelectedCommit = useGitToolWindowState((state) => state.setSelectedCommit)
+  const pendingReveal = useGitToolWindowState((state) =>
+    worktreeId ? (state.pendingRevealByWorktree[worktreeId] ?? null) : null
+  )
   const listRef = useRef<HTMLDivElement | null>(null)
+  // The result a reveal step already acted on; the next step waits for a fresh one.
+  const revealStepResultRef = useRef<unknown>(null)
   const result = gitHistoryState.result
   const viewModels = useMemo(
     () =>
@@ -123,6 +129,40 @@ export function GitLogList({ model }: { model: GitToolWindowModel }): React.JSX.
       setSelectedCommit(worktreeId, item.id)
     }
   }
+  // Why: a revealed commit may sit past the loaded page, so page deeper, then restart the log at it.
+  useEffect(() => {
+    if (!worktreeId || !pendingReveal || gitHistoryState.status === 'idle') {
+      return
+    }
+    const state = useGitToolWindowState.getState()
+    if (gitHistoryState.status === 'error') {
+      state.clearPendingReveal(worktreeId)
+      return
+    }
+    if (gitHistoryState.status !== 'ready' || !result || result === revealStepResultRef.current) {
+      return
+    }
+    if (result.items.some((item) => item.id === pendingReveal)) {
+      revealStepResultRef.current = null
+      state.clearPendingReveal(worktreeId)
+      listRef.current
+        ?.querySelector(`#${CSS.escape(`git-log-row-${pendingReveal}`)}`)
+        ?.scrollIntoView({ block: 'center' })
+      listRef.current?.focus({ preventScroll: true })
+      return
+    }
+    revealStepResultRef.current = result
+    if (result.hasMore && limit < GIT_HISTORY_MAX_LIMIT) {
+      loadMore()
+    } else if (logRef !== pendingReveal) {
+      state.setLogRef(worktreeId, pendingReveal)
+      state.setSelectedCommit(worktreeId, pendingReveal)
+    } else {
+      revealStepResultRef.current = null
+      state.clearPendingReveal(worktreeId)
+    }
+  }, [gitHistoryState.status, limit, loadMore, logRef, pendingReveal, result, worktreeId])
+
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp' && event.key !== 'Enter') {
       return

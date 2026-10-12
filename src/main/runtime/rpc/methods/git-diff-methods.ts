@@ -1,6 +1,11 @@
 import { defineMethod } from '../core'
 import { remoteRpcContentBudget } from '../../../../shared/remote-rpc-content-budget'
-import { GitBranchDiff, GitCommitDiff, GitDiff } from '../../../../shared/rpc-contract/git-params'
+import {
+  GitBlame,
+  GitBranchDiff,
+  GitCommitDiff,
+  GitDiff
+} from '../../../../shared/rpc-contract/git-params'
 
 // Only WebSocket callers set clientKind; local/in-process diffs retain uncapped fidelity.
 function remoteDiffContentBudget(
@@ -53,5 +58,12 @@ export const GIT_DIFF_METHODS = [
         },
         remoteDiffContentBudget(clientKind, requestId)
       )
+  }),
+  defineMethod({
+    name: 'git.blame',
+    permission: 'workspace',
+    params: GitBlame,
+    handler: async (params, { runtime }) =>
+      runtime.getRuntimeGitBlame(params.worktree, params.filePath, params.contents)
   })
 ]
