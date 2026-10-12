@@ -27,11 +27,15 @@ type GitToolWindowState = {
   /** Per-worktree log ref; absent means the current branch plus its upstream. */
   logRefByWorktree: Record<string, string>
   selectedCommitByWorktree: Record<string, string>
+  /** Commit the log should scroll to once it has loaded, requested from outside this tab. */
+  pendingRevealByWorktree: Record<string, string>
   toggleCommitPane: () => void
   setLayoutSize: (key: keyof GitToolWindowLayout, size: number) => void
   setCommitDraft: (worktreeId: string, message: string) => void
   setLogRef: (worktreeId: string, ref: string | null) => void
   setSelectedCommit: (worktreeId: string, commitId: string | null) => void
+  revealCommit: (worktreeId: string, commitId: string) => void
+  clearPendingReveal: (worktreeId: string) => void
 }
 
 type PersistedGitToolWindow = Pick<GitToolWindowState, 'commitPaneOpen' | 'layout'>
@@ -87,6 +91,7 @@ export const useGitToolWindowState = create<GitToolWindowState>((set) => ({
   commitDrafts: {},
   logRefByWorktree: {},
   selectedCommitByWorktree: {},
+  pendingRevealByWorktree: {},
   toggleCommitPane: () => set((state) => ({ commitPaneOpen: !state.commitPaneOpen })),
   setLayoutSize: (key, size) =>
     set((state) => ({
@@ -105,6 +110,15 @@ export const useGitToolWindowState = create<GitToolWindowState>((set) => ({
   setSelectedCommit: (worktreeId, commitId) =>
     set((state) => ({
       selectedCommitByWorktree: withEntry(state.selectedCommitByWorktree, worktreeId, commitId)
+    })),
+  revealCommit: (worktreeId, commitId) =>
+    set((state) => ({
+      selectedCommitByWorktree: withEntry(state.selectedCommitByWorktree, worktreeId, commitId),
+      pendingRevealByWorktree: withEntry(state.pendingRevealByWorktree, worktreeId, commitId)
+    })),
+  clearPendingReveal: (worktreeId) =>
+    set((state) => ({
+      pendingRevealByWorktree: withEntry(state.pendingRevealByWorktree, worktreeId, null)
     }))
 }))
 

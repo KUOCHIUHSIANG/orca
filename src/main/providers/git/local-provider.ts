@@ -2,6 +2,7 @@ import { createBranch } from '../../git/worktrees/checkout/create-branch'
 import { applyCommit, recoverSequencer } from '../../git/worktrees/checkout/commit-actions'
 import { gitSyncForkDefaultBranch } from '../../git/remotes/fork-sync'
 import type { GitRuntimeOptions } from '../../git/command-runner/git-runtime-options'
+import { getBlame } from '../../git/blame'
 import { checkIgnoredPaths } from '../../git/source-control/ignores/check-ignored-paths'
 import { checkoutBranch, listLocalBranches } from '../../git/worktrees/checkout/checkout'
 import { getHistory, getHistoryRefs } from '../../git/source-control/history'
@@ -149,6 +150,8 @@ export function createLocalGitProvider(options: LocalGitProviderOptions = {}): L
     syncForkDefaultBranch: (worktreePath, expectedUpstream) =>
       gitSyncForkDefaultBranch(worktreePath, expectedUpstream, interactive),
     getCommitDiff: (worktreePath, args) => getCommitDiff(worktreePath, args, interactive),
+    getBlame: (worktreePath, filePath, blameOptions) =>
+      getBlame(worktreePath, filePath, { ...blameOptions, ...interactive }),
     listWorktrees: (repoPath, listOptions) =>
       listWorktrees(repoPath, listOptions?.signal ? { ...base, signal: listOptions.signal } : base),
     isGitRepo: (path) => isGitRepo(path),

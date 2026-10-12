@@ -122,6 +122,12 @@ export const getGeneralEditorSearchDescriptors = createLocalizedCatalog(() => [
       ...translateSearchKeyword('auto.components.settings.general.search.a0014961ae', 'scroll')
     ]
   }),
+  generalSetting(GENERAL_SETTING_ANCHORS.inlineBlame, {
+    title: 'Inline Git Blame',
+    description:
+      "Show who last changed the cursor's line, when, and why, after the end of the line.",
+    keywords: ['blame', 'git', 'inline', 'commit', 'author', 'gitlens']
+  }),
   generalSetting(GENERAL_SETTING_ANCHORS.markdownView, {
     title: translate('auto.components.settings.general.search.0f9304f821', 'Default Markdown view'),
     description: translate(
