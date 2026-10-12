@@ -15,6 +15,7 @@ import type { createWebContentsTimedFlag } from './web-contents-timed-flag'
 import { recordCrashBreadcrumb } from '../crash-reporting/crash-breadcrumb-store'
 import { recordDurableCrashBreadcrumb } from '../crash-reporting/durable-crash-breadcrumb'
 import { checkForUpdatesFromMenu, isQuittingForUpdate } from '../updater/updater-service'
+import { checkForkUpdate, isForkBuild } from '../fork-update'
 import {
   createSystemTray,
   setMacMenuBarIconVisible,
@@ -206,6 +207,11 @@ export async function quitAfterRendererStoppedAllSessions(
 
 export function runUserInitiatedUpdateCheck(options?: UpdateCheckOptions): void {
   ensureAutoUpdaterConfigured()
+  // Why: fork builds never set up electron-updater, so its menu check would do nothing.
+  if (isForkBuild()) {
+    checkForkUpdate()
+    return
+  }
   checkForUpdatesFromMenu(options)
 }
 
