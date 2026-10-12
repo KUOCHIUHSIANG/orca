@@ -19,7 +19,9 @@ const hoverCardContentVariants = cva('', {
     variant: {
       default: 'w-64 p-4',
       'workspace-details':
-        'w-[360px] max-w-[calc(100vw-2rem)] max-h-[28rem] overflow-y-auto p-3 text-xs scrollbar-sleek'
+        'w-[360px] max-w-[calc(100vw-2rem)] max-h-[28rem] overflow-y-auto p-3 text-xs scrollbar-sleek',
+      // Wide enough for a commit message and a code excerpt from the editor's inline blame.
+      'commit-details': 'w-[36rem] max-w-[calc(100vw-2rem)] p-3 text-xs'
     }
   },
   defaultVariants: { variant: 'default' }

@@ -29,6 +29,7 @@ import {
   resolveOwnedPathTarget,
   validateLocalPathTarget
 } from './shell-owned-path-target'
+import { openExternalUrlInLastUsedProfile } from '../external-link-chromium-profile'
 
 export { EXTERNAL_EDITOR_CLI_COMMAND }
 
@@ -162,7 +163,7 @@ export function registerShellHandlers(
       return
     }
 
-    return shell.openExternal(parsed.toString())
+    return openExternalUrlInLastUsedProfile(parsed.toString())
   })
 
   ipcMain.handle(

@@ -25,6 +25,7 @@ import { useMonacoEditorMount } from './use-monaco-editor-mount'
 import { useDocumentDarkTheme } from '@/hooks/use-document-dark-theme'
 import { snapshotMonacoViewState } from './monaco-view-state-persistence'
 import { MonacoMarkdownAnnotationOverlay } from './MonacoMarkdownAnnotationOverlay'
+import { MonacoInlineBlame } from './inline-blame/MonacoInlineBlame'
 
 type MonacoEditorProps = {
   fileId: string
@@ -44,6 +45,7 @@ type MonacoEditorProps = {
   worktreeId?: string
   markdownAnnotationsEnabled?: boolean
   conflictDecorationsEnabled?: boolean
+  inlineBlameEnabled?: boolean
   readOnly?: boolean
   liveTail?: boolean
   autoHeight?: boolean
@@ -66,6 +68,7 @@ export default function MonacoEditor({
   worktreeId,
   markdownAnnotationsEnabled = false,
   conflictDecorationsEnabled = false,
+  inlineBlameEnabled = false,
   readOnly = false,
   liveTail = false,
   autoHeight = false
@@ -315,6 +318,18 @@ export default function MonacoEditor({
         keepCurrentModel
       />
 
+      {inlineBlameEnabled &&
+        settings?.editorInlineBlame !== false &&
+        mountedEditor &&
+        worktreeId && (
+          <MonacoInlineBlame
+            editorInstance={mountedEditor}
+            fileId={fileId}
+            filePath={filePath}
+            relativePath={relativePath}
+            worktreeId={worktreeId}
+          />
+        )}
       {toastNode}
       <MonacoGutterContextMenu
         open={gutterMenuOpen}

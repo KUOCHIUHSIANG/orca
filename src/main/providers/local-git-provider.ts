@@ -1,5 +1,6 @@
 import { gitSyncForkDefaultBranch } from '../git/fork-sync'
 import type { GitRuntimeOptions } from '../git/git-runtime-options'
+import { getBlame } from '../git/blame'
 import { checkIgnoredPaths } from '../git/check-ignored-paths'
 import { checkoutBranch, listLocalBranches } from '../git/checkout'
 import { getHistory } from '../git/history'
@@ -124,6 +125,8 @@ export function createLocalGitProvider(options: LocalGitProviderOptions = {}): L
     syncForkDefaultBranch: (worktreePath, expectedUpstream) =>
       gitSyncForkDefaultBranch(worktreePath, expectedUpstream, interactive),
     getCommitDiff: (worktreePath, args) => getCommitDiff(worktreePath, args, interactive),
+    getBlame: (worktreePath, filePath, blameOptions) =>
+      getBlame(worktreePath, filePath, { ...blameOptions, ...interactive }),
     listWorktrees: (repoPath, listOptions) =>
       listWorktrees(repoPath, listOptions?.signal ? { ...base, signal: listOptions.signal } : base),
     isGitRepo: (path) => isGitRepo(path),

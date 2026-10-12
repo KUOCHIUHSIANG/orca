@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
 import { awaitWindowsHostGitEnvironmentReady } from '../../git/runner'
 import { getRemoteCommitUrl, getRemoteFileUrl } from '../../git/repo'
+import { resolveCommitAuthorAvatar } from '../../git/commit-author-avatar'
 import { resolveRegisteredWorktreePath } from '../registered-worktree-roots-cache'
 import { validateFullGitObjectId } from '../filesystem-path-containment'
 import type { FilesystemHandlerContext } from './filesystem-handler-context'
@@ -36,5 +37,12 @@ export function registerFilesystemGitUrlHandlers(context: FilesystemHandlerConte
       await awaitWindowsHostGitEnvironmentReady({ cwd: worktreePath })
       return getRemoteCommitUrl(worktreePath, sha)
     }
+  )
+  ipcMain.handle(
+    'git:commitAuthorAvatar',
+    async (_event, args: { commitUrl: unknown; email: unknown }): Promise<string | null> =>
+      typeof args?.commitUrl === 'string' && typeof args.email === 'string'
+        ? resolveCommitAuthorAvatar(args.commitUrl, args.email)
+        : null
   )
 }

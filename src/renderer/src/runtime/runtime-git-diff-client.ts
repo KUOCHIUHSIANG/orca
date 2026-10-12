@@ -1,3 +1,4 @@
+import type { GitBlameResult } from '../../../shared/git-blame'
 import type {
   GitBranchCompareResult,
   GitCommitCompareResult,
@@ -124,6 +125,27 @@ export async function getRuntimeGitCommitDiff(
   return callRuntimeRpc<GitDiffResult>(
     target,
     'git.commitDiff',
+    { worktree: toRuntimeWorktreeSelector(context.worktreeId), ...args },
+    { timeoutMs: 15_000 }
+  )
+}
+
+export async function getRuntimeGitBlame(
+  context: RuntimeGitContext,
+  args: { filePath: string; contents?: string }
+): Promise<GitBlameResult> {
+  const target = context.target
+  if (target.kind === 'local' || !context.worktreeId) {
+    return window.api.git.blame({
+      worktreePath: resolveLocalWorktreePath(context),
+      filePath: args.filePath,
+      contents: args.contents,
+      connectionId: context.connectionId
+    })
+  }
+  return callRuntimeRpc<GitBlameResult>(
+    target,
+    'git.blame',
     { worktree: toRuntimeWorktreeSelector(context.worktreeId), ...args },
     { timeoutMs: 15_000 }
   )

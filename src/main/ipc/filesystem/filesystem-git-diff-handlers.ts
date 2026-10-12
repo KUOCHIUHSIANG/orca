@@ -1,5 +1,7 @@
 import { ipcMain } from 'electron'
+import type { GitBlameResult } from '../../../shared/git-blame'
 import type { GitDiffResult } from '../../../shared/git-diff-compare-types'
+import { getBlame } from '../../git/blame'
 import { getBranchDiff, getCommitDiff } from '../../git/status'
 import { resolveRegisteredWorktreePath } from '../registered-worktree-roots-cache'
 import { getLocalGitOptionsForRegisteredWorktree } from '../local-worktree-runtime-options'
@@ -90,6 +92,29 @@ export function registerFilesystemGitDiffHandlers(context: FilesystemHandlerCont
         },
         { ...gitOptions, admissionTier: 'interactive' }
       )
+    }
+  )
+
+  ipcMain.handle(
+    'git:blame',
+    async (
+      _event,
+      args: { worktreePath: string; filePath: string; contents?: string; connectionId?: string }
+    ): Promise<GitBlameResult> => {
+      const contents = typeof args.contents === 'string' ? args.contents : undefined
+      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      const worktreePath = await resolveRegisteredWorktreePath(args.worktreePath, store)
+      const filePath = validateGitRelativeFilePath(worktreePath, args.filePath)
+      const gitOptions = getLocalGitOptionsForRegisteredWorktree(
+        store,
+        args.worktreePath,
+        worktreePath
+      )
+      return getBlame(worktreePath, filePath, {
+        ...gitOptions,
+        contents,
+        admissionTier: 'interactive'
+      })
     }
   )
 }

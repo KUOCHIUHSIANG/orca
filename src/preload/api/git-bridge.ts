@@ -4,6 +4,7 @@ import type { GitStagingArea, GitUpstreamStatus } from '../../shared/git-status-
 import type { GitPushTarget } from '../../shared/worktree/types'
 import type { GitStageWorktreeScope } from '../../shared/git-stage-worktree-scope'
 import type { GitHistoryOptions, GitHistoryResult } from '../../shared/git-history'
+import type { GitBlameResult } from '../../shared/git-blame'
 import type { PreloadApi } from '../api-types'
 
 export const gitApi = {
@@ -117,6 +118,12 @@ export const gitApi = {
     oldPath?: string
     connectionId?: string
   }) => ipcRenderer.invoke('git:commitDiff', args),
+  blame: (args: {
+    worktreePath: string
+    filePath: string
+    contents?: string
+    connectionId?: string
+  }): Promise<GitBlameResult> => ipcRenderer.invoke('git:blame', args),
   commit: (args: {
     worktreePath: string
     message: string
@@ -197,5 +204,7 @@ export const gitApi = {
     worktreePath: string
     sha: string
     connectionId?: string
-  }): Promise<string | null> => ipcRenderer.invoke('git:remoteCommitUrl', args)
+  }): Promise<string | null> => ipcRenderer.invoke('git:remoteCommitUrl', args),
+  commitAuthorAvatar: (args: { commitUrl: string; email: string }): Promise<string | null> =>
+    ipcRenderer.invoke('git:commitAuthorAvatar', args)
 } satisfies PreloadApi['git']

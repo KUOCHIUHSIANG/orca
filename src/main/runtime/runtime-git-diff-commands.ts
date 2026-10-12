@@ -5,6 +5,7 @@ import type {
 } from '../../shared/git-diff-compare-types'
 import { assertGitDiffWithinTransportBudget } from '../../shared/git-diff-transport-budget'
 import { getBranchDiff } from '../git/status'
+import type { GitBlameResult } from '../../shared/git-blame'
 import type { GitAdmissionTier } from '../git/command-runner/git-exec-options'
 import { normalizeRuntimeRelativePath } from './runtime-relative-paths'
 import {
@@ -104,6 +105,18 @@ export class RuntimeGitDiffCommands {
       }),
       maxContentBytes
     )
+  }
+
+  async getRuntimeGitBlame(
+    worktreeSelector: string,
+    filePath: string,
+    contents?: string
+  ): Promise<GitBlameResult> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    const relativePath = normalizeRuntimeGitRelativePath(filePath)
+    return requireRuntimeGitProvider(target).getBlame(target.worktree.path, relativePath, {
+      contents
+    })
   }
 
   async getRuntimeGitRemoteFileUrl(
