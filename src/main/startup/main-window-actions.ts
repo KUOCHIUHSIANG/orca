@@ -4,6 +4,7 @@ import type { UpdateCheckOptions } from '../../shared/update-status-types'
 import { recordCrashBreadcrumb } from '../crash-reporting/crash-breadcrumb-store'
 import { recordDurableCrashBreadcrumb } from '../crash-reporting/durable-crash-breadcrumb'
 import { checkForUpdatesFromMenu, isQuittingForUpdate } from '../updater'
+import { checkForkUpdate, isForkBuild } from '../fork-update'
 import {
   createSystemTray,
   setMacMenuBarIconVisible,
@@ -97,6 +98,11 @@ export function quitFromSystemTray(): void {
 
 export function runUserInitiatedUpdateCheck(options?: UpdateCheckOptions): void {
   ensureAutoUpdaterConfigured()
+  // Why: fork builds never set up electron-updater, so its menu check would do nothing.
+  if (isForkBuild()) {
+    checkForkUpdate()
+    return
+  }
   checkForUpdatesFromMenu(options)
 }
 
