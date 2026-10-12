@@ -60,6 +60,29 @@ describe('resolveRebaseBase', () => {
     ).toEqual({ kind: 'rebase', base: forkPoint })
   })
 
+  it('starts after the release tag when custom sits on a release branch', () => {
+    // main: m1 ─ m2 ─ m3; v1 = m1 ─ r1 ─ r2 on its own branch; custom = v1 ─ fork; v2 cut off m3.
+    repo = mkdtempSync(path.join(os.tmpdir(), 'rebase-base-'))
+    git('init', '-q', '-b', 'main')
+    commit('m1')
+    git('switch', '-q', '-c', 'release/1')
+    commit('ci: sync release workflows for v1')
+    const releaseTag = commit('release: v1')
+    git('tag', 'v1.0.0')
+    git('switch', '-q', '-c', 'custom')
+    commit('fork 1')
+    git('switch', '-q', 'main')
+    commit('m2')
+    commit('m3')
+    git('switch', '-q', '-c', 'release/2')
+    commit('ci: sync release workflows for v2')
+    commit('release: v2')
+    git('tag', 'v2.0.0')
+    expect(
+      resolveRebaseBase({ cwd: repo, branch: 'custom', targetTag: 'v2.0.0', upstreamMain: 'main' })
+    ).toEqual({ kind: 'rebase', base: releaseTag })
+  })
+
   it('refuses a tag cut before the fork point', () => {
     const forkPoint = createForkRepo()
     expect(
