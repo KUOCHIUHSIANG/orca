@@ -13,6 +13,8 @@ import {
   getDiff
 } from '../git/status'
 import { awaitWindowsHostGitEnvironmentReady } from '../git/runner'
+import type { GitBlameResult } from '../../shared/git-blame'
+import { getBlame } from '../git/blame'
 import type { GitAdmissionTier } from '../git/command-runner/git-exec-options'
 import { normalizeRuntimeRelativePath } from './runtime-relative-paths'
 import {
@@ -165,6 +167,24 @@ export class RuntimeGitDiffCommands {
       ),
       maxContentBytes
     )
+  }
+
+  async getRuntimeGitBlame(
+    worktreeSelector: string,
+    filePath: string,
+    contents?: string
+  ): Promise<GitBlameResult> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    const relativePath = normalizeRuntimeGitRelativePath(filePath)
+    const provider = requireRuntimeGitProvider(target)
+    if (provider) {
+      return provider.getBlame(target.worktree.path, relativePath, { contents })
+    }
+    return getBlame(target.worktree.path, relativePath, {
+      contents,
+      ...localGitOptionsForTarget(target),
+      admissionTier: 'interactive'
+    })
   }
 
   async getRuntimeGitRemoteFileUrl(

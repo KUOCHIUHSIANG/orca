@@ -128,6 +128,12 @@ export const getGeneralEditorSearchEntries = createLocalizedCatalog(() => [
     ]
   },
   {
+    title: 'Inline Git Blame',
+    description:
+      "Show who last changed the cursor's line, when, and why, after the end of the line.",
+    keywords: ['blame', 'git', 'inline', 'commit', 'author', 'gitlens']
+  },
+  {
     title: translate(
       'auto.components.settings.general.search.d2d2d929c0',
       'Rich Markdown Spellcheck'

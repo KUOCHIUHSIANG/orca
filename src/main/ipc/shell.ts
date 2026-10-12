@@ -17,6 +17,7 @@ import {
   resolveVsCodeRemoteSshLaunchSpec
 } from '../external-editor-launch'
 import { resolveVsCodeSshAuthority } from '../ssh/vscode-ssh-authority'
+import { openExternalUrlInLastUsedProfile } from '../external-link-chromium-profile'
 
 export { EXTERNAL_EDITOR_CLI_COMMAND }
 
@@ -166,7 +167,7 @@ export function registerShellHandlers(store: Store): void {
       return
     }
 
-    return shell.openExternal(parsed.toString())
+    return openExternalUrlInLastUsedProfile(parsed.toString())
   })
 
   ipcMain.handle('shell:openFilePath', async (_event, filePath: string): Promise<boolean> => {
