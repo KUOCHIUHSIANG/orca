@@ -149,6 +149,7 @@ export function syncAndBuild(): void {
   const stages: Record<string, number> = {
     fetch: 5,
     rebase: 20,
+    resolve: 25,
     install: 35,
     verify: 50,
     build: 60
@@ -176,9 +177,10 @@ export function syncAndBuild(): void {
           })
         } else if (event.type === 'conflict') {
           const files = Array.isArray(event.files) ? event.files.join(', ') : ''
+          const reason = typeof event.reason === 'string' ? `${event.reason}。` : ''
           broadcastStatus({
             state: 'error',
-            message: `Rebase 衝突：${event.commitSubject ?? ''}。衝突檔案：${files}。請手動解決後重試。`,
+            message: `Rebase 衝突：${event.commitSubject ?? ''}。衝突檔案：${files}。${reason}請手動解決後重試。`,
             version,
             userInitiated: true
           })
