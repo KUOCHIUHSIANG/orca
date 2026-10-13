@@ -1,6 +1,6 @@
 import type { MondayDocRef } from '../../shared/monday-calendar-types'
 import { MondayApiError, type MondayQueryRunner } from './monday-graphql-client'
-import { asArray, asString, isRecord } from './monday-json-guards'
+import { asArray, asString, isRecord } from '../untrusted-json-guards'
 
 // Why: a monday doc's object id is also a board of type "document", so one boards() lookup
 // both verifies access and tells boards from docs — a bare id works for either.
