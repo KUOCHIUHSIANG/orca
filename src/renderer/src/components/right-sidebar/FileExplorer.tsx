@@ -21,6 +21,7 @@ import { FileExplorerFilesTreePane } from './FileExplorerFilesTreePane'
 import { FileExplorerNameFilter } from './FileExplorerNameFilter'
 import { FileExplorerQueryStrip } from './FileExplorerQueryStrip'
 import { FileExplorerToolbar } from './FileExplorerToolbar'
+import { getLocatableActiveFilePath } from './file-explorer-locate-active-file'
 import { SearchFilters } from './SearchFilters'
 import { SearchQueryRow } from './SearchQueryRow'
 import { SearchResultsPane } from './SearchResultsPane'
@@ -152,6 +153,13 @@ function FileExplorerFiles(): React.JSX.Element {
     }
     collapseAllDirs(activeWorktreeId)
   }, [activeWorktreeId, collapseAllDirs, hasNameFilter, isFilesViewActive])
+  const revealInExplorer = useAppStore((s) => s.revealInExplorer)
+  const locatableActiveFilePath = useAppStore((s) => getLocatableActiveFilePath(s, worktreePath))
+  const handleLocateActiveFile = useCallback(() => {
+    if (activeWorktreeId && locatableActiveFilePath) {
+      revealInExplorer(activeWorktreeId, locatableActiveFilePath)
+    }
+  }, [activeWorktreeId, locatableActiveFilePath, revealInExplorer])
   const handleToggleDotfiles = useCallback(() => {
     if (activeWorktreeId) {
       toggleShowDotfilesForWorktree(activeWorktreeId)
@@ -257,6 +265,8 @@ function FileExplorerFiles(): React.JSX.Element {
           runtimeEnvironmentId={runtimeEnvironmentId}
           refresh={manualRefresh}
           canRefresh={isFilesViewActive}
+          canLocateActiveFile={locatableActiveFilePath !== null}
+          onLocateActiveFile={handleLocateActiveFile}
           canCollapseAll={canCollapseAll}
           onCollapseAll={handleCollapseAll}
           showGitIgnoredFilesToggle={activeRepoSupportsGit}
