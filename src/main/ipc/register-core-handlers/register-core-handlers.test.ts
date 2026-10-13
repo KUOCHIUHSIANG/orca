@@ -52,6 +52,7 @@ const {
   registerLinearHandlersMock,
   registerJiraHandlersMock,
   registerJiraIssueSummaryGenerationHandlersMock,
+  registerMondayHandlersMock,
   registerBitbucketHandlersMock,
   registerGitLabHandlersMock,
   registerHostedReviewHandlersMock,
@@ -124,6 +125,7 @@ const {
   registerLinearHandlersMock: vi.fn(),
   registerJiraHandlersMock: vi.fn(),
   registerJiraIssueSummaryGenerationHandlersMock: vi.fn(),
+  registerMondayHandlersMock: vi.fn(),
   registerBitbucketHandlersMock: vi.fn(),
   registerGitLabHandlersMock: vi.fn(),
   registerHostedReviewHandlersMock: vi.fn(),
@@ -432,6 +434,10 @@ vi.mock('../jira/issue-summary-generation', () => ({
   registerJiraIssueSummaryGenerationHandlers: registerJiraIssueSummaryGenerationHandlersMock
 }))
 
+vi.mock('../monday', () => ({
+  registerMondayHandlers: registerMondayHandlersMock
+}))
+
 vi.mock('../source-control/bitbucket', () => ({
   registerBitbucketHandlers: registerBitbucketHandlersMock
 }))
@@ -515,6 +521,7 @@ describe('registerCoreHandlers', () => {
     registerLinearHandlersMock.mockReset()
     registerJiraHandlersMock.mockReset()
     registerJiraIssueSummaryGenerationHandlersMock.mockReset()
+    registerMondayHandlersMock.mockReset()
     registerBitbucketHandlersMock.mockReset()
     registerGitLabHandlersMock.mockReset()
     registerHostedReviewHandlersMock.mockReset()
