@@ -15,6 +15,7 @@ import { registerHostedReviewHandlers } from '../hosted-review'
 import { registerLinearHandlers } from '../linear'
 import { registerJiraHandlers } from '../jira'
 import { registerMondayHandlers } from '../monday'
+import { registerMicrosoftTodoHandlers } from '../microsoft-todo'
 import { registerBitbucketHandlers } from '../bitbucket'
 import { registerFeedbackHandlers } from '../feedback'
 import { registerCrashReportingHandlers } from '../crash-reporting'
@@ -184,6 +185,7 @@ export function registerCoreHandlers(
   registerLinearHandlers()
   registerJiraHandlers()
   registerMondayHandlers()
+  registerMicrosoftTodoHandlers()
   registerBitbucketHandlers()
   registerFeedbackHandlers()
   if (crashReports) {

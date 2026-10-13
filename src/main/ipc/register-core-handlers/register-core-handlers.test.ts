@@ -52,6 +52,7 @@ const {
   registerLinearHandlersMock,
   registerJiraHandlersMock,
   registerMondayHandlersMock,
+  registerMicrosoftTodoHandlersMock,
   registerBitbucketHandlersMock,
   registerGitLabHandlersMock,
   registerHostedReviewHandlersMock,
@@ -122,6 +123,7 @@ const {
   registerLinearHandlersMock: vi.fn(),
   registerJiraHandlersMock: vi.fn(),
   registerMondayHandlersMock: vi.fn(),
+  registerMicrosoftTodoHandlersMock: vi.fn(),
   registerBitbucketHandlersMock: vi.fn(),
   registerGitLabHandlersMock: vi.fn(),
   registerHostedReviewHandlersMock: vi.fn(),
@@ -396,6 +398,10 @@ vi.mock('../monday', () => ({
   registerMondayHandlers: registerMondayHandlersMock
 }))
 
+vi.mock('../microsoft-todo', () => ({
+  registerMicrosoftTodoHandlers: registerMicrosoftTodoHandlersMock
+}))
+
 vi.mock('../bitbucket', () => ({
   registerBitbucketHandlers: registerBitbucketHandlersMock
 }))
@@ -479,6 +485,7 @@ describe('registerCoreHandlers', () => {
     registerLinearHandlersMock.mockReset()
     registerJiraHandlersMock.mockReset()
     registerMondayHandlersMock.mockReset()
+    registerMicrosoftTodoHandlersMock.mockReset()
     registerBitbucketHandlersMock.mockReset()
     registerGitLabHandlersMock.mockReset()
     registerHostedReviewHandlersMock.mockReset()
@@ -583,6 +590,7 @@ describe('registerCoreHandlers', () => {
     expect(registerLinearHandlersMock).toHaveBeenCalled()
     expect(registerJiraHandlersMock).toHaveBeenCalled()
     expect(registerMondayHandlersMock).toHaveBeenCalled()
+    expect(registerMicrosoftTodoHandlersMock).toHaveBeenCalled()
     expect(registerBitbucketHandlersMock).toHaveBeenCalled()
     expect(registerGitLabHandlersMock).toHaveBeenCalledWith(store)
     expect(registerHostedReviewHandlersMock).toHaveBeenCalledWith(store, stats)
