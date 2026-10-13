@@ -20,6 +20,8 @@ describe('applyZhTwTerms', () => {
     expect(applyZhTwTerms('退出', 'Opt out')).toBe('退出')
     expect(applyZhTwTerms('測試已通過', 'Tests passed')).toBe('測試已通過')
     expect(applyZhTwTerms('通過選單報告', 'Report it from the menu')).toBe('透過選單報告')
+    expect(applyZhTwTerms('看板與檔案', 'Boards and docs')).toBe('看板與文件')
+    expect(applyZhTwTerms('開啟檔案', 'Open file')).toBe('開啟檔案')
   })
 
   it('swaps mainland row/column wording without breaking compounds', () => {
