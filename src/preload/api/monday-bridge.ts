@@ -9,5 +9,6 @@ export const mondayApi: MondayApi = {
   fetchCalendar: () => ipcRenderer.invoke('monday:fetchCalendar'),
   fetchItemUpdates: (args) => ipcRenderer.invoke('monday:fetchItemUpdates', args),
   fetchDocs: () => ipcRenderer.invoke('monday:fetchDocs'),
-  fetchDocContent: (args) => ipcRenderer.invoke('monday:fetchDocContent', args)
+  fetchDocContent: (args) => ipcRenderer.invoke('monday:fetchDocContent', args),
+  fetchTaiwanHolidays: () => ipcRenderer.invoke('monday:fetchTaiwanHolidays')
 }

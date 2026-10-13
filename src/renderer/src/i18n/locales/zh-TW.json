@@ -1189,6 +1189,13 @@
     },
     "components": {
       "mondayCalendar": {
+        "holidays": {
+          "makeupWorkday": "補班",
+          "substituteFor": "{{value0}}補假",
+          "substitute": "補假",
+          "toggle": "顯示臺灣國定假日",
+          "source": "資料來源：政府行政機關辦公日曆表（新北市資料開放平臺），每週自動更新。"
+        },
         "tabs": {
           "calendar": "行事曆",
           "docs": "文件"

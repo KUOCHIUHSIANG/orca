@@ -1359,6 +1359,13 @@
     },
     "components": {
       "mondayCalendar": {
+        "holidays": {
+          "makeupWorkday": "Make-up workday",
+          "substituteFor": "{{value0}} (day off)",
+          "substitute": "Day off in lieu",
+          "toggle": "Show Taiwan public holidays",
+          "source": "From the government office calendar (New Taipei open data), refreshed weekly."
+        },
         "tabs": {
           "calendar": "Calendar",
           "docs": "Docs"
