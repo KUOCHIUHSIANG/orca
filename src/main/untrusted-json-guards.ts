@@ -1,4 +1,4 @@
-// Narrowing for untrusted monday.com GraphQL payloads.
+// Narrowing for untrusted JSON from third-party APIs (monday.com, Microsoft Graph, open data).
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)

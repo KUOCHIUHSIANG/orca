@@ -1,5 +1,5 @@
 import type { MondayCalendarItem, MondayPerson } from '../../shared/monday-calendar-types'
-import { asString, isRecord } from './monday-json-guards'
+import { asString, isRecord } from '../untrusted-json-guards'
 
 const STATUS_TITLE_PATTERN = /status|狀態|状态/i
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}/
