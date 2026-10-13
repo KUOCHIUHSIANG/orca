@@ -12,6 +12,7 @@ const FolderWorkspaceSourceControl = lazy(
 const SourceControl = lazy(() => import('./source-control/panel/SourceControl'))
 const ChecksPanel = lazy(() => import('./checks-panel/ChecksPanel'))
 const PortsPanel = lazy(() => import('./ports/PortsPanel'))
+const TodoPanel = lazy(() => import('./todo-panel/TodoPanel'))
 const AiVaultSidebarPanel = lazy(() => import('./ai-vault/panel/AiVaultSidebarPanel'))
 const FolderWorkspaceWorktreesPanel = lazy(
   () => import('./folder-workspaces/FolderWorkspaceWorktreesPanel')
@@ -52,6 +53,7 @@ export function RightSidebarPanelContent({
             <SourceControl />
           ))}
         {effectiveTab === 'checks' && <ChecksPanel />}
+        {effectiveTab === 'todos' && <TodoPanel isVisible={rightSidebarOpen} />}
         {/* SSH forwarding needs raw ports.detect data absent from the workspace-scoped status popover. */}
         {effectiveTab === 'ports' && (
           <PortsPanel isVisible={rightSidebarOpen && effectiveTab === 'ports'} />
