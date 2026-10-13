@@ -96,6 +96,19 @@ export function createUiViewActions(set: UISliceSet, get: UISliceGet): Partial<U
         activeView: state.previousViewBeforeArtifacts,
         worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'artifacts')
       })),
+    openMondayPage: () => {
+      get().recordViewVisit('monday')
+      set((state) => ({
+        activeView: 'monday',
+        previousViewBeforeMonday:
+          state.activeView === 'monday' ? state.previousViewBeforeMonday : state.activeView
+      }))
+    },
+    closeMondayPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeMonday,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'monday')
+      })),
     openMobilePage: () =>
       set((state) => ({
         activeView: 'mobile',
