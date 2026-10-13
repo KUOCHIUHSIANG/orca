@@ -6,7 +6,7 @@ import type {
 } from '../../shared/monday-calendar-types'
 import type { MondayQueryRunner } from './monday-graphql-client'
 import { mapMondayItem, mapMondayPeople, readSubitemBoardIds } from './monday-item-mapping'
-import { asArray, asString, isRecord } from './monday-json-guards'
+import { asArray, asString, isRecord } from '../untrusted-json-guards'
 
 const PAGE_LIMIT = 500
 // Why: bounds one refresh to ~10k items per board so a runaway cursor can't drain the daily call budget.
