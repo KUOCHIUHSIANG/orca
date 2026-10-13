@@ -27,6 +27,7 @@ type MondayConfigFile = {
   boardSettings: MondayBoardDisplaySettings
   showDone: boolean
   undatedExpanded: boolean
+  showTaiwanHolidays: boolean
 }
 
 let cachedToken: string | null = null
@@ -82,7 +83,8 @@ function emptyConfig(): MondayConfigFile {
     selectedBoardIds: null,
     boardSettings: {},
     showDone: false,
-    undatedExpanded: false
+    undatedExpanded: false,
+    showTaiwanHolidays: true
   }
 }
 
@@ -104,6 +106,7 @@ function readConfig(): MondayConfigFile {
       config.boardSettings = parseMondayBoardDisplaySettings(record.boardSettings)
       config.showDone = record.showDone === true
       config.undatedExpanded = record.undatedExpanded === true
+      config.showTaiwanHolidays = record.showTaiwanHolidays !== false
     }
   } catch {
     // Missing or corrupt config reads as a fresh setup.
@@ -133,7 +136,8 @@ export function getMondayConnectionStatus(): MondayConnectionStatus {
     selectedBoardIds: config.selectedBoardIds,
     boardSettings: config.boardSettings,
     showDone: config.showDone,
-    undatedExpanded: config.undatedExpanded
+    undatedExpanded: config.undatedExpanded,
+    showTaiwanHolidays: config.showTaiwanHolidays
   }
 }
 
@@ -179,6 +183,9 @@ export function updateMondayPreferences(update: MondayPreferencesUpdate): void {
   }
   if (update.activeTab !== undefined) {
     next.activeTab = update.activeTab
+  }
+  if (update.showTaiwanHolidays !== undefined) {
+    next.showTaiwanHolidays = update.showTaiwanHolidays
   }
   if (update.boardSettings !== undefined) {
     next.boardSettings = update.boardSettings
