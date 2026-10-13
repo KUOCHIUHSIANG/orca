@@ -34,6 +34,7 @@ import type { ActivePluginCustomEditor } from '@/store/plugins/file-editors/plug
 import { PluginEditorSourceFallbackNotice } from '../plugin-editors/PluginEditorNeedsDesktopNotice'
 import PluginCustomEditorFrame from '../plugin-editors/PluginCustomEditorFrame'
 import PluginBytesCustomEditorSurface from '../plugin-editors/PluginBytesCustomEditorSurface'
+import { canUseChangesModeForFile } from '../view-mode/editor-panel-file-mode'
 
 // Retry is a user act: it may start a stopped WSL distro.
 
@@ -291,6 +292,12 @@ export function EditorEditFileSurface({
             : undefined
         }
         markdownDocuments={isMarkdown ? markdownDocuments.markdownDocuments : undefined}
+        // Why: conflict markers would all read as added lines, and live-tail logs churn every line.
+        gitChangeGutterEnabled={
+          canUseChangesModeForFile(activeFile) &&
+          activeFile.liveTail !== true &&
+          activeFile.conflict === undefined
+        }
       />
     </RecoverableRenderErrorBoundary>
   )
