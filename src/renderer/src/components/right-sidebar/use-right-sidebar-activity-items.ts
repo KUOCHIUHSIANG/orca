@@ -39,7 +39,6 @@ export function useRightSidebarActivityItems({
   const languageRevision = useUiLanguageRevision()
   const explorerShortcut = useShortcutLabel('sidebar.explorer.toggle')
   const sourceControlShortcut = useShortcutLabel('sidebar.sourceControl.toggle')
-  const checksShortcut = useShortcutLabel('sidebar.checks.toggle')
   const portsShortcut = useShortcutLabel('sidebar.ports.toggle')
   const activeWorktreeId = useAppStore((s) => (rightSidebarOpen ? s.activeWorktreeId : null))
   // Hide Git-only tabs for folder workspaces.
@@ -109,12 +108,13 @@ export function useRightSidebarActivityItems({
         shortcut: sourceControlShortcut === 'Unassigned' ? '' : sourceControlShortcut,
         gitOnly: true
       },
+      // Fork: Microsoft To Do takes the Checks slot and icon; CI checks stay reachable through
+      // their shortcut and PR flows, which still route to the 'checks' panel.
       {
-        id: 'checks',
+        id: 'todos',
         icon: ListChecks,
-        title: translate('auto.components.right.sidebar.index.83a10e3c44', 'Checks'),
-        shortcut: checksShortcut === 'Unassigned' ? '' : checksShortcut,
-        gitOnly: true
+        title: translate('auto.components.right.sidebar.index.todos', 'To Do'),
+        shortcut: ''
       },
       {
         id: 'ports',
@@ -128,7 +128,6 @@ export function useRightSidebarActivityItems({
     ],
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- translate() reads the UI language implicitly.
     [
-      checksShortcut,
       explorerShortcut,
       pluginPanelErrors,
       visiblePluginPanels,

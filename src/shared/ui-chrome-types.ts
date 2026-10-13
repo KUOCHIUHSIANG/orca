@@ -101,6 +101,7 @@ export type RightSidebarTab =
   | 'pr-checks'
   | 'source-control'
   | 'checks'
+  | 'todos'
   | 'ports'
   // Plugin IDs encode their dynamic panel namespace without opening the static tab union.
   | `plugin:${string}`
