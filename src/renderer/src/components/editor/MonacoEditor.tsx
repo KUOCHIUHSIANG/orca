@@ -37,6 +37,7 @@ import {
 import { useMonacoTheme } from '@/hooks/use-monaco-theme'
 import { useEditorModelRekeyCarry } from './model-lifetime/identity/editor-model-rekey-carry'
 import { MonacoInlineBlame } from './inline-blame/MonacoInlineBlame'
+import { MonacoGitChangeGutter } from './git-change-gutter/MonacoGitChangeGutter'
 
 type MonacoEditorProps = {
   fileId: string
@@ -64,6 +65,7 @@ type MonacoEditorProps = {
   passiveMirror?: boolean
   liveTail?: boolean
   autoHeight?: boolean
+  gitChangeGutterEnabled?: boolean
 }
 
 export default function MonacoEditor({
@@ -88,7 +90,8 @@ export default function MonacoEditor({
   readOnly = false,
   passiveMirror = false,
   liveTail = false,
-  autoHeight = false
+  autoHeight = false,
+  gitChangeGutterEnabled = false
 }: MonacoEditorProps): React.JSX.Element {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement | null>(null)
@@ -361,6 +364,16 @@ export default function MonacoEditor({
         relativePath={relativePath}
         worktreeId={worktreeId}
       />
+      {gitChangeGutterEnabled && mountedEditor && worktreeId && (
+        <MonacoGitChangeGutter
+          editorInstance={mountedEditor}
+          fileId={fileId}
+          filePath={filePath}
+          relativePath={relativePath}
+          worktreeId={worktreeId}
+          readOnly={readOnly}
+        />
+      )}
     </div>
   )
 }
