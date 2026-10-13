@@ -13395,6 +13395,7 @@
             "31b4c3195d": "More Explorer Actions",
             "d95e30fe28": "Refresh Explorer",
             "6026b16950": "Collapse All",
+            "revealActiveFile": "Reveal Active File",
             "693cbeadd0": "Search",
             "c1f3f3ec70": "Search file contents"
           },

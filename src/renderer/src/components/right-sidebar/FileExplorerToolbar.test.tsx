@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Ellipsis, ListCollapse, Loader2, RefreshCw } from 'lucide-react'
+import { Crosshair, Ellipsis, ListCollapse, Loader2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DropdownMenuCheckboxItem } from '@/components/ui/dropdown-menu'
 import { WorktreeOpenInMenuItems } from '@/components/sidebar/WorktreeOpenInMenu'
@@ -28,6 +28,19 @@ function findCollapseAllButton(node: unknown): ReactElementLike {
   })
   if (!found) {
     throw new Error('collapse all button not found')
+  }
+  return found
+}
+
+function findLocateActiveFileButton(node: unknown): ReactElementLike {
+  let found: ReactElementLike | null = null
+  visit(node, (entry) => {
+    if (entry.type === Button && entry.props['aria-label'] === 'Reveal Active File') {
+      found = entry
+    }
+  })
+  if (!found) {
+    throw new Error('reveal active file button not found')
   }
   return found
 }
@@ -165,6 +178,8 @@ function makeToolbar(overrides: Partial<Parameters<typeof FileExplorerToolbar>[0
     connectionId: null,
     refresh: makeRefreshState(),
     canRefresh: true,
+    canLocateActiveFile: false,
+    onLocateActiveFile: vi.fn(),
     canCollapseAll: false,
     onCollapseAll: vi.fn(),
     showGitIgnoredFilesToggle: true,
@@ -272,6 +287,24 @@ describe('FileExplorerToolbar', () => {
     expect(onCollapseAll).not.toHaveBeenCalled()
   })
 
+  it('fires the reveal active file action from the crosshair button', () => {
+    const onLocateActiveFile = vi.fn()
+    const element = makeToolbar({ canLocateActiveFile: true, onLocateActiveFile })
+
+    const button = findLocateActiveFileButton(element)
+    ;(button.props.onClick as () => void)()
+
+    expect(onLocateActiveFile).toHaveBeenCalledTimes(1)
+    expect(button.props.disabled).toBe(false)
+    expect(hasIcon(button, Crosshair)).toBe(true)
+  })
+
+  it('disables reveal active file when the center is not showing a file', () => {
+    const element = makeToolbar({ canLocateActiveFile: false })
+
+    expect(findLocateActiveFileButton(element).props.disabled).toBe(true)
+  })
+
   it('puts the git ignored visibility toggle in the overflow menu', () => {
     const onToggleGitIgnoredFiles = vi.fn()
     const element = makeToolbar({ onToggleGitIgnoredFiles })
@@ -316,6 +349,7 @@ describe('FileExplorerToolbar', () => {
     const element = makeToolbar()
 
     expect(getToolbarButtonLabels(element)).toEqual([
+      'Reveal Active File',
       'Collapse All',
       'Refresh Explorer',
       'More Explorer Actions'

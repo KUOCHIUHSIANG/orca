@@ -1,5 +1,5 @@
 import React from 'react'
-import { Ellipsis, ListCollapse, Loader2, RefreshCw } from 'lucide-react'
+import { Crosshair, Ellipsis, ListCollapse, Loader2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -26,6 +26,8 @@ type FileExplorerToolbarProps = {
     handleRefresh: () => void
   }
   canRefresh: boolean
+  canLocateActiveFile: boolean
+  onLocateActiveFile: () => void
   canCollapseAll: boolean
   onCollapseAll: () => void
   showGitIgnoredFilesToggle: boolean
@@ -45,6 +47,8 @@ export function FileExplorerToolbar({
   workspaceId,
   refresh,
   canRefresh,
+  canLocateActiveFile,
+  onLocateActiveFile,
   canCollapseAll,
   onCollapseAll,
   showGitIgnoredFilesToggle,
@@ -54,13 +58,36 @@ export function FileExplorerToolbar({
   onToggleDotfiles
 }: FileExplorerToolbarProps): React.JSX.Element {
   return (
-    <div className="flex h-8 min-h-8 items-center gap-2 border-b border-border px-2">
+    <div className="flex h-8 min-h-8 items-center gap-2 border-b border-border px-2 text-muted-foreground">
       <span
         className="min-w-0 flex-1 truncate text-xs font-medium text-foreground"
         title={repoName}
       >
         {repoName}
       </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            aria-label={translate(
+              'auto.components.right.sidebar.FileExplorerToolbar.revealActiveFile',
+              'Reveal Active File'
+            )}
+            disabled={!canLocateActiveFile}
+            onClick={onLocateActiveFile}
+          >
+            <Crosshair className="size-3" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" sideOffset={4}>
+          {translate(
+            'auto.components.right.sidebar.FileExplorerToolbar.revealActiveFile',
+            'Reveal Active File'
+          )}
+        </TooltipContent>
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

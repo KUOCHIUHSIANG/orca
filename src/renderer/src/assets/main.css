@@ -1428,6 +1428,28 @@ html.native-shell .app-layout {
   background: color-mix(in srgb, var(--accent) 80%, transparent);
 }
 
+/* Why: animation values outrank the unlayered selection rules above, so each pulse
+   starts and ends on the row's own selected look. */
+[data-file-explorer-row][data-flashing='true'] {
+  animation: file-explorer-reveal-flash 600ms ease-in-out 3;
+}
+
+@keyframes file-explorer-reveal-flash {
+  50% {
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-file-explorer-row][data-flashing='true'],
+  .dark [data-file-explorer-row][data-flashing='true'] {
+    animation: none;
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
+}
+
 .sidebar {
   width: 240px;
   flex-shrink: 0;
