@@ -1282,6 +1282,13 @@
         "moreHosts_other": "还有 {{count}} 个主机，请按名称搜索。"
       },
       "mondayCalendar": {
+        "holidays": {
+          "makeupWorkday": "补班",
+          "substituteFor": "{{value0}}补假",
+          "substitute": "补假",
+          "toggle": "显示台湾国定假日",
+          "source": "资料来源：政府行政机关办公日历表（新北市资料开放平台），每周自动更新。"
+        },
         "tabs": {
           "calendar": "行事历",
           "docs": "文件"

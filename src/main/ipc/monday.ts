@@ -11,6 +11,7 @@ import { fetchMondayCalendarSnapshot } from '../monday/monday-calendar-fetch'
 import { fetchMondayDocList, fetchMondayDocMarkdown } from '../monday/monday-docs'
 import { createMondayQueryRunner, MondayApiError } from '../monday/monday-graphql-client'
 import { fetchMondayItemUpdates } from '../monday/monday-item-updates'
+import { getTaiwanHolidays } from '../monday/taiwan-holidays'
 import {
   parseMondayBoardDisplaySettings,
   type MondayCalendarFetchResult,
@@ -166,6 +167,9 @@ function normalizePreferences(value: unknown): MondayPreferencesUpdate {
   if ('activeTab' in record && (record.activeTab === 'calendar' || record.activeTab === 'docs')) {
     update.activeTab = record.activeTab
   }
+  if ('showTaiwanHolidays' in record && typeof record.showTaiwanHolidays === 'boolean') {
+    update.showTaiwanHolidays = record.showTaiwanHolidays
+  }
   return update
 }
 
@@ -175,6 +179,8 @@ export function registerMondayHandlers(): void {
   ipcMain.handle('monday:disconnect', () => clearMondayConnection())
   ipcMain.handle('monday:fetchItemUpdates', (_event, args: unknown) => fetchItemUpdates(args))
   ipcMain.handle('monday:fetchDocs', () => fetchDocs())
+  // Why: public government data, so it needs neither the monday token nor a connection.
+  ipcMain.handle('monday:fetchTaiwanHolidays', () => getTaiwanHolidays())
   ipcMain.handle('monday:fetchDocContent', (_event, args: unknown) => fetchDocContent(args))
   ipcMain.handle('monday:updatePreferences', (_event, args: unknown) =>
     updateMondayPreferences(normalizePreferences(args))

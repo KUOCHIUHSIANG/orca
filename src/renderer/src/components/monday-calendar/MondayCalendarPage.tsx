@@ -20,6 +20,7 @@ import { MondayCalendarWorkspace } from './MondayCalendarWorkspace'
 import { MondaySettingsDialog } from './MondaySettingsDialog'
 import { useMondayCalendar } from './use-monday-calendar'
 import { useMondayDocs } from './use-monday-docs'
+import { useTaiwanHolidays } from './use-taiwan-holidays'
 
 const EMPTY_BOARD_SETTINGS: MondayBoardDisplaySettings = {}
 
@@ -59,6 +60,9 @@ export default function MondayCalendarPage(): React.JSX.Element {
   const docsKey = status?.docs.map((doc) => doc.objectId).join(',') ?? ''
   const docs = useMondayDocs(docsKey, connected && tab === 'docs')
   const { ensureLoaded } = calendar
+  const holidaysByDate = useTaiwanHolidays(
+    connected && tab === 'calendar' && status?.showTaiwanHolidays !== false
+  )
 
   useEffect(() => {
     if (connected && tab === 'calendar') {
@@ -147,6 +151,7 @@ export default function MondayCalendarPage(): React.JSX.Element {
         <MondayCalendarWorkspace
           cursor={cursor}
           items={items}
+          holidaysByDate={holidaysByDate}
           peopleById={peopleById}
           selectedPersonIds={selectedPersonIds}
           undatedExpanded={status.undatedExpanded}
@@ -162,6 +167,9 @@ export default function MondayCalendarPage(): React.JSX.Element {
           onDisconnect={calendar.disconnect}
           boards={boards}
           onBoardSettingsChange={(next) => calendar.updatePreferences({ boardSettings: next })}
+          onShowTaiwanHolidaysChange={(next) =>
+            calendar.updatePreferences({ showTaiwanHolidays: next })
+          }
         />
       ) : null}
     </main>

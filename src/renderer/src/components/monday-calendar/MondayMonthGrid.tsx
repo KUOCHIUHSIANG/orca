@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { getIntlLocale } from '@/i18n/i18n'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
+import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 import { ownerNamesForItem } from './monday-calendar-filter'
+import { MondayDayCell } from './MondayDayCell'
 import { MondayItemBar } from './MondayItemBar'
 import {
   buildMonthLayout,
@@ -15,6 +17,8 @@ import {
 // 2026-01-04 is a Sunday; the grid is Sunday-first.
 const SUNDAY_UTC_MS = Date.UTC(2026, 0, 4)
 const DAY_MS = 86_400_000
+
+const NO_HOLIDAYS: readonly TaiwanCalendarDay[] = []
 
 function isWeekendColumn(column: number): boolean {
   return column === 0 || column === 6
@@ -36,6 +40,7 @@ function MondayWeekRow(props: {
   striped: boolean
   cursor: MonthCursor
   today: string
+  holidaysByDate: ReadonlyMap<string, readonly TaiwanCalendarDay[]>
   peopleById: ReadonlyMap<string, string>
   selectedPersonIds: readonly string[] | null
   showOwnerNames: boolean
@@ -51,34 +56,16 @@ function MondayWeekRow(props: {
       )}
     >
       <div className="absolute inset-0 grid grid-cols-7" aria-hidden>
-        {week.days.map((day, index) => {
-          const outside = !isInMonth(day, props.cursor)
-          const weekend = isWeekendColumn(index)
-          return (
-            <div
-              key={day}
-              className={cn(
-                'px-1.5 pt-1',
-                index > 0 && 'border-l border-border',
-                // Why: a translucent wash (not opaque muted) so it still stacks on striped weeks.
-                weekend && 'bg-foreground/[0.045]'
-              )}
-            >
-              <span
-                className={cn(
-                  'inline-flex size-5 items-center justify-center rounded-full text-xs tabular-nums',
-                  day === props.today
-                    ? 'bg-primary font-semibold text-primary-foreground'
-                    : outside || weekend
-                      ? 'text-muted-foreground/60'
-                      : 'text-muted-foreground'
-                )}
-              >
-                {Number(day.slice(8))}
-              </span>
-            </div>
-          )
-        })}
+        {week.days.map((day, index) => (
+          <MondayDayCell
+            key={day}
+            day={day}
+            column={index}
+            outsideMonth={!isInMonth(day, props.cursor)}
+            today={day === props.today}
+            holidays={props.holidaysByDate.get(day) ?? NO_HOLIDAYS}
+          />
+        ))}
       </div>
       <div className="relative grid grid-cols-7 auto-rows-[22px] gap-y-0.5 pt-7 pb-1.5">
         {week.segments.map((segment) => (
@@ -102,6 +89,7 @@ function MondayWeekRow(props: {
 export function MondayMonthGrid(props: {
   cursor: MonthCursor
   items: readonly MondayCalendarItem[]
+  holidaysByDate: ReadonlyMap<string, readonly TaiwanCalendarDay[]>
   peopleById: ReadonlyMap<string, string>
   selectedPersonIds: readonly string[] | null
   selectedItemId: string | null
@@ -139,6 +127,7 @@ export function MondayMonthGrid(props: {
             striped={index % 2 === 1}
             cursor={props.cursor}
             today={today}
+            holidaysByDate={props.holidaysByDate}
             peopleById={props.peopleById}
             selectedPersonIds={props.selectedPersonIds}
             showOwnerNames={showOwnerNames}

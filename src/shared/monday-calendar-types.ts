@@ -90,6 +90,7 @@ export type MondayConnectionStatus = {
   boardSettings: MondayBoardDisplaySettings
   showDone: boolean
   undatedExpanded: boolean
+  showTaiwanHolidays: boolean
 }
 
 export type MondayErrorKind =
@@ -123,6 +124,7 @@ export type MondayPreferencesUpdate = {
   showDone?: boolean
   undatedExpanded?: boolean
   activeTab?: MondayPageTab
+  showTaiwanHolidays?: boolean
 }
 
 export type MondayDocListResult = { ok: true; docs: MondayDocSummary[] } | MondayFailure
