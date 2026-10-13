@@ -1188,6 +1188,75 @@
       }
     },
     "components": {
+      "todoPanel": {
+        "steps": {
+          "remove": "移除步驟"
+        },
+        "delete": {
+          "button": "刪除待辦",
+          "toast": "已刪除「{{value0}}」",
+          "undo": "復原"
+        },
+        "details": {
+          "title": "標題",
+          "clearDue": "清除到期日",
+          "notesPlaceholder": "新增備註",
+          "notes": "備註",
+          "stepsFailed": "無法載入步驟。",
+          "reminder": "提醒",
+          "created": "建立時間",
+          "save": "儲存"
+        },
+        "add": {
+          "dueDate": "到期日",
+          "label": "新增待辦",
+          "placeholder": "新增待辦，按 Enter 送出"
+        },
+        "connect": {
+          "changeClientId": "更換應用程式 ID",
+          "clientIdHelp": "來自你在 Microsoft Entra 註冊的應用程式。這是 ID，不是密碼。",
+          "clientIdLabel": "應用程式（用戶端）ID",
+          "description": "顯示你從手機新增的待辦（提醒事項裡的 Microsoft 帳號，或 To Do App）。登入憑證會加密儲存在這臺電腦。",
+          "guide": "設定說明",
+          "save": "儲存",
+          "signIn": "使用 Microsoft 登入",
+          "title": "連線 Microsoft To Do",
+          "waiting": "請在瀏覽器中完成登入…"
+        },
+        "due": {
+          "today": "今天",
+          "tomorrow": "明天"
+        },
+        "empty": "沒有待辦，太棒了。",
+        "failure": {
+          "api": "Microsoft 返回錯誤：{{value0}}",
+          "cancelled": "已取消登入。",
+          "invalidClientId": "這看起來不是應用程式 ID（xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。",
+          "network": "無法連線 Microsoft，請檢查網路連線。",
+          "notConfigured": "Microsoft 拒絕了這個應用程式註冊：{{value0}}",
+          "rateLimited": "Microsoft 正在限制請求次數，請稍後再試。",
+          "signedOut": "Microsoft 登入已過期，請重新登入。"
+        },
+        "group": {
+          "completed": "已完成",
+          "noDate": "沒有到期日",
+          "overdue": "已逾期",
+          "today": "今天",
+          "upcoming": "之後"
+        },
+        "list": "清單",
+        "more": "更多操作",
+        "refresh": "重新整理",
+        "row": {
+          "openWeb": "在 To Do 網頁版開啟",
+          "showDetails": "顯示詳情",
+          "hideDetails": "隱藏詳情",
+          "important": "重要",
+          "markDone": "標記為已完成",
+          "markOpen": "標記為未完成"
+        },
+        "signOut": "登出 Microsoft"
+      },
       "mondayCalendar": {
         "holidays": {
           "makeupWorkday": "補班",
@@ -13435,6 +13504,7 @@
             }
           },
           "index": {
+            "todos": "待辦",
             "70893f017b": "邊",
             "7b415c39e9": "頂端",
             "864111caa2": "活動欄位置",
