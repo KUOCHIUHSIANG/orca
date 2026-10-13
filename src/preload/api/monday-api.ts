@@ -8,6 +8,7 @@ import type {
   MondayItemUpdatesResult,
   MondayPreferencesUpdate
 } from '../../shared/monday-calendar-types'
+import type { TaiwanHolidaysResult } from '../../shared/taiwan-holiday-types'
 
 export type MondayApi = {
   status: () => Promise<MondayConnectionStatus>
@@ -18,4 +19,5 @@ export type MondayApi = {
   fetchItemUpdates: (args: { itemId: string }) => Promise<MondayItemUpdatesResult>
   fetchDocs: () => Promise<MondayDocListResult>
   fetchDocContent: (args: { docId: string }) => Promise<MondayDocContentResult>
+  fetchTaiwanHolidays: () => Promise<TaiwanHolidaysResult>
 }

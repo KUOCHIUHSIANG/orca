@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { LoaderCircle, Unlink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogContent,
@@ -27,6 +28,7 @@ export function MondaySettingsDialog(props: {
   onDisconnect: () => Promise<void>
   boards: readonly MondayBoardSummary[]
   onBoardSettingsChange: (settings: MondayBoardDisplaySettings) => void
+  onShowTaiwanHolidaysChange: (show: boolean) => void
 }): React.JSX.Element {
   const mountedRef = useMountedRef()
   const [disconnecting, setDisconnecting] = useState(false)
@@ -102,6 +104,31 @@ export function MondaySettingsDialog(props: {
               </Button>
             }
           />
+        ) : null}
+        {props.open ? (
+          <section className="border-t border-border pt-4">
+            <label className="flex cursor-pointer items-start gap-2.5">
+              <Switch
+                className="mt-0.5"
+                checked={props.status.showTaiwanHolidays}
+                onCheckedChange={props.onShowTaiwanHolidaysChange}
+              />
+              <span className="space-y-0.5">
+                <span className="block text-sm font-medium">
+                  {translate(
+                    'auto.components.mondayCalendar.holidays.toggle',
+                    'Show Taiwan public holidays'
+                  )}
+                </span>
+                <span className="block text-xs text-muted-foreground">
+                  {translate(
+                    'auto.components.mondayCalendar.holidays.source',
+                    'From the government office calendar (New Taipei open data), refreshed weekly.'
+                  )}
+                </span>
+              </span>
+            </label>
+          </section>
         ) : null}
         {props.open ? (
           <MondayBoardDisplaySection

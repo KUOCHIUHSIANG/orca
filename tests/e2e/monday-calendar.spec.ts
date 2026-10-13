@@ -7,6 +7,7 @@ import type {
   MondayDocSummary,
   MondayUpdate
 } from '../../src/shared/monday-calendar-types'
+import type { TaiwanCalendarDay } from '../../src/shared/taiwan-holiday-types'
 
 function isoDay(offsetDays: number): string {
   const date = new Date()
@@ -136,6 +137,22 @@ const UPDATES: MondayUpdate[] = [
   }
 ]
 
+function saturdayThisMonthOtherThanToday(): string {
+  const today = new Date()
+  for (let day = 1; day <= 28; day += 1) {
+    const date = new Date(today.getFullYear(), today.getMonth(), day)
+    if (date.getDay() === 6 && day !== today.getDate()) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    }
+  }
+  throw new Error('no Saturday found')
+}
+
+const HOLIDAYS: TaiwanCalendarDay[] = [
+  { date: isoDay(0), name: '國慶日', kind: 'holiday' },
+  { date: saturdayThisMonthOtherThanToday(), name: null, kind: 'makeup-workday' }
+]
+
 const DOCS: MondayDocSummary[] = [
   {
     id: '42',
@@ -171,6 +188,7 @@ async function stubMondayIpc(
         'monday:fetchItemUpdates',
         'monday:fetchDocs',
         'monday:fetchDocContent',
+        'monday:fetchTaiwanHolidays',
         'monday:updatePreferences'
       ]) {
         ipcMain.removeHandler(channel)
@@ -180,9 +198,14 @@ async function stubMondayIpc(
       ipcMain.handle('monday:fetchItemUpdates', () => ({ ok: true, updates: fixture.updates }))
       ipcMain.handle('monday:fetchDocs', () => ({ ok: true, docs: fixture.docs }))
       ipcMain.handle('monday:fetchDocContent', () => ({ ok: true, markdown: fixture.markdown }))
+      ipcMain.handle('monday:fetchTaiwanHolidays', () => ({
+        ok: true,
+        days: fixture.holidays,
+        fetchedAt: 0
+      }))
       ipcMain.handle('monday:updatePreferences', () => undefined)
     },
-    { status, snapshot, updates, docs: DOCS, markdown: DOC_MARKDOWN }
+    { status, snapshot, updates, docs: DOCS, markdown: DOC_MARKDOWN, holidays: HOLIDAYS }
   )
 }
 
@@ -192,6 +215,7 @@ const CONNECTED: MondayConnectionStatus = {
   boardIds: ['1'],
   docs: [{ objectId: '100', url: 'https://example.monday.com/docs/100' }],
   activeTab: 'calendar',
+  showTaiwanHolidays: true,
   selectedPersonIds: null,
   selectedBoardIds: null,
   // Why: mirrors the weekly-report board setup — everyone, done included, last two weeks.
@@ -219,6 +243,9 @@ test('Monday calendar filters tasks and opens a read-only detail panel', async (
   })
   await expect(main.getByRole('button', { name: /SEO audit/ })).toBeVisible()
   await expect(main.getByRole('button', { name: /Old done task/ })).toHaveCount(0)
+  // Taiwan government calendar: a named day off and a Saturday make-up workday.
+  await expect(main.getByText('國慶日', { exact: true })).toBeVisible()
+  await expect(main.getByText('Make-up workday', { exact: true })).toBeVisible()
   await expect(main.getByRole('button', { name: /Weekly report/ })).toBeVisible()
 
   await main.getByRole('switch', { name: 'Show done' }).click()
