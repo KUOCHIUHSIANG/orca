@@ -24,6 +24,8 @@ const RULES = [
   { en: /\b(sign(ed|s|ing)?|log(ged|s|ging)?) out\b/i, from: /退出/g, to: '登出' },
   { en: /\b(quit(s|ting)?|exit(s|ed|ing)?)\b/i, from: /退出/g, to: '結束' },
   { en: /\bvisit/i, from: /訪問/g, to: '造訪' },
+  // OpenCC turns 文件 into 檔案 (file); a written document such as a monday doc stays 文件.
+  { en: /\bdocs?\b/i, from: /檔案/g, to: '文件' },
   { en: /\bund(o|one)\b/i, from: /撤銷/g, to: '復原' },
   { en: /\bitems?\b/i, unless: /\bprojects?\b/i, from: /專案/g, to: '項目' },
   {
