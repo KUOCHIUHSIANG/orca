@@ -1,6 +1,6 @@
 import { getMainHttpClient } from '../network/http-client'
 import type { MondayErrorKind } from '../../shared/monday-calendar-types'
-import { isRecord } from './monday-json-guards'
+import { isRecord } from '../untrusted-json-guards'
 
 const MONDAY_API_URL = 'https://api.monday.com/v2'
 const REQUEST_TIMEOUT_MS = 30_000

@@ -1,6 +1,6 @@
 import type { MondayDocSummary } from '../../shared/monday-calendar-types'
 import { MondayApiError, type MondayQueryRunner } from './monday-graphql-client'
-import { asArray, asString, isRecord } from './monday-json-guards'
+import { asArray, asString, isRecord } from '../untrusted-json-guards'
 
 const DOC_LIST_QUERY = `query ($objectIds: [ID!]) {
   docs(object_ids: $objectIds) { id object_id name url updated_at }
