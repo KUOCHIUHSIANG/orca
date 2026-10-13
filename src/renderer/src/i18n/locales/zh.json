@@ -1281,6 +1281,103 @@
         "moreHosts_one": "还有 {{count}} 个主机，请按名称搜索。",
         "moreHosts_other": "还有 {{count}} 个主机，请按名称搜索。"
       },
+      "mondayCalendar": {
+        "tabs": {
+          "calendar": "行事历",
+          "docs": "文件"
+        },
+        "docs": {
+          "emptyTitle": "还没有文件",
+          "emptyDescription": "在 Monday 设置中贴上文件网址（…/docs/123…），就能在这里阅读。",
+          "updated": "{{value0}}编辑",
+          "loading": "正在加载文件…"
+        },
+        "boardSettings": {
+          "range": "时间范围",
+          "allTime": "全部时间",
+          "thisWeek": "本周",
+          "recentWeeks": "最近 {{value0}} 个星期",
+          "includeDone": "此看板的已完成任务一律显示",
+          "title": "看板显示",
+          "description": "可以只显示看板的某个群组或最近几周，或不论负责人是谁都显示它的任务。",
+          "group": "群组",
+          "allGroups": "所有群组",
+          "ignorePeople": "显示此看板所有人的任务，不套用人员筛选"
+        },
+        "boards": {
+          "label": "看板",
+          "all": "所有看板"
+        },
+        "undated": {
+          "title": "没有日期"
+        },
+        "panel": {
+          "updates": "讨论",
+          "refreshUpdates": "刷新讨论",
+          "loadingUpdates": "正在加载讨论…",
+          "noUpdates": "还没有讨论。",
+          "close": "关闭"
+        },
+        "failure": {
+          "docNotFound": "找不到文件 {{value0}}，或此密钥没有访问权限。",
+          "notConnected": "请输入 monday.com API 密钥。",
+          "unauthorized": "monday.com 拒绝了此 API 密钥，请确认密钥仍然有效。",
+          "rateLimited": "已达到 monday.com API 使用上限，请稍后再试。",
+          "boardNotFound": "找不到看板 {{value0}}，或此密钥没有访问权限。",
+          "boardMissing": "请至少输入一个看板或文件网址。",
+          "network": "无法连接 monday.com，请检查网络连接。",
+          "api": "monday.com 返回错误：{{value0}}"
+        },
+        "connect": {
+          "unrecognized": "不是 monday 看板或文件网址：{{value0}}",
+          "tokenLabel": "API 密钥",
+          "tokenHelp": "在 monday.com 点击头像 → Developers → API token 取得。密钥会加密保存在这台电脑上。",
+          "tokenKeepPlaceholder": "已保存，留空则继续使用",
+          "boardsLabel": "看板与文件",
+          "boardsHelp": "每行一个看板或文件的网址（或只贴 ID）。看板显示在行事历，文件显示在文件分页；子任务会自动一起读取。",
+          "tokenDocs": "如何取得密钥"
+        },
+        "settings": {
+          "disconnectFailed": "无法删除已保存的 monday.com 密钥。",
+          "title": "Monday 设置",
+          "connectedAs": "正在使用 {{value0}} 的 API 密钥读取看板。仅供查看，不会修改 monday.com 上的任何内容。",
+          "description": "仅供查看，不会修改 monday.com 上的任何内容。",
+          "save": "保存",
+          "disconnect": "断开连接"
+        },
+        "people": {
+          "label": "人员",
+          "others": "其他人员",
+          "everyone": "所有人",
+          "search": "搜索人员...",
+          "empty": "没有符合的人员。"
+        },
+        "toolbar": {
+          "previousMonth": "上个月",
+          "nextMonth": "下个月",
+          "today": "今天",
+          "showDone": "显示已完成",
+          "updatedJustNow": "刚刚更新",
+          "updated": "{{value0}}更新",
+          "refresh": "刷新",
+          "settings": "Monday 设置"
+        },
+        "item": {
+          "subitemOf": "{{value0}} 的子任务",
+          "board": "看板",
+          "status": "状态",
+          "owners": "负责人",
+          "dates": "日期",
+          "open": "在 Monday 中打开"
+        },
+        "page": {
+          "openSettings": "打开设置",
+          "retry": "重试",
+          "connectTitle": "连接 Monday",
+          "connectDescription": "使用 monday.com 个人 API 密钥读取看板，在行事历上显示每个任务的开始与结束日期。仅供查看，不会修改 monday.com 上的任何内容。",
+          "connect": "连接"
+        }
+      },
       "CodexRestartChip": {
         "c72a5fb234": "重新启动",
         "9263e75f49": "Codex 正在使用之前的账户",
@@ -5558,6 +5655,7 @@
           "addProject": "添加项目"
         },
         "SidebarNav": {
+          "monday": "Monday",
           "80611a8b10": "搜索",
           "0c3395fd32": "搜索工作树和浏览器选项卡",
           "c86d83b5c3": "新功能",

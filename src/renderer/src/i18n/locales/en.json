@@ -1479,6 +1479,103 @@
         "moreHosts_one": "{{count}} more host. Search by name to find it.",
         "moreHosts_other": "{{count}} more hosts. Search by name to find one."
       },
+      "mondayCalendar": {
+        "tabs": {
+          "calendar": "Calendar",
+          "docs": "Docs"
+        },
+        "docs": {
+          "emptyTitle": "No docs yet",
+          "emptyDescription": "Paste a monday doc URL (…/docs/123…) into Monday settings to read it here.",
+          "updated": "Edited {{value0}}",
+          "loading": "Loading doc…"
+        },
+        "boardSettings": {
+          "range": "Time range",
+          "allTime": "All time",
+          "thisWeek": "This week",
+          "recentWeeks": "Last {{value0}} weeks",
+          "includeDone": "Always show done tasks on this board",
+          "title": "Board display",
+          "description": "Limit a board to one group or recent weeks, or keep showing its tasks whoever they belong to.",
+          "group": "Group",
+          "allGroups": "All groups",
+          "ignorePeople": "Show everyone’s tasks on this board, ignoring the people filter"
+        },
+        "boards": {
+          "label": "Boards",
+          "all": "All boards"
+        },
+        "undated": {
+          "title": "No date"
+        },
+        "panel": {
+          "updates": "Updates",
+          "refreshUpdates": "Refresh updates",
+          "loadingUpdates": "Loading updates…",
+          "noUpdates": "No updates yet.",
+          "close": "Close"
+        },
+        "failure": {
+          "docNotFound": "Doc {{value0}} was not found, or this token cannot access it.",
+          "notConnected": "Enter a monday.com API token.",
+          "unauthorized": "monday.com rejected the API token. Check that it is still valid.",
+          "rateLimited": "The monday.com API limit was reached. Try again later.",
+          "boardNotFound": "Board {{value0}} was not found, or this token cannot access it.",
+          "boardMissing": "Enter at least one board or doc URL.",
+          "network": "Could not reach monday.com. Check your network connection.",
+          "api": "monday.com returned an error: {{value0}}"
+        },
+        "connect": {
+          "unrecognized": "Not a monday board or doc URL: {{value0}}",
+          "tokenLabel": "API token",
+          "tokenHelp": "In monday.com, open your avatar → Developers → API token. The token is encrypted on this computer.",
+          "tokenKeepPlaceholder": "Saved — leave empty to keep it",
+          "boardsLabel": "Boards and docs",
+          "boardsHelp": "One board or doc URL (or just its ID) per line. Boards go on the calendar and docs in the Docs tab; subitems are included automatically.",
+          "tokenDocs": "How to get a token"
+        },
+        "settings": {
+          "disconnectFailed": "Could not remove the saved monday.com token.",
+          "title": "Monday settings",
+          "connectedAs": "Reading boards with {{value0}}’s API token. View only — nothing is changed in monday.com.",
+          "description": "View only — nothing is changed in monday.com.",
+          "save": "Save",
+          "disconnect": "Disconnect"
+        },
+        "people": {
+          "label": "People",
+          "others": "Other people",
+          "everyone": "Everyone",
+          "search": "Search people...",
+          "empty": "No matching people."
+        },
+        "toolbar": {
+          "previousMonth": "Previous month",
+          "nextMonth": "Next month",
+          "today": "Today",
+          "showDone": "Show done",
+          "updatedJustNow": "Updated just now",
+          "updated": "Updated {{value0}}",
+          "refresh": "Refresh",
+          "settings": "Monday settings"
+        },
+        "item": {
+          "subitemOf": "Subitem of {{value0}}",
+          "board": "Board",
+          "status": "Status",
+          "owners": "Owners",
+          "dates": "Dates",
+          "open": "Open in Monday"
+        },
+        "page": {
+          "openSettings": "Open settings",
+          "retry": "Retry",
+          "connectTitle": "Connect Monday",
+          "connectDescription": "Reads your monday.com boards with a personal API token and shows each task’s start and end dates on a calendar. View only — nothing is changed in monday.com.",
+          "connect": "Connect"
+        }
+      },
       "BrowserCookieImportDisclosure": {
         "title": "Google logins aren't imported",
         "description": "Sign in to Google directly in Orca."
@@ -5865,6 +5962,7 @@
           "addProject": "Add project"
         },
         "SidebarNav": {
+          "monday": "Monday",
           "80611a8b10": "Search",
           "0c3395fd32": "Search worktrees and browser tabs",
           "c86d83b5c3": "New",
