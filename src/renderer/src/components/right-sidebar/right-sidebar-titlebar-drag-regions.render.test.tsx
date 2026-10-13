@@ -249,7 +249,8 @@ describe('rendered right sidebar titlebar drag regions', () => {
 
     expectNoDrag(buttonOpeningTag(markup, 'Explorer'))
     expectNoDrag(buttonOpeningTag(markup, 'Source Control'))
-    expectNoDrag(buttonOpeningTag(markup, 'Checks'))
+    // Fork: the To Do tab occupies the former Checks slot.
+    expectNoDrag(buttonOpeningTag(markup, 'To Do'))
     expect(buttonOpeningTag(markup, 'Toggle right sidebar')).toContain('sidebar-toggle')
     expect(markup).toContain(RIGHT_SIDEBAR_HEADER_NO_DRAG_CLASS_NAME)
   })
@@ -310,7 +311,8 @@ describe('rendered right sidebar titlebar drag regions', () => {
 
     expectNoDrag(buttonOpeningTag(markup, 'Explorer'))
     expectNoDrag(buttonOpeningTag(markup, 'Source Control'))
-    expectNoDrag(buttonOpeningTag(markup, 'Checks'))
+    // Fork: the To Do tab occupies the former Checks slot.
+    expectNoDrag(buttonOpeningTag(markup, 'To Do'))
     expect(buttonOpeningTag(markup, 'Toggle right sidebar')).toContain('sidebar-toggle')
   })
 

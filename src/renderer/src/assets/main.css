@@ -2079,6 +2079,30 @@ html.native-shell .app-layout {
   }
 }
 
+/* Why: line-through can't animate, so a completed to-do draws its strike as a growing line;
+   clone repeats it on every wrapped line. */
+[data-todo-title] {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 60%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 300ms ease-out,
+    color 300ms ease-out;
+}
+
+[data-todo-title][data-done='true'] {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-todo-title] {
+    transition: none;
+  }
+}
+
 .sidebar.collapsed {
   width: 0;
   border-right: none;

@@ -1281,6 +1281,75 @@
         "moreHosts_one": "还有 {{count}} 个主机，请按名称搜索。",
         "moreHosts_other": "还有 {{count}} 个主机，请按名称搜索。"
       },
+      "todoPanel": {
+        "steps": {
+          "remove": "移除步骤"
+        },
+        "delete": {
+          "button": "删除待办",
+          "toast": "已删除「{{value0}}」",
+          "undo": "复原"
+        },
+        "details": {
+          "title": "标题",
+          "clearDue": "清除到期日",
+          "notesPlaceholder": "新增备注",
+          "notes": "备注",
+          "stepsFailed": "无法加载步骤。",
+          "reminder": "提醒",
+          "created": "建立时间",
+          "save": "保存"
+        },
+        "add": {
+          "dueDate": "到期日",
+          "label": "新增待办",
+          "placeholder": "新增待办，按 Enter 送出"
+        },
+        "connect": {
+          "changeClientId": "更换应用程序 ID",
+          "clientIdHelp": "来自你在 Microsoft Entra 注册的应用程序。这是 ID，不是密码。",
+          "clientIdLabel": "应用程序（客户端）ID",
+          "description": "显示你从手机新增的待办（提醒事项里的 Microsoft 账号，或 To Do App）。登录凭证会加密保存在这台电脑。",
+          "guide": "设置说明",
+          "save": "保存",
+          "signIn": "使用 Microsoft 登录",
+          "title": "连接 Microsoft To Do",
+          "waiting": "请在浏览器中完成登录…"
+        },
+        "due": {
+          "today": "今天",
+          "tomorrow": "明天"
+        },
+        "empty": "没有待办，太棒了。",
+        "failure": {
+          "api": "Microsoft 返回错误：{{value0}}",
+          "cancelled": "已取消登录。",
+          "invalidClientId": "这看起来不是应用程序 ID（xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。",
+          "network": "无法连接 Microsoft，请检查网络连接。",
+          "notConfigured": "Microsoft 拒绝了这个应用程序注册：{{value0}}",
+          "rateLimited": "Microsoft 正在限制请求次数，请稍后再试。",
+          "signedOut": "Microsoft 登录已过期，请重新登录。"
+        },
+        "group": {
+          "completed": "已完成",
+          "noDate": "没有到期日",
+          "overdue": "已逾期",
+          "today": "今天",
+          "upcoming": "之后"
+        },
+        "list": "清单",
+        "more": "更多操作",
+        "refresh": "刷新",
+        "row": {
+          "openWeb": "在 To Do 网页版打开",
+          "showDetails": "显示详情",
+          "hideDetails": "隐藏详情",
+          "important": "重要",
+          "markDone": "标记为已完成",
+          "markOpen": "标记为未完成"
+        },
+        "signOut": "登出 Microsoft"
+      },
       "mondayCalendar": {
         "holidays": {
           "makeupWorkday": "补班",
@@ -13947,6 +14016,7 @@
             }
           },
           "index": {
+            "todos": "待办",
             "70893f017b": "边",
             "7b415c39e9": "顶部",
             "864111caa2": "活动栏位置",

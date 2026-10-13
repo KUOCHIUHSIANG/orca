@@ -17,6 +17,7 @@ import { registerLinearHandlers } from '../linear'
 import { registerJiraHandlers } from '../jira'
 import { registerJiraIssueSummaryGenerationHandlers } from '../jira-issue-summary-generation'
 import { registerMondayHandlers } from '../monday'
+import { registerMicrosoftTodoHandlers } from '../microsoft-todo'
 import { registerBitbucketHandlers } from '../bitbucket'
 import { registerFeedbackHandlers } from '../feedback'
 import { registerCrashReportingHandlers } from '../crash-reporting'
@@ -202,6 +203,7 @@ export function registerCoreHandlers(
   registerJiraHandlers()
   registerJiraIssueSummaryGenerationHandlers(store, commitMessageAgentEnv)
   registerMondayHandlers()
+  registerMicrosoftTodoHandlers()
   registerBitbucketHandlers()
   registerFeedbackHandlers()
   if (crashReports) {
