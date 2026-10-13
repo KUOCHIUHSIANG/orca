@@ -1188,6 +1188,103 @@
       }
     },
     "components": {
+      "mondayCalendar": {
+        "tabs": {
+          "calendar": "行事曆",
+          "docs": "文件"
+        },
+        "docs": {
+          "emptyTitle": "還沒有文件",
+          "emptyDescription": "在 Monday 設定中貼上文件網址（…/docs/123…），就能在這裡閱讀。",
+          "updated": "{{value0}}編輯",
+          "loading": "正在載入文件…"
+        },
+        "boardSettings": {
+          "range": "時間範圍",
+          "allTime": "全部時間",
+          "thisWeek": "本週",
+          "recentWeeks": "最近 {{value0}} 個星期",
+          "includeDone": "此看板的已完成任務一律顯示",
+          "title": "看板顯示",
+          "description": "可以只顯示看板的某個群組或最近幾週，或不論負責人是誰都顯示它的任務。",
+          "group": "群組",
+          "allGroups": "所有群組",
+          "ignorePeople": "顯示此看板所有人的任務，不套用人員篩選"
+        },
+        "boards": {
+          "label": "看板",
+          "all": "所有看板"
+        },
+        "undated": {
+          "title": "沒有日期"
+        },
+        "panel": {
+          "updates": "討論",
+          "refreshUpdates": "重新整理討論",
+          "loadingUpdates": "正在載入討論…",
+          "noUpdates": "還沒有討論。",
+          "close": "關閉"
+        },
+        "failure": {
+          "docNotFound": "找不到文件 {{value0}}，或此金鑰沒有存取權限。",
+          "notConnected": "請輸入 monday.com API 金鑰。",
+          "unauthorized": "monday.com 拒絕了此 API 金鑰，請確認金鑰仍然有效。",
+          "rateLimited": "已達到 monday.com API 使用上限，請稍後再試。",
+          "boardNotFound": "找不到看板 {{value0}}，或此金鑰沒有存取權限。",
+          "boardMissing": "請至少輸入一個看板或文件網址。",
+          "network": "無法連線 monday.com，請檢查網路連線。",
+          "api": "monday.com 返回錯誤：{{value0}}"
+        },
+        "connect": {
+          "unrecognized": "不是 monday 看板或文件網址：{{value0}}",
+          "tokenLabel": "API 金鑰",
+          "tokenHelp": "在 monday.com 點選頭像 → Developers → API token 取得。金鑰會加密儲存在這臺電腦上。",
+          "tokenKeepPlaceholder": "已儲存，留空則繼續使用",
+          "boardsLabel": "看板與文件",
+          "boardsHelp": "每行一個看板或文件的網址（或只貼 ID）。看板顯示在行事曆，文件顯示在文件分頁；子任務會自動一起讀取。",
+          "tokenDocs": "如何取得金鑰"
+        },
+        "settings": {
+          "disconnectFailed": "無法刪除已儲存的 monday.com 金鑰。",
+          "title": "Monday 設定",
+          "connectedAs": "正在使用 {{value0}} 的 API 金鑰讀取看板。僅供檢視，不會修改 monday.com 上的任何內容。",
+          "description": "僅供檢視，不會修改 monday.com 上的任何內容。",
+          "save": "儲存",
+          "disconnect": "中斷連線"
+        },
+        "people": {
+          "label": "人員",
+          "others": "其他人員",
+          "everyone": "所有人",
+          "search": "搜尋人員...",
+          "empty": "沒有符合的人員。"
+        },
+        "toolbar": {
+          "previousMonth": "上個月",
+          "nextMonth": "下個月",
+          "today": "今天",
+          "showDone": "顯示已完成",
+          "updatedJustNow": "剛剛更新",
+          "updated": "{{value0}}更新",
+          "refresh": "重新整理",
+          "settings": "Monday 設定"
+        },
+        "item": {
+          "subitemOf": "{{value0}} 的子任務",
+          "board": "看板",
+          "status": "狀態",
+          "owners": "負責人",
+          "dates": "日期",
+          "open": "在 Monday 中開啟"
+        },
+        "page": {
+          "openSettings": "開啟設定",
+          "retry": "重試",
+          "connectTitle": "連線 Monday",
+          "connectDescription": "使用 monday.com 個人 API 金鑰讀取看板，在行事曆上顯示每個任務的開始與結束日期。僅供檢視，不會修改 monday.com 上的任何內容。",
+          "connect": "連線"
+        }
+      },
       "CodexRestartChip": {
         "c72a5fb234": "重新啟動",
         "9263e75f49": "Codex 正在使用之前的帳號",
@@ -5389,6 +5486,7 @@
           "addProject": "新增專案"
         },
         "SidebarNav": {
+          "monday": "Monday",
           "80611a8b10": "搜尋",
           "0c3395fd32": "搜尋工作樹和瀏覽器分頁",
           "c86d83b5c3": "新功能",
