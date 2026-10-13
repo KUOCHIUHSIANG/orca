@@ -22,6 +22,7 @@ import { ExternalFileChangeBanner } from './ExternalFileChangeBanner'
 import type { useMarkdownDocuments } from './useMarkdownDocuments'
 import { EditorMarkdownFileSurface } from './EditorMarkdownFileSurface'
 import type { MarkdownRenderState } from './markdown-render-mode'
+import { canUseChangesModeForFile } from './editor-panel-file-mode'
 
 const noopEditorContentChange = (_content: string): void => {}
 const noopEditorSave = async (_content: string): Promise<boolean> => false
@@ -248,6 +249,12 @@ export function EditorEditFileSurface({
             : undefined
         }
         markdownDocuments={isMarkdown ? markdownDocuments.markdownDocuments : undefined}
+        // Why: conflict markers would all read as added lines, and live-tail logs churn every line.
+        gitChangeGutterEnabled={
+          canUseChangesModeForFile(activeFile) &&
+          activeFile.liveTail !== true &&
+          activeFile.conflict === undefined
+        }
       />
     </RecoverableRenderErrorBoundary>
   )

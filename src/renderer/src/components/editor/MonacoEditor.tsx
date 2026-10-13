@@ -26,6 +26,7 @@ import { useDocumentDarkTheme } from '@/hooks/use-document-dark-theme'
 import { snapshotMonacoViewState } from './monaco-view-state-persistence'
 import { MonacoMarkdownAnnotationOverlay } from './MonacoMarkdownAnnotationOverlay'
 import { MonacoInlineBlame } from './inline-blame/MonacoInlineBlame'
+import { MonacoGitChangeGutter } from './git-change-gutter/MonacoGitChangeGutter'
 
 type MonacoEditorProps = {
   fileId: string
@@ -49,6 +50,7 @@ type MonacoEditorProps = {
   readOnly?: boolean
   liveTail?: boolean
   autoHeight?: boolean
+  gitChangeGutterEnabled?: boolean
 }
 
 export default function MonacoEditor({
@@ -71,7 +73,8 @@ export default function MonacoEditor({
   inlineBlameEnabled = false,
   readOnly = false,
   liveTail = false,
-  autoHeight = false
+  autoHeight = false,
+  gitChangeGutterEnabled = false
 }: MonacoEditorProps): React.JSX.Element {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement | null>(null)
@@ -339,6 +342,16 @@ export default function MonacoEditor({
         filePath={filePath}
         relativePath={relativePath}
       />
+      {gitChangeGutterEnabled && mountedEditor && worktreeId && (
+        <MonacoGitChangeGutter
+          editorInstance={mountedEditor}
+          fileId={fileId}
+          filePath={filePath}
+          relativePath={relativePath}
+          worktreeId={worktreeId}
+          readOnly={readOnly}
+        />
+      )}
     </div>
   )
 }

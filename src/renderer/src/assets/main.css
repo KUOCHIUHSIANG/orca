@@ -2555,6 +2555,70 @@ html.native-shell .app-layout {
   opacity: 0.92;
 }
 
+/* ── Uncommitted-change gutter (git-change-gutter/) ─────────────── */
+
+/* Why: Monaco's folding toggle ignores the first 4px of its lane, so a 4px-wide
+   marker never fires both actions; z-index keeps it above the folding icon. */
+.monaco-editor .orca-git-change-marker {
+  width: 4px !important;
+  margin-left: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.monaco-editor .orca-git-change-added {
+  border-left: 3px solid var(--git-decoration-added);
+}
+
+.monaco-editor .orca-git-change-modified {
+  border-left: 3px solid var(--git-decoration-modified);
+}
+
+.monaco-editor .orca-git-change-deleted::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid var(--git-decoration-deleted);
+  pointer-events: none;
+}
+
+.monaco-editor .orca-git-change-deleted-top::after {
+  top: 0;
+  bottom: auto;
+}
+
+.monaco-editor .orca-git-change-peek {
+  position: absolute;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-top: 1px solid var(--git-decoration-modified);
+  border-bottom: 1px solid var(--git-decoration-modified);
+  background: var(--editor-surface);
+}
+
+.monaco-editor .orca-git-change-peek[data-kind='added'] {
+  border-color: var(--git-decoration-added);
+}
+
+.monaco-editor .orca-git-change-peek[data-kind='deleted'] {
+  border-color: var(--git-decoration-deleted);
+}
+
+.monaco-editor .orca-git-change-peek-header {
+  flex-shrink: 0;
+}
+
+.monaco-editor .orca-git-change-peek-body {
+  flex: 1;
+  min-height: 0;
+}
+
 /* Why: Monaco's find-widget button tooltips (Close, Find in Selection, etc.)
    render inside a `.context-view` wrapper → `.workbench-hover-container` →
    `.workbench-hover.compact`, positioned above the target button. The wrapper's

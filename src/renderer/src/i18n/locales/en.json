@@ -16046,6 +16046,14 @@
           "7dffb0f563": "Binary file",
           "54e0035b15": "Loading diff..."
         },
+        "GitChangePeekHeader": {
+          "457d2979e3": "Uncommitted changes",
+          "786781f46d": "{{value0}} of {{value1}}",
+          "48cca39ed8": "Previous change",
+          "d3d50ef92d": "Next change",
+          "29fd43681e": "Close",
+          "ca3f71d030": "Revert change"
+        },
         "CodeBlockCopyButton": {
           "28921f5bf9": "Copied",
           "1f9f4def45": "Copy code"
