@@ -4,7 +4,7 @@ import type {
   MondayUpdateEntry
 } from '../../shared/monday-calendar-types'
 import type { MondayQueryRunner } from './monday-graphql-client'
-import { asArray, asString, isRecord } from './monday-json-guards'
+import { asArray, asString, isRecord } from '../untrusted-json-guards'
 
 const UPDATES_LIMIT = 50
 const ENTRY_FIELDS = 'id body created_at creator { name } assets { id name public_url }'
