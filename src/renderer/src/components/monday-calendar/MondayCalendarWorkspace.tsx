@@ -3,6 +3,7 @@ import {
   isDatedMondayItem,
   type MondayCalendarItem
 } from '../../../../shared/monday-calendar-types'
+import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 import { ownerNamesForItem } from './monday-calendar-filter'
 import type { MonthCursor } from './monday-month-layout'
 import { MondayItemPanel } from './MondayItemPanel'
@@ -12,6 +13,7 @@ import { MondayUndatedSection } from './MondayUndatedSection'
 export function MondayCalendarWorkspace(props: {
   cursor: MonthCursor
   items: readonly MondayCalendarItem[]
+  holidaysByDate: ReadonlyMap<string, readonly TaiwanCalendarDay[]>
   peopleById: ReadonlyMap<string, string>
   selectedPersonIds: readonly string[] | null
   undatedExpanded: boolean
@@ -68,6 +70,7 @@ export function MondayCalendarWorkspace(props: {
         <MondayMonthGrid
           cursor={props.cursor}
           items={props.items}
+          holidaysByDate={props.holidaysByDate}
           peopleById={props.peopleById}
           selectedPersonIds={props.selectedPersonIds}
           selectedItemId={selectedItem?.id ?? null}
