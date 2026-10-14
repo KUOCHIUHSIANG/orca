@@ -36,7 +36,6 @@ function useWeekdayLabels(): string[] {
 
 function MondayWeekRow(props: {
   week: MondayCalendarWeek
-  /** Alternate weeks get a faint band so multi-day bars read as belonging to their row. */
   striped: boolean
   cursor: MonthCursor
   today: string
@@ -49,12 +48,7 @@ function MondayWeekRow(props: {
 }): React.JSX.Element {
   const { week } = props
   return (
-    <div
-      className={cn(
-        'relative min-h-24 shrink-0 grow border-b border-border',
-        props.striped && 'bg-foreground/[0.035]'
-      )}
-    >
+    <div className="relative min-h-24 shrink-0 grow border-b border-border">
       <div className="absolute inset-0 grid grid-cols-7" aria-hidden>
         {week.days.map((day, index) => (
           <MondayDayCell
@@ -63,6 +57,7 @@ function MondayWeekRow(props: {
             column={index}
             outsideMonth={!isInMonth(day, props.cursor)}
             today={day === props.today}
+            striped={props.striped}
             holidays={props.holidaysByDate.get(day) ?? NO_HOLIDAYS}
           />
         ))}
