@@ -246,6 +246,23 @@ test('Monday calendar filters tasks and opens a read-only detail panel', async (
   // Taiwan government calendar: a named day off and a Saturday make-up workday.
   await expect(main.getByText('國慶日', { exact: true })).toBeVisible()
   await expect(main.getByText('Make-up workday', { exact: true })).toBeVisible()
+  // Holidays are green and weekends gray, each one shade in every week: the layers (cell plus
+  // week row) must not differ between striped and plain weeks, or the band would stack under.
+  const dayOffShades = await main.locator('[data-day-off]').evaluateAll((cells) => {
+    const shades: Record<string, string[]> = {}
+    for (const cell of cells) {
+      const layers: string[] = []
+      for (let node: Element | null = cell; node && layers.length < 3; node = node.parentElement) {
+        layers.push(getComputedStyle(node).backgroundColor)
+      }
+      const kind = cell.getAttribute('data-day-off') ?? ''
+      shades[kind] = [...new Set([...(shades[kind] ?? []), layers.join(' / ')])]
+    }
+    return shades
+  })
+  expect(dayOffShades.holiday).toHaveLength(1)
+  expect(dayOffShades.weekend).toHaveLength(1)
+  expect(dayOffShades.holiday[0]).not.toBe(dayOffShades.weekend[0])
   await expect(main.getByRole('button', { name: /Weekly report/ })).toBeVisible()
 
   await main.getByRole('switch', { name: 'Show done' }).click()
