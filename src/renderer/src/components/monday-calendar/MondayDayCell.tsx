@@ -28,6 +28,8 @@ export function MondayDayCell(props: {
   column: number
   outsideMonth: boolean
   today: boolean
+  /** Alternate weeks get a faint band so multi-day bars read as belonging to their row. */
+  striped: boolean
   holidays: readonly TaiwanCalendarDay[]
 }): React.JSX.Element {
   const weekend = props.column === 0 || props.column === 6
@@ -38,11 +40,17 @@ export function MondayDayCell(props: {
   const label = props.holidays.map(holidayLabel).filter(Boolean).join('、')
   return (
     <div
+      data-day-off={holidayOff ? 'holiday' : dayOff ? 'weekend' : undefined}
       className={cn(
         'flex min-w-0 items-start gap-1 px-1.5 pt-1',
         props.column > 0 && 'border-l border-border',
-        // Why: a translucent wash (not opaque muted) so it still stacks on striped weeks.
-        dayOff && 'bg-foreground/[0.045]'
+        // Why: holidays take their label's green and plain weekends gray; either replaces the
+        // week band instead of stacking on it, so a day off looks the same in every week.
+        holidayOff
+          ? 'bg-status-success-background'
+          : dayOff
+            ? 'bg-foreground/[0.06]'
+            : props.striped && 'bg-foreground/[0.035]'
       )}
     >
       <span
