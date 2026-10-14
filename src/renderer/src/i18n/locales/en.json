@@ -1499,6 +1499,7 @@
           "save": "Save"
         },
         "failure": {
+          "credentialUnreadable": "This Orca can’t read the saved Microsoft sign-in (for example, it was saved by a development build). Sign in again.",
           "invalidClientId": "That does not look like an application ID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).",
           "notConfigured": "Microsoft rejected the app registration: {{value0}}",
           "signedOut": "Your Microsoft sign-in expired. Sign in again.",
