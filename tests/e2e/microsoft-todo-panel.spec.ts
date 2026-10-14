@@ -42,14 +42,18 @@ const TASKS = [
 
 async function stubTodoIpc(
   electronApp: ElectronApplication,
-  status: MicrosoftTodoStatus
+  status: MicrosoftTodoStatus,
+  options: { unreadableUntilSignIn?: boolean } = {}
 ): Promise<void> {
   // Why: the spec must never reach Microsoft; replace the main-process handlers with fixtures.
   await electronApp.evaluate(
     ({ ipcMain }, fixture) => {
       const tasks = [...fixture.tasks]
+      // Mirrors a sign-in saved by another build, which this install's keychain key can't open.
+      let unreadable = fixture.unreadableUntilSignIn
       for (const channel of [
         'todo:status',
+        'todo:signIn',
         'todo:setClientId',
         'todo:fetchLists',
         'todo:fetchTasks',
@@ -70,13 +74,25 @@ async function stubTodoIpc(
         kind: 'not-configured',
         message: 'invalid-client-id'
       }))
-      ipcMain.handle('todo:fetchLists', () => ({
-        ok: true,
-        lists: [
-          { id: 'tasks', name: 'Tasks', wellKnownName: 'defaultList' },
-          { id: 'work', name: 'Work', wellKnownName: 'none' }
-        ]
-      }))
+      ipcMain.handle('todo:signIn', () => {
+        unreadable = false
+        return { ok: true, status: fixture.status }
+      })
+      ipcMain.handle('todo:fetchLists', () =>
+        unreadable
+          ? {
+              ok: false,
+              kind: 'credential-unreadable',
+              message: 'Could not decrypt saved Microsoft To Do credential.'
+            }
+          : {
+              ok: true,
+              lists: [
+                { id: 'tasks', name: 'Tasks', wellKnownName: 'defaultList' },
+                { id: 'work', name: 'Work', wellKnownName: 'none' }
+              ]
+            }
+      )
       ipcMain.handle('todo:fetchTasks', () => ({ ok: true, tasks }))
       ipcMain.handle(
         'todo:createTask',
@@ -140,7 +156,12 @@ async function stubTodoIpc(
       ipcMain.handle('todo:deleteChecklistItem', () => ({ ok: true }))
       ipcMain.handle('todo:selectList', () => undefined)
     },
-    { status, tasks: TASKS, template: todoTask('template') }
+    {
+      status,
+      tasks: TASKS,
+      template: todoTask('template'),
+      unreadableUntilSignIn: options.unreadableUntilSignIn === true
+    }
   )
 }
 
@@ -270,4 +291,21 @@ test('To Do panel asks for an app registration before signing in', async ({
   await expect(
     orcaPage.getByText('That does not look like an application ID', { exact: false })
   ).toBeVisible()
+})
+
+test('To Do panel offers to sign in again when the saved sign-in cannot be decrypted', async ({
+  electronApp,
+  orcaPage
+}) => {
+  await stubTodoIpc(electronApp, SIGNED_IN, { unreadableUntilSignIn: true })
+  await openTodoPanel(orcaPage)
+
+  await expect(
+    orcaPage.getByText('can’t read the saved Microsoft sign-in', { exact: false })
+  ).toBeVisible({ timeout: 10_000 })
+  await orcaPage.getByRole('button', { name: 'Sign in with Microsoft' }).click()
+  await expect(orcaPage.getByText('Today · 1')).toBeVisible()
+  await expect(
+    orcaPage.getByText('can’t read the saved Microsoft sign-in', { exact: false })
+  ).toHaveCount(0)
 })
