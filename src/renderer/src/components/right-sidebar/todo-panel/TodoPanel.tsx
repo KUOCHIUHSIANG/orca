@@ -20,9 +20,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
 import type { MicrosoftTodoTask } from '../../../../../shared/microsoft-todo-types'
-import { describeTodoFailure } from './todo-failure-copy'
 import { groupTodoTasks, type TodoTaskGroupKey } from './todo-task-groups'
 import { TodoConnectForm } from './TodoConnectForm'
+import { TodoFailureBanner } from './TodoFailureBanner'
 import { TodoQuickAdd } from './TodoQuickAdd'
 import { TodoTaskRow } from './TodoTaskRow'
 import { useMicrosoftTodo } from './use-microsoft-todo'
@@ -159,9 +159,11 @@ export default function TodoPanel(props: { isVisible: boolean }): React.JSX.Elem
             <TodoQuickAdd disabled={!todo.listId} onCreate={todo.createTask} />
           </div>
           {todo.error ? (
-            <p role="alert" className="border-b border-border px-4 py-2 text-xs text-destructive">
-              {describeTodoFailure(todo.error)}
-            </p>
+            <TodoFailureBanner
+              failure={todo.error}
+              onSignIn={todo.signIn}
+              onFailure={todo.reportError}
+            />
           ) : null}
           <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto px-2 py-2">
             {todo.tasks && groups.open.length === 0 ? (

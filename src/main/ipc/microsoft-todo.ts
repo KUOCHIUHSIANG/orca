@@ -32,6 +32,7 @@ import {
   setMicrosoftTodoSelectedList
 } from '../microsoft-todo/microsoft-todo-store'
 import type { MicrosoftTodoFailure } from '../../shared/microsoft-todo-types'
+import { CredentialDecryptionError } from '../integration-credential-file'
 
 const CLIENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
@@ -39,13 +40,17 @@ const MAX_TITLE_LENGTH = 255
 
 let inFlightRefresh: Promise<string> | null = null
 
-function toFailure(error: unknown): MicrosoftTodoFailure {
+export function toMicrosoftTodoFailure(error: unknown): MicrosoftTodoFailure {
   if (error instanceof MicrosoftTodoError) {
     if (error.kind === 'signed-out') {
       // Why: a dead refresh token never recovers; drop it so the panel asks to sign in again.
       clearMicrosoftTokens()
     }
     return { ok: false, kind: error.kind, message: error.message }
+  }
+  if (error instanceof CredentialDecryptionError) {
+    // Why: kept on disk, not cleared — approving Keychain access may still recover it.
+    return { ok: false, kind: 'credential-unreadable', message: error.message }
   }
   return { ok: false, kind: 'api', message: error instanceof Error ? error.message : String(error) }
 }
@@ -117,7 +122,7 @@ async function withGraph<T extends Record<string, unknown>>(
   try {
     return { ok: true, ...(await work(createGraphRunner(getAccessToken))) }
   } catch (error) {
-    return toFailure(error)
+    return toMicrosoftTodoFailure(error)
   }
 }
 
@@ -146,7 +151,7 @@ export function registerMicrosoftTodoHandlers(): void {
       setMicrosoftTodoAccount(accountName)
       return { ok: true, status: getMicrosoftTodoStatus() }
     } catch (error) {
-      return toFailure(error)
+      return toMicrosoftTodoFailure(error)
     }
   })
 

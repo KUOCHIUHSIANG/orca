@@ -19,6 +19,11 @@ export function describeTodoFailure(failure: MicrosoftTodoFailure): string {
         'auto.components.todoPanel.failure.signedOut',
         'Your Microsoft sign-in expired. Sign in again.'
       )
+    case 'credential-unreadable':
+      return translate(
+        'auto.components.todoPanel.failure.credentialUnreadable',
+        'This Orca can’t read the saved Microsoft sign-in (for example, it was saved by a development build). Sign in again.'
+      )
     case 'cancelled':
       return translate('auto.components.todoPanel.failure.cancelled', 'Sign-in was cancelled.')
     case 'rate-limited':

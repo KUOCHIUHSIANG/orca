@@ -40,6 +40,8 @@ export type MicrosoftTodoStatus = {
 export type MicrosoftTodoErrorKind =
   | 'not-configured'
   | 'signed-out'
+  /** The saved sign-in exists but this install's keychain key can't decrypt it (e.g. saved by a dev build). */
+  | 'credential-unreadable'
   | 'cancelled'
   | 'rate-limited'
   | 'network'
