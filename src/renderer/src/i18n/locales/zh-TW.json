@@ -1229,6 +1229,7 @@
         },
         "empty": "沒有待辦，太棒了。",
         "failure": {
+          "credentialUnreadable": "這個 Orca 無法讀取先前儲存的 Microsoft 登入（例如之前是在開發版登入的），請重新登入。",
           "api": "Microsoft 返回錯誤：{{value0}}",
           "cancelled": "已取消登入。",
           "invalidClientId": "這看起來不是應用程式 ID（xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。",
