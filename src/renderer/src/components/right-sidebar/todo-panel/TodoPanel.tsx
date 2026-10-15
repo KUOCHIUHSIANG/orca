@@ -28,11 +28,7 @@ import { TodoTaskRow } from './TodoTaskRow'
 import { useMicrosoftTodo } from './use-microsoft-todo'
 import { useTodoCompletionSettle } from './use-todo-completion-settle'
 import { useTodoTaskMutations } from './use-todo-task-mutations'
-
-function localToday(): string {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-}
+import { localToday } from './todo-due-dates'
 
 function groupTitle(key: TodoTaskGroupKey): string {
   switch (key) {
@@ -156,7 +152,7 @@ export default function TodoPanel(props: { isVisible: boolean }): React.JSX.Elem
                 </SelectContent>
               </Select>
             ) : null}
-            <TodoQuickAdd disabled={!todo.listId} onCreate={todo.createTask} />
+            <TodoQuickAdd disabled={!todo.listId} today={today} onCreate={todo.createTask} />
           </div>
           {todo.error ? (
             <TodoFailureBanner
