@@ -4,7 +4,7 @@
 //   node config/scripts/fork-maintenance/sync-upstream.mjs v1.4.221 [--push] [--build]
 //                                                          [--auto-worktree] [--events]
 //
-// Steps: fetch upstream tags → back up the branch → rebase the fork's own commits onto <new> →
+// Steps: fetch upstream tags → back up the branch (replacing the previous backup) → rebase the fork's own commits onto <new> →
 // install deps → regenerate (and commit) zh-TW.json → typecheck. --push force-with-lease pushes the branch and fast-forwards origin main to upstream
 // main; --build then produces the local arm64 app.
 // On a rebase conflict it stops and prints how to continue; rerere replays resolutions it has seen
@@ -222,6 +222,17 @@ function rebaseOnto(currentBase) {
   const backupBranch = `backup/${CUSTOM_BRANCH}-before-${targetTag}`
   run('git', ['branch', '-f', backupBranch, 'HEAD'])
   console.log(`[sync-upstream] Backup saved as ${backupBranch}.`)
+  // Why only one: a new sync means the previous backup's version proved stable.
+  const olderBackups = git(
+    'for-each-ref',
+    '--format=%(refname:short)',
+    `refs/heads/backup/${CUSTOM_BRANCH}-before-*`
+  )
+    .split('\n')
+    .filter((branch) => branch && branch !== backupBranch)
+  for (const branch of olderBackups) {
+    run('git', ['branch', '-D', branch])
+  }
 
   let rebased = succeeds('git', [
     ...RERERE,
