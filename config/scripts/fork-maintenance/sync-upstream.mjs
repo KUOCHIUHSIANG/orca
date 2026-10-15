@@ -29,6 +29,12 @@ import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
+import {
+  createProgressReporter,
+  estimatedBuildMs,
+  gitCommonDir,
+  STARTED_AT_ENV
+} from './build-progress.mjs'
 import { writeSyncSummary } from './sync-summary-file.mjs'
 
 // Why: Orca runs this script through its own binary as Node; the build's Electron children must not inherit that.
@@ -58,8 +64,23 @@ function emit(event) {
   }
 }
 
+// First-run guesses for the status bar's "time left"; measured durations replace them afterwards.
+const SYNC_STEPS = [
+  { key: 'sync:fetch', defaultMs: 15_000 },
+  { key: 'sync:rebase', defaultMs: 20_000 },
+  { key: 'sync:install', defaultMs: 90_000 },
+  { key: 'sync:verify', defaultMs: 120_000 }
+]
+// Reports to the status bar; created once the run gets past its preflight checks.
+let progress = null
+
 function stage(name) {
   emit({ type: 'stage', stage: name })
+  if (name === 'resolve' || name === 'repair') {
+    progress?.waitOnClaude()
+  } else if (SYNC_STEPS.some((step) => step.key === `sync:${name}`)) {
+    progress?.step(`sync:${name}`)
+  }
 }
 
 function exec(command, commandArgs, env) {
@@ -124,6 +145,7 @@ function fail(message) {
     rollbackTo = null
     fullMessage = `${message} ${rollBack(commit)}`
   }
+  progress?.finish('failed')
   console.error(`\n[sync-upstream] ${fullMessage}`)
   process.exit(1)
 }
@@ -288,6 +310,7 @@ function rebaseOnto(currentBase) {
         ...(unresolvedReason ? { reason: unresolvedReason } : {}),
         ...(conflictCommits ? { conflictCommits } : {})
       })
+      progress?.finish('failed')
       process.exit(CONFLICT_EXIT_CODE)
     }
     fail(
@@ -367,6 +390,16 @@ if (git('status', '--porcelain')) {
   fail(`${repoRoot} has uncommitted changes on ${CUSTOM_BRANCH}. Commit or stash them first.`)
 }
 
+const progressGitDir = gitCommonDir(repoRoot)
+const syncStartedAt = Date.now()
+progress = createProgressReporter({
+  gitDir: progressGitDir,
+  phase: 'sync',
+  steps: SYNC_STEPS,
+  laterMs: shouldBuild ? estimatedBuildMs(progressGitDir) : 0,
+  startedAt: syncStartedAt
+})
+
 stage('fetch')
 dropStaleUpstreamRefs()
 // Why an explicit refspec: upstream has 10k+ branches (pr-assets etc.) that grew .git by GBs.
@@ -427,6 +460,9 @@ if (shouldPush) {
 
 if (shouldBuild) {
   stage('build')
+  // Why: the build reports its own steps; it keeps this run's start so the bar doesn't reset.
+  progress.saveTimings()
+  process.env[STARTED_AT_ENV] = String(syncStartedAt)
   run('node', [path.join('config', 'scripts', 'fork-maintenance', 'build-mac-local-arm64.mjs')])
   emit({
     type: 'done',
@@ -434,6 +470,9 @@ if (shouldBuild) {
   })
 }
 
+if (!shouldBuild) {
+  progress.finish('done')
+}
 console.log(`\n[sync-upstream] ${CUSTOM_BRANCH} is now based on ${targetTag}.`)
 if (!shouldPush) {
   console.log(
