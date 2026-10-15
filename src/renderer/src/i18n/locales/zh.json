@@ -1276,7 +1276,9 @@
     },
     "components": {
       "forkUpdate": {
-        "syncNotesTitle": "同步时自动处理的内容"
+        "dismiss": "关闭",
+        "syncNotesTitle": "同步时自动处理的内容",
+        "updatedTitle": "已更新到 {{value0}}"
       },
       "hostPicker": {
         "searchHosts": "搜索主机…",

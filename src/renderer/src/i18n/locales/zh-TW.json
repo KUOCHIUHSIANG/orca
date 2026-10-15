@@ -1238,7 +1238,9 @@
     },
     "components": {
       "forkUpdate": {
-        "syncNotesTitle": "同步時自動處理的內容"
+        "dismiss": "關閉",
+        "syncNotesTitle": "同步時自動處理的內容",
+        "updatedTitle": "已更新到 {{value0}}"
       },
       "todoPanel": {
         "steps": {

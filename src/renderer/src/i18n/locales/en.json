@@ -1474,7 +1474,9 @@
     },
     "components": {
       "forkUpdate": {
-        "syncNotesTitle": "Handled automatically during sync"
+        "dismiss": "Dismiss",
+        "syncNotesTitle": "Handled automatically during sync",
+        "updatedTitle": "Updated to {{value0}}"
       },
       "hostPicker": {
         "searchHosts": "Search hosts…",

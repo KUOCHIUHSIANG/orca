@@ -38,6 +38,7 @@ import type { BitbucketApi, HostedReviewApi } from './api/hosted-review-api'
 import type { JiraApi } from './api/jira-api'
 import type { LinearApi } from './api/linear-api'
 import type { MondayApi } from './api/monday-api'
+import type { ForkSyncApi } from './api/fork-sync-api'
 import type { MicrosoftTodoApi } from './api/microsoft-todo-api'
 import type { MobileApi } from './api/mobile-api'
 import type { NativeChatApi } from './api/native-chat-api'
@@ -98,6 +99,7 @@ export type PreloadApi = {
   linear: LinearApi
   jira: JiraApi
   monday: MondayApi
+  forkSync: ForkSyncApi
   microsoftTodo: MicrosoftTodoApi
   starNag: StarNagApi
   telemetryTrack: TelemetryApi['telemetryTrack']

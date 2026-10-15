@@ -109,12 +109,10 @@ export function UpdateDownloadingContent({
 
 export function UpdateReadyToInstallContent({
   version,
-  notes,
   onRestart,
   onClose
 }: {
   version: string
-  notes?: string
   onRestart: () => void
   onClose: () => void
 }): React.JSX.Element {
@@ -141,19 +139,6 @@ export function UpdateReadyToInstallContent({
           { value0: version }
         )}
       </p>
-      {notes ? (
-        <div className="flex flex-col gap-1">
-          <p className="text-xs font-medium">
-            {translate(
-              'auto.components.forkUpdate.syncNotesTitle',
-              'Handled automatically during sync'
-            )}
-          </p>
-          <p className="max-h-48 overflow-y-auto whitespace-pre-wrap text-xs text-muted-foreground scrollbar-sleek">
-            {notes}
-          </p>
-        </div>
-      ) : null}
       <Button variant="default" size="sm" onClick={onRestart} className="w-full">
         {translate('auto.components.UpdateCard.68b235d264', 'Restart to Update')}
       </Button>
