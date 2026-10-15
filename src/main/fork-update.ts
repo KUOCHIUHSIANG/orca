@@ -152,6 +152,7 @@ export function syncAndBuild(): void {
     resolve: 25,
     install: 35,
     verify: 50,
+    repair: 55,
     build: 60
   }
 
@@ -186,9 +187,11 @@ export function syncAndBuild(): void {
           })
         } else if (event.type === 'done') {
           built = true
+          const notes = typeof event.summary === 'string' ? event.summary.trim() : ''
           broadcastStatus({
             state: 'downloaded',
-            version
+            version,
+            ...(notes ? { notes } : {})
           })
         }
       } catch {
