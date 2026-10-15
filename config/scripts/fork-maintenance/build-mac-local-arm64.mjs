@@ -21,16 +21,27 @@ if (process.platform !== 'darwin' || process.arch !== 'arm64') {
 
 function run(command, args, env = process.env) {
   console.log(`\n$ ${command} ${args.join(' ')}`)
-  execFileSync(command, args, { cwd: repoRoot, stdio: 'inherit', env })
+  try {
+    execFileSync(command, args, { cwd: repoRoot, stdio: 'inherit', env })
+  } catch (error) {
+    // Why: Orca's update card shows only the stderr tail; an uncaught stack trace hides the failed step.
+    console.error(
+      `\n[build-mac-local-arm64] ${command} ${args.join(' ')} failed (exit ${error.status ?? error.signal}).`
+    )
+    process.exit(1)
+  }
 }
 
-// build:desktop without build:mobile-web (mobile deps not installed locally)
-run('pnpm', ['run', 'typecheck'])
-run('pnpm', ['run', 'build:relay'])
-run('pnpm', ['run', 'build:cli'])
-run('pnpm', ['run', 'build:electron-vite'])
-run('pnpm', ['run', 'verify:built-skills-cli'])
-run('pnpm', ['run', 'build:web-from-renderer'])
+// Why read build:desktop instead of copying it: upstream reshapes it between releases (v1.4.226
+// replaced build:relay with build:wsl-guest). Mobile deps are not installed locally, so skip that step.
+const MOBILE_WEB_STEP = 'pnpm run build:mobile-web'
+const packageScripts = JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).scripts
+for (const step of packageScripts['build:desktop'].split('&&').map((part) => part.trim())) {
+  if (step !== MOBILE_WEB_STEP) {
+    const [command, ...args] = step.split(/\s+/)
+    run(command, args)
+  }
+}
 run('node', ['config/scripts/build-computer-macos.mjs'])
 run('node', ['config/scripts/build-keyboard-layout-macos.mjs', '--single-arch'])
 run('node', ['config/scripts/build-notification-status-macos.mjs', '--single-arch'])
