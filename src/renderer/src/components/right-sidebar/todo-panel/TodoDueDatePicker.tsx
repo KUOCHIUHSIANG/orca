@@ -11,7 +11,13 @@ import {
   shiftMonth,
   type MonthCursor
 } from '@/components/calendar/calendar-dates'
+import { describeCalendarDay } from '@/components/calendar/calendar-day-off'
+import { isWeekendColumn } from '@/components/calendar/CalendarWeekdayHeader'
+import { useTaiwanHolidays } from '@/components/calendar/use-taiwan-holidays'
+import type { TaiwanCalendarDay } from '../../../../../shared/taiwan-holiday-types'
 import { dueLabel, monthGrid, nextMonday } from './todo-due-dates'
+
+const NO_HOLIDAYS: readonly TaiwanCalendarDay[] = []
 
 const ARROW_STEPS = new Map([
   ['ArrowLeft', -1],
@@ -36,6 +42,7 @@ export function TodoDueDatePicker(props: {
   const [month, setMonth] = useState<MonthCursor>(() => monthCursorOfIso(value ?? today))
   const [focusDay, setFocusDay] = useState<string | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
+  const holidaysByDate = useTaiwanHolidays(open)
   const days = monthGrid(month)
   const inMonth = (iso: string | null): iso is string =>
     iso !== null && days.some((day) => day.iso === iso && day.inMonth)
@@ -135,9 +142,15 @@ export function TodoDueDatePicker(props: {
               <ChevronRight />
             </Button>
           </div>
-          <div className="mt-1 grid grid-cols-7 text-center text-[11px] text-muted-foreground">
-            {weekdays.map((weekday) => (
-              <span key={weekday.iso} className="py-1">
+          <div className="mt-1 grid grid-cols-7 text-center text-[11px]">
+            {weekdays.map((weekday, column) => (
+              <span
+                key={weekday.iso}
+                className={cn(
+                  'py-1',
+                  isWeekendColumn(column) ? 'text-destructive' : 'text-muted-foreground'
+                )}
+              >
                 {weekday.label}
               </span>
             ))}
@@ -157,26 +170,39 @@ export function TodoDueDatePicker(props: {
               setFocusDay(next)
             }}
           >
-            {days.map((day) => (
-              <button
-                key={day.iso}
-                type="button"
-                data-day={day.iso}
-                tabIndex={day.iso === tabStop ? 0 : -1}
-                aria-label={formatDate(day.iso, { dateStyle: 'full' })}
-                aria-pressed={day.iso === value}
-                aria-current={day.iso === today ? 'date' : undefined}
-                onClick={() => pick(day.iso)}
-                className={cn(
-                  'h-7 rounded-md text-xs tabular-nums hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
-                  !day.inMonth && 'text-muted-foreground/50',
-                  day.iso === today && 'font-semibold ring-1 ring-border ring-inset',
-                  day.iso === value && 'bg-primary text-primary-foreground hover:bg-primary/90'
-                )}
-              >
-                {parseIsoDate(day.iso).getDate()}
-              </button>
-            ))}
+            {days.map((day, index) => {
+              // Why: days off read red like the calendars; holidays keep their green fill.
+              const { holidayOff, dayOff, label } = describeCalendarDay(
+                index % 7,
+                holidaysByDate.get(day.iso) ?? NO_HOLIDAYS
+              )
+              return (
+                <button
+                  key={day.iso}
+                  type="button"
+                  data-day={day.iso}
+                  data-day-off={holidayOff ? 'holiday' : dayOff ? 'weekend' : undefined}
+                  tabIndex={day.iso === tabStop ? 0 : -1}
+                  title={label || undefined}
+                  aria-label={[formatDate(day.iso, { dateStyle: 'full' }), label]
+                    .filter(Boolean)
+                    .join(' ')}
+                  aria-pressed={day.iso === value}
+                  aria-current={day.iso === today ? 'date' : undefined}
+                  onClick={() => pick(day.iso)}
+                  className={cn(
+                    'h-7 rounded-md text-xs tabular-nums hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
+                    dayOff && 'text-destructive',
+                    holidayOff && 'bg-status-success-background',
+                    !day.inMonth && 'opacity-50',
+                    day.iso === today && 'font-semibold ring-1 ring-border ring-inset',
+                    day.iso === value && 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  )}
+                >
+                  {parseIsoDate(day.iso).getDate()}
+                </button>
+              )
+            })}
           </div>
           {value ? (
             <div className="mt-2 border-t border-border pt-2">

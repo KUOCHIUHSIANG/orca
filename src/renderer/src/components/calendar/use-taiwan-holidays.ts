@@ -24,8 +24,9 @@ export function useTaiwanHolidays(enabled: boolean): HolidaysByDate {
     if (!enabled) {
       return
     }
+    // Why optional: web clients have no holiday bridge.
     void window.api.monday
-      .fetchTaiwanHolidays()
+      ?.fetchTaiwanHolidays()
       .then((result) => {
         if (!result.ok) {
           console.warn('Could not load Taiwan holidays:', result.message)

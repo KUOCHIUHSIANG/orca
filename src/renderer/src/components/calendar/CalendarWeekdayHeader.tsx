@@ -20,7 +20,7 @@ function useWeekdayLabels(): string[] {
   }, [locale])
 }
 
-/** Sunday-first weekday names over a 7-column calendar; weekends dimmed like their cells. */
+/** Sunday-first weekday names over a 7-column calendar; weekends in red like their day numbers. */
 export function CalendarWeekdayHeader(): React.JSX.Element {
   const labels = useWeekdayLabels()
   return (
@@ -30,7 +30,7 @@ export function CalendarWeekdayHeader(): React.JSX.Element {
           key={label}
           className={cn(
             'px-1.5 text-[11px] font-medium',
-            isWeekendColumn(index) ? 'text-muted-foreground/60' : 'text-muted-foreground'
+            isWeekendColumn(index) ? 'text-destructive' : 'text-muted-foreground'
           )}
         >
           {label}
