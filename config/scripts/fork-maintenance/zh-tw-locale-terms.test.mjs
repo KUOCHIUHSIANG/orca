@@ -22,6 +22,8 @@ describe('applyZhTwTerms', () => {
     expect(applyZhTwTerms('通過選單報告', 'Report it from the menu')).toBe('透過選單報告')
     expect(applyZhTwTerms('看板與檔案', 'Boards and docs')).toBe('看板與文件')
     expect(applyZhTwTerms('開啟檔案', 'Open file')).toBe('開啟檔案')
+    expect(applyZhTwTerms('周', 'Week')).toBe('週')
+    expect(applyZhTwTerms('周圍', 'Around')).toBe('周圍')
   })
 
   it('swaps mainland row/column wording without breaking compounds', () => {

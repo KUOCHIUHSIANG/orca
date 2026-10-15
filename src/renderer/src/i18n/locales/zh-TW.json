@@ -5661,7 +5661,8 @@
           "fee535205b": "任務",
           "d599269755": "從側邊欄隱藏",
           "artifacts": "工件",
-          "skills": "技能"
+          "skills": "技能",
+          "todo": "待辦"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "清除",
@@ -18064,6 +18065,20 @@
         "a62f9db53d": "Cancel",
         "c77189bc0c": "Update filter",
         "19af906d12": "Save filter"
+      },
+      "todoCalendar": {
+        "addOn": "在 {{value0}} 新增待辦",
+        "closeDetails": "關閉詳情",
+        "view": {
+          "week": "週",
+          "month": "月"
+        },
+        "previousWeek": "上一週",
+        "nextWeek": "下一週",
+        "lists": "清單",
+        "allLists": "所有清單",
+        "showCompleted": "顯示已完成",
+        "refresh": "重新整理"
       }
     },
     "i18n": {

@@ -130,3 +130,4 @@ export type TopLevelView =
   | 'artifacts'
   | 'mobile'
   | 'monday'
+  | 'todo'

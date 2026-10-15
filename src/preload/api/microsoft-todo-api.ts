@@ -18,6 +18,11 @@ export type MicrosoftTodoApi = {
   fetchTasks: (args: {
     listId: string
   }) => Promise<MicrosoftTodoResult<{ tasks: MicrosoftTodoTask[] }>>
+  /** Every list's open tasks, plus completed tasks due in [completedFrom, completedTo) when given. */
+  fetchCalendar: (args: {
+    completedFrom?: string
+    completedTo?: string
+  }) => Promise<MicrosoftTodoResult<{ lists: MicrosoftTodoList[]; tasks: MicrosoftTodoTask[] }>>
   fetchChecklist: (args: {
     listId: string
     taskId: string
