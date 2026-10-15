@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import {
-  BUILD_TIMINGS_TOTAL_KEY,
+  BUILD_TIMING_PREFIX,
   createProgressReporter,
   DEFAULT_BUILD_MS,
   estimatedBuildMs,
@@ -51,19 +51,14 @@ describe('createProgressReporter', () => {
   })
 
   it('learns measured durations on success so the next run uses them', () => {
-    const first = createProgressReporter({
-      gitDir,
-      phase: 'build',
-      steps,
-      now,
-      totalKey: BUILD_TIMINGS_TOTAL_KEY
-    })
+    const totalKey = `${BUILD_TIMING_PREFIX.afterSync}total`
+    const first = createProgressReporter({ gitDir, phase: 'build', steps, now, totalKey })
     first.step('a')
     clock += 2_000
     first.step('b')
     clock += 6_000
     first.finish('done')
-    expect(timings()).toEqual({ a: 2_000, b: 6_000, [BUILD_TIMINGS_TOTAL_KEY]: 8_000 })
+    expect(timings()).toEqual({ a: 2_000, b: 6_000, [totalKey]: 8_000 })
     expect(progress().state).toBe('done')
     expect(estimatedBuildMs(gitDir)).toBe(8_000)
 
@@ -106,5 +101,16 @@ describe('createProgressReporter', () => {
 
   it('falls back to a default build length before any build finished', () => {
     expect(estimatedBuildMs(gitDir)).toBe(DEFAULT_BUILD_MS)
+  })
+
+  it('estimates a post-sync build from post-sync timings, not quick local rebuilds', () => {
+    writeFileSync(
+      path.join(gitDir, TIMINGS_FILE),
+      JSON.stringify({
+        [`${BUILD_TIMING_PREFIX.standalone}total`]: 62_000,
+        [`${BUILD_TIMING_PREFIX.afterSync}total`]: 480_000
+      })
+    )
+    expect(estimatedBuildMs(gitDir)).toBe(480_000)
   })
 })
