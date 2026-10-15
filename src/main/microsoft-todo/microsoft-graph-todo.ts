@@ -175,11 +175,12 @@ export async function fetchTodoTasks(
 
 export async function createTodoTask(
   run: GraphRunner,
-  args: { listId: string; title: string; dueDate: string | null }
+  args: { listId: string; title: string; dueDate: string | null; notes: string | null }
 ): Promise<MicrosoftTodoTask> {
   const payload = await run('POST', `/me/todo/lists/${encodeURIComponent(args.listId)}/tasks`, {
     title: args.title,
-    ...(args.dueDate ? { dueDateTime: toGraphDueDateTime(args.dueDate) } : {})
+    ...(args.dueDate ? { dueDateTime: toGraphDueDateTime(args.dueDate) } : {}),
+    ...(args.notes ? { body: { content: args.notes, contentType: 'text' } } : {})
   })
   const task = mapTodoTask(payload, args.listId)
   if (!task) {

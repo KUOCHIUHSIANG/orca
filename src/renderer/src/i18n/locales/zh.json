@@ -1308,7 +1308,9 @@
         "add": {
           "dueDate": "到期日",
           "label": "新增待办",
-          "placeholder": "新增待办，按 Enter 送出"
+          "placeholder": "新增待办，按 Enter 送出",
+          "notesPlaceholder": "备注（选填）",
+          "submit": "新增"
         },
         "connect": {
           "changeClientId": "更换应用程序 ID",
@@ -1323,7 +1325,10 @@
         },
         "due": {
           "today": "今天",
-          "tomorrow": "明天"
+          "tomorrow": "明天",
+          "nextWeek": "下周",
+          "previousMonth": "上个月",
+          "nextMonth": "下个月"
         },
         "empty": "没有待办，太棒了。",
         "failure": {
