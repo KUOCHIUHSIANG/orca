@@ -11,6 +11,9 @@ export const READ_ONLY_GIT_TOOLS = [
   'Bash(git grep:*)'
 ]
 export const FILE_TOOLS = ['Read', 'Edit', 'Write', 'Grep', 'Glob']
+// Why so strict: the final message is shown verbatim on Orca's update card.
+export const SUMMARY_INSTRUCTION =
+  'Your final message is shown to the user as-is: write only the summary, in Traditional Chinese, one short line per file you changed (`- <file>：<what you did>`), with no preamble or closing remarks.'
 
 function parseResult(stdout) {
   try {
@@ -39,6 +42,8 @@ export function runClaudeHeadless({
       '-p',
       '--output-format',
       'json',
+      // Why: the user's MCP servers and connectors only slow startup and leak status into the summary.
+      '--strict-mcp-config',
       '--permission-mode',
       'acceptEdits',
       '--allowedTools',
