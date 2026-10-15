@@ -1395,7 +1395,9 @@
         "add": {
           "placeholder": "Add a task, press Enter",
           "label": "New task",
-          "dueDate": "Due date"
+          "dueDate": "Due date",
+          "notesPlaceholder": "Note (optional)",
+          "submit": "Add"
         },
         "group": {
           "overdue": "Overdue",
@@ -1422,7 +1424,10 @@
         },
         "due": {
           "today": "Today",
-          "tomorrow": "Tomorrow"
+          "tomorrow": "Tomorrow",
+          "nextWeek": "Next week",
+          "previousMonth": "Previous month",
+          "nextMonth": "Next month"
         },
         "row": {
           "openWeb": "Open in To Do on the web",

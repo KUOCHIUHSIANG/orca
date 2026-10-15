@@ -26,6 +26,7 @@ export type MicrosoftTodoApi = {
     listId: string
     title: string
     dueDate: string | null
+    notes?: string
   }) => Promise<MicrosoftTodoResult<{ task: MicrosoftTodoTask }>>
   setTaskCompleted: (args: {
     listId: string

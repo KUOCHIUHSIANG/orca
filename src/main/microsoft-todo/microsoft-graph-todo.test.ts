@@ -8,6 +8,7 @@ setMainHttpClient({ fetch: (url, init) => fetchMock(url, init), proxySession: ()
 
 const {
   createGraphRunner,
+  createTodoTask,
   deleteTodoTask,
   fetchTodoTasks,
   mapTodoTask,
@@ -130,6 +131,32 @@ describe('notes and reminders', () => {
 })
 
 describe('task edits', () => {
+  it('creates a task with its due date and plain-text note', async () => {
+    fetchMock.mockResolvedValue(Response.json({ id: 't1', title: 'Buy milk' }))
+    const run = createGraphRunner(async () => 'token')
+    await createTodoTask(run, {
+      listId: 'l1',
+      title: 'Buy milk',
+      dueDate: '2026-10-16',
+      notes: 'two'
+    })
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('https://graph.microsoft.com/v1.0/me/todo/lists/l1/tasks')
+    expect(init?.method).toBe('POST')
+    expect(JSON.parse(String(init?.body))).toEqual({
+      title: 'Buy milk',
+      dueDateTime: { dateTime: '2026-10-16T00:00:00', timeZone: 'UTC' },
+      body: { content: 'two', contentType: 'text' }
+    })
+  })
+
+  it('creates a task without a body when there is no note', async () => {
+    fetchMock.mockResolvedValue(Response.json({ id: 't1', title: 'Buy milk' }))
+    const run = createGraphRunner(async () => 'token')
+    await createTodoTask(run, { listId: 'l1', title: 'Buy milk', dueDate: null, notes: null })
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({ title: 'Buy milk' })
+  })
+
   it('patches only the changed fields, clearing a due date with null', async () => {
     fetchMock.mockResolvedValue(Response.json({ id: 't1', title: 'Renamed', importance: 'high' }))
     const run = createGraphRunner(async () => 'token')
