@@ -187,11 +187,9 @@ export function syncAndBuild(): void {
           })
         } else if (event.type === 'done') {
           built = true
-          const notes = typeof event.summary === 'string' ? event.summary.trim() : ''
           broadcastStatus({
             state: 'downloaded',
-            version,
-            ...(notes ? { notes } : {})
+            version
           })
         }
       } catch {
