@@ -12,7 +12,7 @@ import { chmodSync, lstatSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { getLocalBuildIdentity } from './build-mac-local.mjs'
 import {
-  BUILD_TIMINGS_TOTAL_KEY,
+  BUILD_TIMING_PREFIX,
   createProgressReporter,
   gitCommonDir,
   STARTED_AT_ENV
@@ -48,16 +48,19 @@ const STEP_DEFAULT_MS = {
   'pnpm run build:web-from-renderer': 60_000,
   [PACKAGE_STEP]: 150_000
 }
+// Set only when the sync script runs this build, i.e. after an upstream update.
 const sharedStartedAt = Number(process.env[STARTED_AT_ENV])
+const timingPrefix =
+  sharedStartedAt > 0 ? BUILD_TIMING_PREFIX.afterSync : BUILD_TIMING_PREFIX.standalone
 const progress = createProgressReporter({
   gitDir: gitCommonDir(repoRoot),
   phase: 'build',
   steps: [...steps, PACKAGE_STEP].map((step) => ({
-    key: `build:${step}`,
+    key: `${timingPrefix}${step}`,
     defaultMs: STEP_DEFAULT_MS[step] ?? 20_000
   })),
   startedAt: sharedStartedAt > 0 ? sharedStartedAt : Date.now(),
-  totalKey: BUILD_TIMINGS_TOTAL_KEY
+  totalKey: `${timingPrefix}total`
 })
 
 function fail(message) {
@@ -77,7 +80,7 @@ function run(command, args, env = process.env) {
 }
 
 for (const step of steps) {
-  progress.step(`build:${step}`)
+  progress.step(`${timingPrefix}${step}`)
   const [command, ...args] = step.split(/\s+/)
   run(command, args)
 }
@@ -112,7 +115,7 @@ const forkSource = {
   forkRemote: 'origin'
 }
 console.log(`\n[build-mac-local-arm64] version ${identity.version}, base ${forkSource.baseTag}`)
-progress.step(`build:${PACKAGE_STEP}`)
+progress.step(`${timingPrefix}${PACKAGE_STEP}`)
 run(
   'pnpm',
   [
