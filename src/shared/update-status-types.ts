@@ -80,7 +80,14 @@ export type UpdateStatus = (
     }
   | { state: 'not-available'; userInitiated?: boolean }
   | { state: 'downloading'; percent: number; version: string; activeNudgeId?: string }
-  | { state: 'downloaded'; version: string; releaseUrl?: string; activeNudgeId?: string }
+  | {
+      state: 'downloaded'
+      version: string
+      releaseUrl?: string
+      activeNudgeId?: string
+      /** Fork builds only: what the upstream sync changed on its own (e.g. conflicts Claude resolved). */
+      notes?: string
+    }
   | {
       state: 'error'
       message: string

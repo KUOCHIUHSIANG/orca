@@ -12,7 +12,11 @@ const FAKE_CLAUDE = `
 const { readFileSync, writeFileSync } = require('node:fs')
 const mode = process.argv[2]
 readFileSync(0, 'utf8')
-if (mode === 'resolve') writeFileSync('f.txt', 'merged\\n')
+if (mode.startsWith('resolve')) writeFileSync('f.txt', 'merged\\n')
+if (mode === 'resolve-other') writeFileSync('g.txt', 'renamed import\\n')
+if (mode === 'resolve-other-markers') writeFileSync('g.txt', '<<<<<<< HEAD\\nx\\n>>>>>>> fork\\n')
+const isError = mode === 'error'
+process.stdout.write(JSON.stringify({ type: 'result', is_error: isError, result: isError ? 'max turns' : 'f.txt：合併兩邊' }))
 process.exit(mode === 'crash' ? 3 : 0)
 `
 
@@ -44,6 +48,9 @@ function createConflictedRebase() {
   repo = path.join(tempDir, 'repo')
   execFileSync('git', ['init', '-q', '-b', 'main', repo])
   commitFile('base\n', 'base')
+  writeFileSync(path.join(repo, 'g.txt'), 'original\n')
+  git('add', 'g.txt')
+  git('commit', '-q', '-m', 'add g')
   git('switch', '-q', '-c', 'fork')
   commitFile('fork\n', 'fork change')
   git('switch', '-q', 'main')
@@ -80,9 +87,32 @@ afterEach(() => {
 describe('resolveConflictsWithClaude', () => {
   it('stages the files once Claude leaves no conflict markers', () => {
     createConflictedRebase()
-    expect(resolveWith('resolve')).toEqual({ ok: true })
+    expect(resolveWith('resolve')).toEqual({ ok: true, summary: 'f.txt：合併兩邊' })
     expect(unmergedFiles()).toBe('')
     expect(readFileSync(path.join(repo, 'f.txt'), 'utf8')).toBe('merged\n')
+  })
+
+  it('also stages files Claude changed outside the conflict list', () => {
+    createConflictedRebase()
+    expect(resolveWith('resolve-other').ok).toBe(true)
+    expect(git('status', '--porcelain')).toBe('M  f.txt\nM  g.txt')
+  })
+
+  it('refuses conflict markers Claude left in files outside the conflict list', () => {
+    createConflictedRebase()
+    expect(resolveWith('resolve-other-markers')).toEqual({
+      ok: false,
+      reason: 'Claude Code 未解完：g.txt'
+    })
+  })
+
+  it('reports a Claude run that ended in an error result', () => {
+    createConflictedRebase()
+    expect(resolveWith('error')).toEqual({
+      ok: false,
+      reason: 'Claude Code 執行失敗（max turns）'
+    })
+    expect(unmergedFiles()).toBe('f.txt')
   })
 
   it('refuses files Claude left with conflict markers', () => {
