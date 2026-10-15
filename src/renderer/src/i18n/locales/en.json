@@ -2412,6 +2412,9 @@
       }
     },
     "components": {
+      "forkUpdate": {
+        "syncNotesTitle": "Handled automatically during sync"
+      },
       "hostPicker": {
         "searchHosts": "Search hosts…",
         "noHostsMatch": "No hosts match.",

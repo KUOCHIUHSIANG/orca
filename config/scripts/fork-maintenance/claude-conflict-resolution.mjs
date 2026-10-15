@@ -1,50 +1,42 @@
 // Hands a paused rebase step's conflicts to headless Claude Code, so the app's update button can
 // finish a sync without someone resolving them by hand.
-import { execFileSync, spawnSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { FILE_TOOLS, READ_ONLY_GIT_TOOLS, runClaudeHeadless } from './claude-headless.mjs'
 
-const CLAUDE_TIMEOUT_MS = 20 * 60 * 1000
 // Why no staging tools beyond `git rm`: the script verifies the files before it stages and continues.
-const ALLOWED_TOOLS = [
-  'Read',
-  'Edit',
-  'Write',
-  'Grep',
-  'Glob',
-  'Bash(git diff:*)',
-  'Bash(git log:*)',
-  'Bash(git show:*)',
-  'Bash(git status:*)',
-  'Bash(git rm:*)'
-]
+const ALLOWED_TOOLS = [...FILE_TOOLS, ...READ_ONLY_GIT_TOOLS, 'Bash(git rm:*)']
 const CONFLICT_MARKER = /^(<{7}|>{7}) /gm
 
 function markerCount(text) {
   return text.match(CONFLICT_MARKER)?.length ?? 0
 }
 
-function stageText(cwd, stage, file) {
+function indexText(cwd, stage, file) {
   try {
     return execFileSync('git', ['show', `:${stage}:${file}`], {
       cwd,
       encoding: 'utf8',
-      maxBuffer: 64 * 1024 * 1024
+      maxBuffer: 64 * 1024 * 1024,
+      // Why: a file is missing from most stages; git's complaint about that is expected noise.
+      stdio: ['ignore', 'pipe', 'ignore']
     })
   } catch {
     return ''
   }
 }
 
-/** Markers beyond what either side already contains (e.g. conflict fixtures) are leftovers. */
+/** Markers beyond what the index already holds (e.g. conflict fixtures) are leftovers. */
 function stillConflicted(cwd, file) {
   const fullPath = path.join(cwd, file)
   if (!existsSync(fullPath)) {
     return false
   }
   const expected = Math.max(
-    markerCount(stageText(cwd, 2, file)),
-    markerCount(stageText(cwd, 3, file))
+    markerCount(indexText(cwd, 0, file)),
+    markerCount(indexText(cwd, 2, file)),
+    markerCount(indexText(cwd, 3, file))
   )
   return markerCount(readFileSync(fullPath, 'utf8')) > expected
 }
@@ -60,62 +52,47 @@ function buildPrompt({ files, commit, subject, onto }) {
     ...files.map((file) => `- ${file}`),
     '',
     `Keep upstream's changes and still apply what the fork commit intended. Use \`git show ${commit}\` to see that intent. Follow AGENTS.md.`,
+    'If upstream renamed or moved something this commit uses, also update the other files of this commit that reference it.',
     'Only edit files. Do not stage, commit, or run git commands that change state; the sync script verifies and continues the rebase itself. If the right resolution is deleting a file, use `git rm <file>`.',
+    'Do not run typecheck or tests: dependencies are not installed for the new upstream yet. The sync script typechecks after the rebase and asks for fixes if needed.',
     'If you cannot resolve a conflict with confidence, leave its markers in place so the update stops for a manual resolution.',
-    'Finish with one line per file describing how you resolved it.'
+    'Finish with a brief summary in Traditional Chinese, one short line per file you changed.'
   ].join('\n')
 }
 
+function changedFiles(cwd, git) {
+  const tracked = git('diff', '--name-only')
+  const untracked = git('ls-files', '--others', '--exclude-standard')
+  return [tracked, untracked].join('\n').split('\n').filter(Boolean)
+}
+
 /**
- * Runs `claude -p` on the conflicted files of the current rebase step and stages them once no
- * conflict markers are left. Returns `{ ok: false, reason }` when Claude fails or gives up.
+ * Runs Claude on the conflicted files of the current rebase step and stages the whole worktree once
+ * no conflict markers are left. Returns `{ ok: true, summary }` or `{ ok: false, reason }`.
  */
-export function resolveConflictsWithClaude({
-  cwd,
-  files,
-  onto,
-  claudeProgram = 'claude',
-  claudeArgsPrefix = []
-}) {
+export function resolveConflictsWithClaude({ cwd, files, onto, claudeProgram, claudeArgsPrefix }) {
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim()
   const commit = git('rev-parse', '--short', 'REBASE_HEAD')
   const subject = git('log', '-1', '--format=%s', 'REBASE_HEAD')
   console.log(`\n[sync-upstream] Asking Claude Code to resolve ${files.join(', ')} in "${subject}"`)
 
-  const result = spawnSync(
+  const result = runClaudeHeadless({
+    cwd,
+    prompt: buildPrompt({ files, commit, subject, onto }),
+    allowedTools: ALLOWED_TOOLS,
     claudeProgram,
-    [
-      ...claudeArgsPrefix,
-      '-p',
-      '--permission-mode',
-      'acceptEdits',
-      '--allowedTools',
-      ALLOWED_TOOLS.join(',')
-    ],
-    {
-      cwd,
-      input: buildPrompt({ files, commit, subject, onto }),
-      stdio: ['pipe', 'inherit', 'inherit'],
-      timeout: CLAUDE_TIMEOUT_MS
-    }
-  )
-  if (result.error?.code === 'ENOENT') {
-    return { ok: false, reason: `找不到 ${claudeProgram} 指令` }
-  }
-  if (result.error?.code === 'ETIMEDOUT') {
-    return { ok: false, reason: `Claude Code 超過 ${CLAUDE_TIMEOUT_MS / 60000} 分鐘未完成` }
-  }
-  if (result.error || result.status !== 0) {
-    return {
-      ok: false,
-      reason: `Claude Code 執行失敗（${result.error?.message ?? `exit ${result.status}`}）`
-    }
+    claudeArgsPrefix
+  })
+  if (!result.ok) {
+    return result
   }
 
-  const leftover = files.filter((file) => stillConflicted(cwd, file))
+  const touched = [...new Set([...files, ...changedFiles(cwd, git)])]
+  const leftover = touched.filter((file) => stillConflicted(cwd, file))
   if (leftover.length > 0) {
     return { ok: false, reason: `Claude Code 未解完：${leftover.join(', ')}` }
   }
-  git('add', '-A', '--', ...files)
-  return { ok: true }
+  // Why the whole tree: a resolution can need edits outside the conflicted files (e.g. a moved module).
+  git('add', '-A')
+  return { ok: true, summary: result.summary }
 }

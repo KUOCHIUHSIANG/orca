@@ -18,10 +18,14 @@
 //                    rerere cannot replay go to headless Claude Code; if it cannot resolve them,
 //                    abort the rebase so the branch is left exactly as before (exit 2) and list
 //                    every conflicting commit from a merge-tree dry run in the conflict event.
+//                    Typecheck errors after the rebase also go to Claude and its fix is committed;
+//                    any failure before the typecheck passes resets the branch to where it started.
+//                    Claude's summaries ride on the done event and in .git/orca-sync-summary.md.
 import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
+import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
 
@@ -83,8 +87,41 @@ function git(...gitArgs) {
   return execFileSync('git', gitArgs, { cwd: repoRoot, encoding: 'utf8' }).trim()
 }
 
+// What Claude did at each step, shown to the user once the update is built.
+const notes = []
+// App mode: the commit to reset to while the branch holds a sync that has not typechecked yet.
+let rollbackTo = null
+
+/** Puts the checkout back on `commit`, including files Claude created and the matching deps. */
+function rollBack(commit) {
+  try {
+    const lockfileChanged = !succeeds('git', [
+      'diff',
+      '--quiet',
+      commit,
+      'HEAD',
+      '--',
+      'pnpm-lock.yaml'
+    ])
+    execFileSync('git', ['add', '-A'], { cwd: repoRoot, stdio: 'inherit' })
+    execFileSync('git', ['reset', '--hard', '--quiet', commit], { cwd: repoRoot, stdio: 'inherit' })
+    if (lockfileChanged) {
+      succeeds('pnpm', ['install', '--frozen-lockfile'])
+    }
+    return `${CUSTOM_BRANCH} 已還原到同步前的狀態。`
+  } catch {
+    return `${CUSTOM_BRANCH} 還原失敗，請手動 git reset --hard ${commit}。`
+  }
+}
+
 function fail(message) {
-  console.error(`\n[sync-upstream] ${message}`)
+  let fullMessage = message
+  if (rollbackTo) {
+    const commit = rollbackTo
+    rollbackTo = null
+    fullMessage = `${message} ${rollBack(commit)}`
+  }
+  console.error(`\n[sync-upstream] ${fullMessage}`)
   process.exit(1)
 }
 
@@ -194,9 +231,15 @@ function rebaseOnto(currentBase) {
   // A stop rerere fully resolved (nothing left unmerged) only needs --continue; bounded per commit.
   let stopsLeft = ownCommits.split('\n').length
   let unresolvedReason = null
+  let failedContinueAt = null
   while (!rebased && stopsLeft > 0 && rebaseInProgress()) {
     stopsLeft -= 1
+    const stop = git('rev-parse', 'REBASE_HEAD')
     const files = conflictedFiles()
+    if (files.length === 0 && stop === failedContinueAt) {
+      unresolvedReason = 'git rebase --continue 在沒有衝突檔的情況下仍失敗'
+      break
+    }
     if (files.length > 0) {
       // Why app mode only: run by hand, the script stops so whoever runs it resolves the conflict.
       if (!eventsMode) {
@@ -208,11 +251,13 @@ function rebaseOnto(currentBase) {
         unresolvedReason = resolution.reason
         break
       }
+      notes.push(`解衝突「${stoppedCommitSubject()}」\n${resolution.summary}`)
     }
     rebased = succeeds('git', [...RERERE, 'rebase', '--continue'], {
       ...process.env,
       GIT_EDITOR: 'true'
     })
+    failedContinueAt = rebased ? null : stop
   }
   if (!rebased) {
     if (eventsMode) {
@@ -240,6 +285,58 @@ function rebaseOnto(currentBase) {
       ].join('\n')
     )
   }
+}
+
+/** Returns null when `pnpm tc` passes, otherwise its output. */
+function typecheck() {
+  console.log('\n$ pnpm tc')
+  const result = spawnSync('pnpm', ['tc'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    maxBuffer: 256 * 1024 * 1024
+  })
+  const output = `${result.stdout ?? ''}${result.stderr ?? ''}`
+  console.log(output)
+  return result.status === 0 ? null : output
+}
+
+/** App mode hands errors upstream caused to Claude and commits its fix once the typecheck passes. */
+function verifyTypecheck(base) {
+  const errors = typecheck()
+  if (errors === null) {
+    return
+  }
+  if (!eventsMode) {
+    fail('pnpm tc failed.')
+  }
+  stage('repair')
+  const repair = repairTypecheckWithClaude({ cwd: repoRoot, onto: targetTag, base, output: errors })
+  if (!repair.ok) {
+    fail(`型別檢查失敗，交給 Claude Code 修正也失敗：${repair.reason}。`)
+  }
+  if (typecheck() !== null) {
+    fail('型別檢查失敗，Claude Code 修正後仍有錯誤。')
+  }
+  if (git('status', '--porcelain')) {
+    run('git', ['add', '-A'])
+    // Why --no-verify: rebase-resolved commits skip hooks too; the typecheck above is this one's gate.
+    run('git', [
+      'commit',
+      '--no-verify',
+      '-m',
+      `fix: 同步上游 ${targetTag} 後修正型別錯誤`,
+      ...(repair.summary ? ['-m', repair.summary] : [])
+    ])
+  }
+  notes.push(`修正型別錯誤\n${repair.summary}`)
+}
+
+/** Overwrites the last sync's summary so a later session can tell the user what Claude did. */
+function writeSummary() {
+  const file = path.resolve(repoRoot, git('rev-parse', '--git-path', 'orca-sync-summary.md'))
+  const body = notes.length > 0 ? notes.join('\n\n') : '不需要 Claude Code 介入。'
+  writeFileSync(file, `# 同步上游 ${targetTag}\n\n${body}\n`)
+  console.log(`[sync-upstream] Summary saved to ${file}`)
 }
 
 if (!targetTag || !RELEASE_TAG.test(targetTag)) {
@@ -284,11 +381,16 @@ if (plan.kind === 'target-predates-fork') {
     `${targetTag} predates ${git('describe', '--tags', '--always', plan.forkPoint)}, the upstream commit ${CUSTOM_BRANCH} builds on. Pick a newer tag.`
   )
 }
+const startHead = git('rev-parse', 'HEAD')
 if (plan.kind === 'already-based') {
   console.log(`\n[sync-upstream] Already based on ${targetTag}; verifying only.`)
 } else {
   stage('rebase')
   rebaseOnto(plan.base)
+}
+// Why app mode only: run by hand, a failed step leaves the branch as-is for whoever runs it to fix.
+if (eventsMode) {
+  rollbackTo = startHead
 }
 
 stage('install')
@@ -299,7 +401,9 @@ if (git('status', '--porcelain', '--', ZH_TW_CATALOG)) {
   run('git', ['commit', '-m', 'chore: 依上游 zh.json 重新產生繁體中文翻譯', '--', ZH_TW_CATALOG])
 }
 stage('verify')
-run('pnpm', ['tc'])
+verifyTypecheck(plan.base)
+rollbackTo = null
+writeSummary()
 
 if (shouldPush) {
   stage('push')
@@ -311,7 +415,11 @@ if (shouldPush) {
 if (shouldBuild) {
   stage('build')
   run('node', [path.join('config', 'scripts', 'fork-maintenance', 'build-mac-local-arm64.mjs')])
-  emit({ type: 'done', manifestPath: path.join(repoRoot, 'dist', 'latest-mac.yml') })
+  emit({
+    type: 'done',
+    manifestPath: path.join(repoRoot, 'dist', 'latest-mac.yml'),
+    summary: notes.join('\n\n')
+  })
 }
 
 console.log(`\n[sync-upstream] ${CUSTOM_BRANCH} is now based on ${targetTag}.`)

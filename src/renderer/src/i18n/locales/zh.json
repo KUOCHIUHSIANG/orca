@@ -1590,6 +1590,9 @@
       }
     },
     "components": {
+      "forkUpdate": {
+        "syncNotesTitle": "同步时自动处理的内容"
+      },
       "hostPicker": {
         "searchHosts": "搜索主机…",
         "noHostsMatch": "没有匹配的主机。",
