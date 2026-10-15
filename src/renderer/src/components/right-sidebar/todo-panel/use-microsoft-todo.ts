@@ -8,7 +8,8 @@ import type {
   MicrosoftTodoTask
 } from '../../../../../shared/microsoft-todo-types'
 import { isTodoDeletePending } from './todo-pending-deletes'
-import { beginTodoTaskWrite } from './todo-task-write-order'
+import { sendTodoCompletion } from './todo-task-completion'
+import { publishTodoTaskEvent, subscribeTodoTaskEvents } from './todo-task-events'
 
 // Why: phone edits show up within one interval without hammering Graph while the panel sits open.
 const POLL_INTERVAL_MS = 5 * 60 * 1000
@@ -151,7 +152,7 @@ export function useMicrosoftTodo(isVisible: boolean): MicrosoftTodoController {
     [mountedRef]
   )
 
-  const replaceTask = useCallback(
+  const applyChanged = useCallback(
     (next: MicrosoftTodoTask): void =>
       writeTasks(next.listId, (current) =>
         current.some((entry) => entry.id === next.id)
@@ -160,11 +161,43 @@ export function useMicrosoftTodo(isVisible: boolean): MicrosoftTodoController {
       ),
     [writeTasks]
   )
-
-  const removeTask = useCallback(
+  const applyRemoved = useCallback(
     (task: MicrosoftTodoTask): void =>
       writeTasks(task.listId, (current) => current.filter((entry) => entry.id !== task.id)),
     [writeTasks]
+  )
+
+  const [eventSource] = useState(() => Symbol('todo-panel'))
+  useEffect(
+    () =>
+      subscribeTodoTaskEvents(eventSource, (event) => {
+        // Why: only lists already loaded here need the calendar's write; others load fresh.
+        if (!cachedTasks.has(event.task.listId)) {
+          return
+        }
+        if (event.type === 'changed') {
+          applyChanged(event.task)
+        } else {
+          applyRemoved(event.task)
+        }
+      }),
+    [applyChanged, applyRemoved, eventSource]
+  )
+
+  const replaceTask = useCallback(
+    (next: MicrosoftTodoTask): void => {
+      applyChanged(next)
+      publishTodoTaskEvent(eventSource, { type: 'changed', task: next })
+    },
+    [applyChanged, eventSource]
+  )
+
+  const removeTask = useCallback(
+    (task: MicrosoftTodoTask): void => {
+      applyRemoved(task)
+      publishTodoTaskEvent(eventSource, { type: 'removed', task })
+    },
+    [applyRemoved, eventSource]
   )
 
   const reportError = useCallback(
@@ -180,35 +213,20 @@ export function useMicrosoftTodo(isVisible: boolean): MicrosoftTodoController {
     (task: MicrosoftTodoTask, completed: boolean): void => {
       // Why: an edit saved a moment earlier is already cached; build on it, not the row's copy.
       const base = cachedTasks.get(task.listId)?.find((entry) => entry.id === task.id) ?? task
-      const isNewest = beginTodoTaskWrite(task.id)
-      // Why: tick instantly; roll back if Microsoft refuses the change.
-      replaceTask({ ...base, completed, completedAt: completed ? new Date().toISOString() : null })
       setPendingTaskIds((current) => new Set(current).add(task.id))
-      void window.api.microsoftTodo
-        .setTaskCompleted({ listId: task.listId, taskId: task.id, completed })
-        .catch(ipcFailure)
-        .then((result) => {
-          const newest = isNewest()
-          if (result.ok) {
-            if (newest) {
-              replaceTask(result.task)
-            }
-          } else {
-            if (newest) {
-              replaceTask(base)
-            }
-            if (mountedRef.current) {
-              setError(result)
-            }
-          }
-          if (mountedRef.current) {
-            setPendingTaskIds((current) => {
-              const next = new Set(current)
-              next.delete(task.id)
-              return next
-            })
-          }
+      void sendTodoCompletion(base, completed, replaceTask).then((failure) => {
+        if (!mountedRef.current) {
+          return
+        }
+        if (failure) {
+          setError(failure)
+        }
+        setPendingTaskIds((current) => {
+          const next = new Set(current)
+          next.delete(task.id)
+          return next
         })
+      })
     },
     [mountedRef, replaceTask]
   )

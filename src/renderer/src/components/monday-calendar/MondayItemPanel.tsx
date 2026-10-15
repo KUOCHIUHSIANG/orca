@@ -5,7 +5,7 @@ import { translate } from '@/i18n/i18n'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
 import { describeMondayFailure } from './monday-failure-copy'
 import { formatMondayDateRange } from './monday-date-range-format'
-import { MondayIconAction } from './MondayIconAction'
+import { CalendarIconAction } from '../calendar/CalendarIconAction'
 import { MondayStatusDot } from './MondayStatusDot'
 import { MondayUpdateCard } from './MondayUpdateCard'
 import { useMondayItemUpdates } from './use-monday-item-updates'
@@ -54,7 +54,7 @@ function ItemDiscussion(props: { itemId: string }): React.JSX.Element {
           {translate('auto.components.mondayCalendar.panel.updates', 'Updates')}
           {updates ? ` · ${updates.length}` : ''}
         </h3>
-        <MondayIconAction
+        <CalendarIconAction
           label={translate(
             'auto.components.mondayCalendar.panel.refreshUpdates',
             'Refresh updates'
@@ -63,7 +63,7 @@ function ItemDiscussion(props: { itemId: string }): React.JSX.Element {
           onClick={refresh}
         >
           <RefreshCw className={cn(loading && 'animate-spin')} />
-        </MondayIconAction>
+        </CalendarIconAction>
       </div>
       {error ? (
         <p role="alert" className="text-xs text-destructive">
@@ -110,12 +110,12 @@ export function MondayItemPanel(props: {
             </p>
           ) : null}
         </div>
-        <MondayIconAction
+        <CalendarIconAction
           label={translate('auto.components.mondayCalendar.panel.close', 'Close')}
           onClick={props.onClose}
         >
           <X />
-        </MondayIconAction>
+        </CalendarIconAction>
       </header>
       <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-3 border-b border-border px-4 py-4">

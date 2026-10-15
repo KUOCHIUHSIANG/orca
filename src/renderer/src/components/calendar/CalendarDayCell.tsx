@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import { isTaiwanDayOff, type TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 
@@ -23,7 +23,7 @@ function holidayLabel(day: TaiwanCalendarDay): string {
 }
 
 /** One background cell of a week row: date number, Taiwan holiday label, and day-off shading. */
-export function MondayDayCell(props: {
+export function CalendarDayCell(props: {
   day: string
   column: number
   outsideMonth: boolean

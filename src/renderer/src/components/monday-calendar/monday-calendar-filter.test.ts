@@ -5,8 +5,7 @@ import {
   filterMondayItems,
   listMondayPeopleWithItems,
   ownerNamesForItem,
-  recentWindowStart,
-  toggleMondayBoardSelection
+  recentWindowStart
 } from './monday-calendar-filter'
 
 function item(
@@ -122,23 +121,6 @@ describe('recentWindowStart', () => {
     expect(recentWindowStart('2026-10-13', 1)).toBe('2026-10-11')
     expect(recentWindowStart('2026-10-13', 2)).toBe('2026-10-04')
     expect(recentWindowStart('2026-10-11', 2)).toBe('2026-10-04')
-  })
-})
-
-describe('toggleMondayBoardSelection', () => {
-  const boards = ['1', '2', '3']
-
-  it('unchecks one board out of "all"', () => {
-    expect(toggleMondayBoardSelection(null, boards, '2')).toEqual(['1', '3'])
-  })
-
-  it('keeps several boards checked and returns to "all" once every board is checked', () => {
-    expect(toggleMondayBoardSelection(['1'], boards, '2')).toEqual(['1', '2'])
-    expect(toggleMondayBoardSelection(['1', '2'], boards, '3')).toBeNull()
-  })
-
-  it('refuses to uncheck the last checked board', () => {
-    expect(toggleMondayBoardSelection(['2'], boards, '2')).toEqual(['2'])
   })
 })
 

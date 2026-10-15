@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-export function MondayIconAction(props: {
+export function CalendarIconAction(props: {
   label: string
   onClick: () => void
   disabled?: boolean
