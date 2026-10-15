@@ -8,6 +8,7 @@ export const microsoftTodoApi: MicrosoftTodoApi = {
   signOut: () => ipcRenderer.invoke('todo:signOut'),
   fetchLists: () => ipcRenderer.invoke('todo:fetchLists'),
   fetchTasks: (args) => ipcRenderer.invoke('todo:fetchTasks', args),
+  fetchCalendar: (args) => ipcRenderer.invoke('todo:fetchCalendar', args),
   fetchChecklist: (args) => ipcRenderer.invoke('todo:fetchChecklist', args),
   createTask: (args) => ipcRenderer.invoke('todo:createTask', args),
   setTaskCompleted: (args) => ipcRenderer.invoke('todo:setTaskCompleted', args),

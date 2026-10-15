@@ -5,7 +5,7 @@ import type {
   MondayCalendarSnapshot,
   MondayPerson
 } from '../../../../shared/monday-calendar-types'
-import { parseIsoDate, toLocalIsoDate } from './monday-month-layout'
+import { parseIsoDate, toLocalIsoDate } from '../calendar/calendar-dates'
 
 /** First day (Sunday) of the oldest week in an N-week window that ends with the current week. */
 export function recentWindowStart(today: string, weeks: number): string {
@@ -71,22 +71,6 @@ export function effectiveBoardSelection(
  * last checked board can't be unchecked. Every board checked collapses back to null so boards
  * added later are included automatically.
  */
-export function toggleMondayBoardSelection(
-  selected: readonly string[] | null,
-  boardIds: readonly string[],
-  boardId: string
-): string[] | null {
-  const current = selected ?? boardIds
-  const next = current.includes(boardId)
-    ? current.filter((id) => id !== boardId)
-    : [...current, boardId]
-  if (next.length === 0) {
-    return selected ? [...selected] : null
-  }
-  return boardIds.every((id) => next.includes(id))
-    ? null
-    : boardIds.filter((id) => next.includes(id))
-}
 
 /** People who own at least one task, so the filter never offers an empty choice. */
 export function listMondayPeopleWithItems(snapshot: MondayCalendarSnapshot | null): MondayPerson[] {

@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   isDatedMondayItem,
   type MondayCalendarItem
 } from '../../../../shared/monday-calendar-types'
 import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 import { ownerNamesForItem } from './monday-calendar-filter'
-import type { MonthCursor } from './monday-month-layout'
+import type { MonthCursor } from '../calendar/calendar-dates'
+import { useCalendarPanelEscape } from '../calendar/use-calendar-panel-escape'
 import { MondayItemPanel } from './MondayItemPanel'
 import { MondayMonthGrid } from './MondayMonthGrid'
 import { MondayUndatedSection } from './MondayUndatedSection'
@@ -32,27 +33,7 @@ export function MondayCalendarWorkspace(props: {
     setSelectedItemId((current) => (current === itemId ? null : itemId))
   const panelOpen = selectedItem !== null
 
-  useEffect(() => {
-    if (!panelOpen) {
-      return
-    }
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== 'Escape') {
-        return
-      }
-      const target = event.target
-      // Why: an unrelated Radix layer (e.g. a sidebar hint) can claim Escape first; focus inside
-      // the calendar still means the user is addressing it. Focus elsewhere defers to that layer.
-      const insideCalendar = target instanceof Node && containerRef.current?.contains(target)
-      if (insideCalendar || (!event.defaultPrevented && target === document.body)) {
-        event.preventDefault()
-        setSelectedItemId(null)
-      }
-    }
-    // Why: bubble phase lets this page's own popovers consume Escape first.
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [panelOpen])
+  useCalendarPanelEscape(panelOpen, containerRef, () => setSelectedItemId(null))
 
   return (
     <div ref={containerRef} className="flex min-h-0 flex-1">

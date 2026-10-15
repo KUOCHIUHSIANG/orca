@@ -1,6 +1,6 @@
 import { getIntlLocale } from '@/i18n/i18n'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
-import { parseIsoDate } from './monday-month-layout'
+import { parseIsoDate } from '../calendar/calendar-dates'
 
 /** "10/13 (Tue) – 10/16 (Fri)" in the UI language, or null for an undated task. */
 export function formatMondayDateRange(item: MondayCalendarItem): string | null {

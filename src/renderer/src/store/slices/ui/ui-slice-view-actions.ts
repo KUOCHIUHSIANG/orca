@@ -109,6 +109,19 @@ export function createUiViewActions(set: UISliceSet, get: UISliceGet): Partial<U
         activeView: state.previousViewBeforeMonday,
         worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'monday')
       })),
+    openTodoPage: () => {
+      get().recordViewVisit('todo')
+      set((state) => ({
+        activeView: 'todo',
+        previousViewBeforeTodo:
+          state.activeView === 'todo' ? state.previousViewBeforeTodo : state.activeView
+      }))
+    },
+    closeTodoPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeTodo,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'todo')
+      })),
     openMobilePage: () =>
       set((state) => ({
         activeView: 'mobile',

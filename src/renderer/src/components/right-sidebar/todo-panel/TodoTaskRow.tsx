@@ -9,8 +9,9 @@ import { translate } from '@/i18n/i18n'
 import type { MicrosoftTodoTask } from '../../../../../shared/microsoft-todo-types'
 import { TodoTaskDetails } from './TodoTaskDetails'
 import { dueLabel } from './todo-due-dates'
-import { hasTodoChanges, pendingTodoChanges, type TodoTaskChanges } from './todo-task-edits'
+import type { TodoTaskChanges } from './todo-task-edits'
 import type { TodoSettlePhase } from './use-todo-completion-settle'
+import { useTodoTaskDraft } from './use-todo-task-draft'
 
 function RowIconButton(props: {
   label: string
@@ -50,12 +51,9 @@ export function TodoTaskRow(props: {
 }): React.JSX.Element {
   const { task } = props
   const [expanded, setExpanded] = useState(false)
-  const [edits, setEdits] = useState<TodoTaskChanges>({})
-  const [saving, setSaving] = useState(false)
+  const draft = useTodoTaskDraft(task, props.onUpdate)
   const rowRef = useRef<HTMLDivElement>(null)
   const shownDueRef = useRef(task.dueDate)
-  const changes = pendingTodoChanges(task, edits)
-  const dirty = hasTodoChanges(changes)
   const settling = props.settle !== undefined && task.completed
   const overdue = !task.completed && task.dueDate !== null && task.dueDate < props.today
 
@@ -70,35 +68,13 @@ export function TodoTaskRow(props: {
     }
   }, [expanded, task.dueDate])
 
-  /** Sends the draft; it is cleared only once Microsoft accepts it, so a failed save can be retried. */
-  const save = async (): Promise<boolean> => {
-    if (!dirty) {
-      return true
-    }
-    const sent = edits
-    const saved = await props.onUpdate(changes)
-    if (saved) {
-      // Why: keep anything typed while the request was out; it already diffs against the saved task.
-      setEdits((current) => (current === sent ? {} : current))
-    }
-    return saved
-  }
-  const saveAndCollapse = (): void => {
-    setSaving(true)
-    void save().then((saved) => {
-      setSaving(false)
-      if (saved) {
-        setExpanded(false)
-      }
-    })
-  }
   const toggle = (): void => {
-    if (saving) {
+    if (draft.saving) {
       return
     }
     // Why: collapsing must not silently drop edits the user forgot to save.
     if (expanded) {
-      void save()
+      void draft.save()
     }
     setExpanded(!expanded)
   }
@@ -121,7 +97,7 @@ export function TodoTaskRow(props: {
                   : translate('auto.components.todoPanel.row.markDone', 'Mark as completed')
               }
               onCheckedChange={(checked) => {
-                void save()
+                void draft.save()
                 props.onCompletedChange(checked === true)
               }}
             />
@@ -198,13 +174,13 @@ export function TodoTaskRow(props: {
                 <TodoTaskDetails
                   task={task}
                   today={props.today}
-                  edits={edits}
-                  dirty={dirty}
-                  saving={saving}
-                  onEdit={(next) => setEdits((current) => ({ ...current, ...next }))}
-                  onSave={saveAndCollapse}
+                  edits={draft.edits}
+                  dirty={draft.dirty}
+                  saving={draft.saving}
+                  onEdit={draft.editDraft}
+                  onSave={() => draft.saveThen(() => setExpanded(false))}
                   onDelete={() => {
-                    setEdits({})
+                    draft.discard()
                     props.onDelete()
                   }}
                 />

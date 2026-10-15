@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { DatedMondayItem } from '../../../../shared/monday-calendar-types'
-import {
-  buildMonthDays,
-  buildMonthLayout,
-  isInMonth,
-  layoutWeekSegments,
-  shiftMonth
-} from './monday-month-layout'
+import { buildMonthDays } from '../calendar/calendar-dates'
+import { buildMonthLayout, layoutWeekSegments } from './monday-month-layout'
 
 function item(id: string, startDate: string, endDate: string): DatedMondayItem {
   return {
@@ -29,36 +24,6 @@ function item(id: string, startDate: string, endDate: string): DatedMondayItem {
 
 // Week of Sun 2026-10-11 .. Sat 2026-10-17.
 const WEEK = buildMonthDays({ year: 2026, month: 9 })[2]
-
-describe('buildMonthDays', () => {
-  it('covers October 2026 in Sunday-first weeks', () => {
-    const weeks = buildMonthDays({ year: 2026, month: 9 })
-    expect(weeks).toHaveLength(5)
-    expect(weeks[0][0]).toBe('2026-09-27')
-    expect(weeks[0][4]).toBe('2026-10-01')
-    expect(weeks[4][6]).toBe('2026-10-31')
-  })
-
-  it('handles a month that needs six rows', () => {
-    const weeks = buildMonthDays({ year: 2026, month: 7 })
-    expect(weeks).toHaveLength(6)
-    expect(weeks[5][1]).toBe('2026-08-31')
-  })
-})
-
-describe('shiftMonth', () => {
-  it('wraps across years', () => {
-    expect(shiftMonth({ year: 2026, month: 11 }, 1)).toEqual({ year: 2027, month: 0 })
-    expect(shiftMonth({ year: 2026, month: 0 }, -1)).toEqual({ year: 2025, month: 11 })
-  })
-})
-
-describe('isInMonth', () => {
-  it('matches only days of the cursor month', () => {
-    expect(isInMonth('2026-10-01', { year: 2026, month: 9 })).toBe(true)
-    expect(isInMonth('2026-09-30', { year: 2026, month: 9 })).toBe(false)
-  })
-})
 
 describe('layoutWeekSegments', () => {
   it('clips multi-week items and marks continuation', () => {

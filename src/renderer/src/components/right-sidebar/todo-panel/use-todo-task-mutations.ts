@@ -26,7 +26,13 @@ function applyChanges(task: MicrosoftTodoTask, changes: TodoTaskChanges): Micros
   }
 }
 
-export function useTodoTaskMutations(todo: MicrosoftTodoController): {
+/** The cache-and-view writers a To Do view hands to the edit/delete mutations. */
+export type TodoTaskWriters = Pick<
+  MicrosoftTodoController,
+  'replaceTask' | 'removeTask' | 'reportError'
+>
+
+export function useTodoTaskMutations(todo: TodoTaskWriters): {
   /** Resolves true once Microsoft accepted the edit. */
   updateTask: (task: MicrosoftTodoTask, changes: TodoTaskChanges) => Promise<boolean>
   deleteTask: (task: MicrosoftTodoTask) => void

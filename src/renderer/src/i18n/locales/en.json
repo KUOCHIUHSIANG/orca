@@ -6063,7 +6063,8 @@
           "fee535205b": "Tasks",
           "d599269755": "Hide from sidebar",
           "artifacts": "Artifacts",
-          "skills": "Skills"
+          "skills": "Skills",
+          "todo": "To Do"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "Clear",
@@ -18692,6 +18693,20 @@
         "copyFailed": "Could not copy the link.",
         "signingIn": "Signing in…",
         "cancel": "Cancel"
+      },
+      "todoCalendar": {
+        "addOn": "Add a task on {{value0}}",
+        "closeDetails": "Close details",
+        "view": {
+          "week": "Week",
+          "month": "Month"
+        },
+        "previousWeek": "Previous week",
+        "nextWeek": "Next week",
+        "lists": "Lists",
+        "allLists": "All lists",
+        "showCompleted": "Show completed",
+        "refresh": "Refresh"
       }
     },
     "i18n": {
