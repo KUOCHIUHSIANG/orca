@@ -1,6 +1,11 @@
 // Hands typecheck errors left by a fork sync (upstream renamed or reshaped what fork code uses) to
 // headless Claude Code, so the app's update button can still finish the sync.
-import { FILE_TOOLS, READ_ONLY_GIT_TOOLS, runClaudeHeadless } from './claude-headless.mjs'
+import {
+  FILE_TOOLS,
+  READ_ONLY_GIT_TOOLS,
+  runClaudeHeadless,
+  SUMMARY_INSTRUCTION
+} from './claude-headless.mjs'
 
 const MAX_OUTPUT_CHARS = 40_000
 // Why exact commands: piped or chained variants would need approval a headless run cannot give.
@@ -22,7 +27,7 @@ function buildPrompt({ onto, base, output }) {
     'Run `pnpm tc` (or `pnpm tc:node` / `pnpm tc:web` / `pnpm tc:cli`) exactly as written, without pipes, to check your fix.',
     'Only edit files. Do not stage or commit; the sync script commits your changes.',
     'If you cannot fix an error with confidence, leave it and say why.',
-    'Finish with a brief summary in Traditional Chinese, one short line per file you changed.'
+    SUMMARY_INSTRUCTION
   ].join('\n')
 }
 
