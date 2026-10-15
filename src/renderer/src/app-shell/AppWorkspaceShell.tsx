@@ -25,6 +25,7 @@ const ArtifactsPage = lazy(() => import('../components/artifacts/ArtifactsPage')
 const WorkspaceSpacePage = lazy(() => import('../components/workspace-space/WorkspaceSpacePage'))
 const MobilePage = lazy(() => import('../components/mobile/MobilePage'))
 const MondayCalendarPage = lazy(() => import('../components/monday-calendar/MondayCalendarPage'))
+const TodoCalendarPage = lazy(() => import('../components/todo-calendar/TodoCalendarPage'))
 const Terminal = lazy(() => import('../components/Terminal'))
 
 type WorktreeSidebarScrollRefs = {
@@ -78,6 +79,7 @@ function ActivePage({ layout }: { layout: AppChromeLayout }): React.JSX.Element 
       {activeView === 'space' ? <WorkspaceSpacePage /> : null}
       {activeView === 'mobile' ? <MobilePage /> : null}
       {activeView === 'monday' ? <MondayCalendarPage /> : null}
+      {activeView === 'todo' ? <TodoCalendarPage /> : null}
       {activeView === 'terminal' && creationLayoutActive && activePendingCreationId ? (
         <WorktreeCreationPanel
           creationId={activePendingCreationId}
@@ -157,11 +159,12 @@ export function AppWorkspaceShell(props: {
               )
             ) : null}
             <div className="flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden">
-              {/* Why: automations/artifacts/monday own their page headers; the stacked titlebar would be an empty 36px stripe. */}
+              {/* Why: automations/artifacts/monday/todo own their page headers; the stacked titlebar would be an empty 36px stripe. */}
               {layout.stackedSidebarOpen &&
               layout.activeView !== 'automations' &&
               layout.activeView !== 'artifacts' &&
-              layout.activeView !== 'monday' ? (
+              layout.activeView !== 'monday' &&
+              layout.activeView !== 'todo' ? (
                 <div className="titlebar">{titlebarMainStrip}</div>
               ) : null}
               <div className="relative flex flex-1 min-w-0 min-h-0 overflow-hidden">

@@ -4,7 +4,7 @@ import { CommentMarkdownAsync } from '@/components/sidebar/comment-markdown-lazy
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
 import { formatUiRelativeTimeFromDate } from '@/i18n/relative-time-format'
-import { MondayIconAction } from './MondayIconAction'
+import { CalendarIconAction } from '../calendar/CalendarIconAction'
 import { MondayErrorBanner } from './MondayPageStates'
 import type { MondayDocsController } from './use-monday-docs'
 
@@ -16,19 +16,19 @@ export function MondayDocsToolbar(props: {
 }): React.JSX.Element {
   return (
     <div className="ml-auto flex items-center gap-2">
-      <MondayIconAction
+      <CalendarIconAction
         label={translate('auto.components.mondayCalendar.toolbar.refresh', 'Refresh')}
         disabled={props.docs.loading}
         onClick={props.docs.refresh}
       >
         <RefreshCw className={cn(props.docs.loading && 'animate-spin')} />
-      </MondayIconAction>
-      <MondayIconAction
+      </CalendarIconAction>
+      <CalendarIconAction
         label={translate('auto.components.mondayCalendar.toolbar.settings', 'Monday settings')}
         onClick={props.onOpenSettings}
       >
         <Settings />
-      </MondayIconAction>
+      </CalendarIconAction>
     </div>
   )
 }

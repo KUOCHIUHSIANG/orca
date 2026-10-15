@@ -11,7 +11,7 @@ import {
   filterMondayItems,
   listMondayPeopleWithItems
 } from './monday-calendar-filter'
-import { monthCursorOf, toLocalIsoDate } from './monday-month-layout'
+import { monthCursorOf, toLocalIsoDate } from '../calendar/calendar-dates'
 import { MondayCalendarToolbar } from './MondayCalendarToolbar'
 import { connectionReferenceLines } from './MondayConnectForm'
 import { MondayDocsToolbar, MondayDocsView } from './MondayDocsView'
@@ -20,7 +20,7 @@ import { MondayCalendarWorkspace } from './MondayCalendarWorkspace'
 import { MondaySettingsDialog } from './MondaySettingsDialog'
 import { useMondayCalendar } from './use-monday-calendar'
 import { useMondayDocs } from './use-monday-docs'
-import { useTaiwanHolidays } from './use-taiwan-holidays'
+import { useTaiwanHolidays } from '../calendar/use-taiwan-holidays'
 
 const EMPTY_BOARD_SETTINGS: MondayBoardDisplaySettings = {}
 

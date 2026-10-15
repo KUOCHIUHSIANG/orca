@@ -6,14 +6,12 @@ import { cn } from '@/lib/utils'
 import { getIntlLocale, translate } from '@/i18n/i18n'
 import {
   addDays,
-  dueLabel,
-  fromIsoDate,
-  monthGrid,
-  monthOf,
-  nextMonday,
+  monthCursorOfIso,
+  parseIsoDate,
   shiftMonth,
-  type TodoMonth
-} from './todo-due-dates'
+  type MonthCursor
+} from '@/components/calendar/calendar-dates'
+import { dueLabel, monthGrid, nextMonday } from './todo-due-dates'
 
 const ARROW_STEPS = new Map([
   ['ArrowLeft', -1],
@@ -23,7 +21,7 @@ const ARROW_STEPS = new Map([
 ])
 
 function formatDate(iso: string, options: Intl.DateTimeFormatOptions): string {
-  return new Intl.DateTimeFormat(getIntlLocale(), options).format(fromIsoDate(iso))
+  return new Intl.DateTimeFormat(getIntlLocale(), options).format(parseIsoDate(iso))
 }
 
 /** Due date button opening quick picks and a month grid; arrow keys move between days. */
@@ -35,7 +33,7 @@ export function TodoDueDatePicker(props: {
 }): React.JSX.Element {
   const { value, today } = props
   const [open, setOpen] = useState(false)
-  const [month, setMonth] = useState<TodoMonth>(() => monthOf(value ?? today))
+  const [month, setMonth] = useState<MonthCursor>(() => monthCursorOfIso(value ?? today))
   const [focusDay, setFocusDay] = useState<string | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const days = monthGrid(month)
@@ -74,7 +72,7 @@ export function TodoDueDatePicker(props: {
       open={open}
       onOpenChange={(next) => {
         if (next) {
-          setMonth(monthOf(value ?? today))
+          setMonth(monthCursorOfIso(value ?? today))
           setFocusDay(null)
         }
         setOpen(next)
@@ -155,7 +153,7 @@ export function TodoDueDatePicker(props: {
               }
               event.preventDefault()
               const next = addDays(current, step)
-              setMonth(monthOf(next))
+              setMonth(monthCursorOfIso(next))
               setFocusDay(next)
             }}
           >
@@ -176,7 +174,7 @@ export function TodoDueDatePicker(props: {
                   day.iso === value && 'bg-primary text-primary-foreground hover:bg-primary/90'
                 )}
               >
-                {fromIsoDate(day.iso).getDate()}
+                {parseIsoDate(day.iso).getDate()}
               </button>
             ))}
           </div>

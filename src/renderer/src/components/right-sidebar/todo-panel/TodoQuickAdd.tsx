@@ -14,13 +14,20 @@ export function TodoQuickAdd(props: {
   disabled: boolean
   today: string
   onCreate: (draft: TodoDraft) => Promise<boolean>
+  /** Calendar days add with their own date preset. */
+  defaultDueDate?: string | null
+  /** Extra controls beside the date picker, e.g. which list the task goes into. */
+  extraControls?: React.ReactNode
+  autoFocus?: boolean
 }): React.JSX.Element {
+  const defaultDueDate = props.defaultDueDate ?? null
   const [title, setTitle] = useState('')
   const [notes, setNotes] = useState('')
-  const [dueDate, setDueDate] = useState<string | null>(null)
+  const [dueDate, setDueDate] = useState<string | null>(defaultDueDate)
   const [saving, setSaving] = useState(false)
   const titleRef = useRef<HTMLInputElement>(null)
-  const expanded = title.trim() !== '' || notes !== '' || dueDate !== null
+  const expanded =
+    title.trim() !== '' || notes !== '' || dueDate !== defaultDueDate || props.extraControls != null
 
   const submit = (): void => {
     const trimmed = title.trim()
@@ -33,7 +40,7 @@ export function TodoQuickAdd(props: {
       if (created) {
         setTitle('')
         setNotes('')
-        setDueDate(null)
+        setDueDate(defaultDueDate)
         titleRef.current?.focus()
       }
     })
@@ -49,6 +56,7 @@ export function TodoQuickAdd(props: {
       {/* Why readOnly, not disabled, while saving: disabling drops focus mid-entry. */}
       <Input
         ref={titleRef}
+        autoFocus={props.autoFocus}
         value={title}
         disabled={props.disabled}
         readOnly={saving}
@@ -84,12 +92,15 @@ export function TodoQuickAdd(props: {
               }}
             />
             <div className="flex items-center justify-between gap-2">
-              <TodoDueDatePicker
-                value={dueDate}
-                today={props.today}
-                disabled={saving}
-                onChange={setDueDate}
-              />
+              <div className="flex min-w-0 items-center gap-1.5">
+                <TodoDueDatePicker
+                  value={dueDate}
+                  today={props.today}
+                  disabled={saving}
+                  onChange={setDueDate}
+                />
+                {props.extraControls}
+              </div>
               <Button type="submit" size="xs" disabled={!title.trim() || saving}>
                 {saving ? <Loader2 className="animate-spin" /> : <Plus />}
                 {translate('auto.components.todoPanel.add.submit', 'Add')}

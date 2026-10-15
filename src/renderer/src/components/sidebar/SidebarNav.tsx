@@ -5,6 +5,7 @@ import {
   CalendarDays,
   EyeOff,
   Files,
+  ListTodo,
   Search,
   Smartphone
 } from 'lucide-react'
@@ -66,6 +67,7 @@ const SidebarNav = React.memo(function SidebarNav() {
   const openArtifactsPage = useAppStore((s) => s.openArtifactsPage)
   const openSkillsPage = useAppStore((s) => s.openSkillsPage)
   const openMondayPage = useAppStore((s) => s.openMondayPage)
+  const openTodoPage = useAppStore((s) => s.openTodoPage)
   const openModal = useAppStore((s) => s.openModal)
   const updateSettings = useAppStore((s) => s.updateSettings)
   const activeView = useAppStore((s) => s.activeView)
@@ -79,6 +81,7 @@ const SidebarNav = React.memo(function SidebarNav() {
   const artifactsActive = activeView === 'artifacts'
   const skillsActive = activeView === 'skills'
   const mondayActive = activeView === 'monday'
+  const todoActive = activeView === 'todo'
   const mobileOnboardingBadge = useMobileSidebarOnboardingBadge(showMobileButton)
   const hideAutomationsButton = React.useCallback(() => {
     void updateSettings({ showAutomationsButton: false })
@@ -146,6 +149,25 @@ const SidebarNav = React.memo(function SidebarNav() {
         />
         <span className="flex-1">
           {translate('auto.components.sidebar.SidebarNav.monday', 'Monday')}
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={openTodoPage}
+        aria-current={todoActive ? 'page' : undefined}
+        className={cn(
+          'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-medium tracking-tight transition-colors',
+          todoActive
+            ? 'bg-worktree-sidebar-accent text-worktree-sidebar-accent-foreground'
+            : 'text-worktree-sidebar-foreground/60 hover:bg-worktree-sidebar-foreground/8'
+        )}
+      >
+        <ListTodo
+          className={cn('size-4 shrink-0', !todoActive && 'text-worktree-sidebar-foreground/30')}
+          strokeWidth={todoActive ? 2.25 : 1.75}
+        />
+        <span className="flex-1">
+          {translate('auto.components.sidebar.SidebarNav.todo', 'To Do')}
         </span>
       </button>
       {showArtifactsButton ? (

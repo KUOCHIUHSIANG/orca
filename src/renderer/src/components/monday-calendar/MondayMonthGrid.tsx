@@ -1,38 +1,14 @@
 import { useMemo, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { getIntlLocale } from '@/i18n/i18n'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
 import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
+import { CalendarDayCell } from '../calendar/CalendarDayCell'
+import { CalendarWeekdayHeader } from '../calendar/CalendarWeekdayHeader'
+import { isInMonth, toLocalIsoDate, type MonthCursor } from '../calendar/calendar-dates'
 import { ownerNamesForItem } from './monday-calendar-filter'
-import { MondayDayCell } from './MondayDayCell'
 import { MondayItemBar } from './MondayItemBar'
-import {
-  buildMonthLayout,
-  isInMonth,
-  toLocalIsoDate,
-  type MondayCalendarWeek,
-  type MonthCursor
-} from './monday-month-layout'
-
-// 2026-01-04 is a Sunday; the grid is Sunday-first.
-const SUNDAY_UTC_MS = Date.UTC(2026, 0, 4)
-const DAY_MS = 86_400_000
+import { buildMonthLayout, type MondayCalendarWeek } from './monday-month-layout'
 
 const NO_HOLIDAYS: readonly TaiwanCalendarDay[] = []
-
-function isWeekendColumn(column: number): boolean {
-  return column === 0 || column === 6
-}
-
-function useWeekdayLabels(): string[] {
-  const locale = getIntlLocale()
-  return useMemo(() => {
-    const formatter = new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: 'UTC' })
-    return Array.from({ length: 7 }, (_, index) =>
-      formatter.format(new Date(SUNDAY_UTC_MS + index * DAY_MS))
-    )
-  }, [locale])
-}
 
 function MondayWeekRow(props: {
   week: MondayCalendarWeek
@@ -51,7 +27,7 @@ function MondayWeekRow(props: {
     <div className="relative min-h-24 shrink-0 grow border-b border-border">
       <div className="absolute inset-0 grid grid-cols-7" aria-hidden>
         {week.days.map((day, index) => (
-          <MondayDayCell
+          <CalendarDayCell
             key={day}
             day={day}
             column={index}
@@ -90,7 +66,6 @@ export function MondayMonthGrid(props: {
   selectedItemId: string | null
   onSelectItem: (itemId: string) => void
 }): React.JSX.Element {
-  const weekdayLabels = useWeekdayLabels()
   const weeks = useMemo(
     () => buildMonthLayout(props.cursor, props.items),
     [props.cursor, props.items]
@@ -101,19 +76,7 @@ export function MondayMonthGrid(props: {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-3 pb-3 md:px-5">
-      <div className="grid shrink-0 grid-cols-7 border-b border-border pb-1.5">
-        {weekdayLabels.map((label, index) => (
-          <div
-            key={label}
-            className={cn(
-              'px-1.5 text-[11px] font-medium',
-              isWeekendColumn(index) ? 'text-muted-foreground/60' : 'text-muted-foreground'
-            )}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
+      <CalendarWeekdayHeader />
       <div className="scrollbar-sleek flex min-h-0 flex-1 flex-col overflow-y-auto">
         {weeks.map((week, index) => (
           <MondayWeekRow
