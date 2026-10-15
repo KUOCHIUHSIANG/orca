@@ -70,7 +70,8 @@ function run(command, commandArgs) {
     exec(command, commandArgs, process.env)
   } catch (error) {
     // Why: Orca's update card shows only the stderr tail; an uncaught stack trace hides the failed step.
-    fail(`${command} ${commandArgs[0]} failed (exit ${error.status ?? error.signal}).`)
+    const step = command === 'node' ? path.basename(commandArgs[0]) : `${command} ${commandArgs[0]}`
+    fail(`${step} failed (exit ${error.status ?? error.signal}).`)
   }
 }
 
