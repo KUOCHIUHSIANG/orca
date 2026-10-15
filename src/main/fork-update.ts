@@ -5,6 +5,7 @@ import type { UpdateStatus } from '../shared/update-status-types'
 import { spawnProcess } from '../shared/child-process/run-process'
 import { AUTO_UPDATE_CHECK_INTERVAL_MS } from './updater/updater-state'
 import { installForkBuild } from './fork-update-install'
+import { onForkBuildProgress } from './fork-build-progress'
 
 type ForkSource = {
   repoRoot: string
@@ -146,15 +147,19 @@ export function syncAndBuild(): void {
     // exits on the single-instance lock, instead of running the script.
     env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' }
   })
-  const stages: Record<string, number> = {
-    fetch: 5,
-    rebase: 20,
-    resolve: 25,
-    install: 35,
-    verify: 50,
-    repair: 55,
-    build: 60
-  }
+  // Why: the scripts' progress file knows each step's expected length; the card follows it.
+  const stopProgress = onForkBuildProgress((progress) => {
+    if (forkStatus.state !== 'downloading' || !progress?.estimatedEndAt) {
+      return
+    }
+    const span = progress.estimatedEndAt - progress.startedAt
+    const share = span > 0 ? (Date.now() - progress.startedAt) / span : 0
+    broadcastStatus({
+      state: 'downloading',
+      percent: Math.min(99, Math.max(1, Math.round(share * 100))),
+      version
+    })
+  })
 
   let built = false
   let lastLine = ''
@@ -170,13 +175,7 @@ export function syncAndBuild(): void {
       }
       try {
         const event = JSON.parse(line.slice('ORCA_SYNC_EVENT '.length))
-        if (event.type === 'stage' && stages[event.stage] !== undefined) {
-          broadcastStatus({
-            state: 'downloading',
-            percent: stages[event.stage],
-            version
-          })
-        } else if (event.type === 'conflict') {
+        if (event.type === 'conflict') {
           const files = Array.isArray(event.files) ? event.files.join(', ') : ''
           const reason = typeof event.reason === 'string' ? `${event.reason}。` : ''
           broadcastStatus({
@@ -204,10 +203,12 @@ export function syncAndBuild(): void {
   })
 
   child.on('error', (error) => {
+    stopProgress()
     broadcastStatus({ state: 'error', message: `無法啟動同步腳本：${error.message}`, version })
   })
 
   child.on('close', (code) => {
+    stopProgress()
     if (code === 2) {
       // conflict exit — event already emitted above
       return

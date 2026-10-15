@@ -18707,6 +18707,17 @@
         "allLists": "All lists",
         "showCompleted": "Show completed",
         "refresh": "Refresh"
+      },
+      "forkBuild": {
+        "justStarted": "Just started",
+        "elapsed": "{{value0}} min elapsed",
+        "restarting": "Restarting soon",
+        "claude": "Claude is fixing conflicts",
+        "almostDone": "almost done",
+        "underMinute": "under a minute left",
+        "minutesLeft": "about {{value0}} min left",
+        "syncing": "Syncing upstream",
+        "building": "Building"
       }
     },
     "i18n": {

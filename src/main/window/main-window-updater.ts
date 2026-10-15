@@ -21,6 +21,7 @@ import {
   type UpdaterSetupOptions
 } from '../updater'
 import {
+  getForkSource,
   isForkBuild,
   checkForkUpdate,
   getForkUpdateStatus,
@@ -29,6 +30,7 @@ import {
   syncAndBuild
 } from '../fork-update'
 import { registerForkSyncSummaryHandlers } from '../fork-sync-summary'
+import { registerForkBuildProgress } from '../fork-build-progress'
 
 const UPDATER_SETUP_FALLBACK_MS = 15_000
 
@@ -213,6 +215,7 @@ export function registerUpdaterHandlers(_store: Store): void {
     }
   )
   registerForkSyncSummaryHandlers()
+  registerForkBuildProgress(getForkSource()?.repoRoot ?? null)
 }
 
 function assertTrustedUpdaterRecoverySender(event: IpcMainInvokeEvent): void {

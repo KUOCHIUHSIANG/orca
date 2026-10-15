@@ -18079,6 +18079,17 @@
         "allLists": "所有清單",
         "showCompleted": "顯示已完成",
         "refresh": "重新整理"
+      },
+      "forkBuild": {
+        "justStarted": "剛開始",
+        "elapsed": "已經過 {{value0}} 分鐘",
+        "restarting": "即將重新啟動",
+        "claude": "Claude 正在處理衝突",
+        "almostDone": "快完成了",
+        "underMinute": "不到 1 分鐘",
+        "minutesLeft": "約剩 {{value0}} 分鐘",
+        "syncing": "同步上游",
+        "building": "建置中"
       }
     },
     "i18n": {

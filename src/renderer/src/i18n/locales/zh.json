@@ -18445,6 +18445,17 @@
         "allLists": "所有清单",
         "showCompleted": "显示已完成",
         "refresh": "刷新"
+      },
+      "forkBuild": {
+        "justStarted": "刚开始",
+        "elapsed": "已经过 {{value0}} 分钟",
+        "restarting": "即将重新启动",
+        "claude": "Claude 正在处理冲突",
+        "almostDone": "快完成了",
+        "underMinute": "不到 1 分钟",
+        "minutesLeft": "约剩 {{value0}} 分钟",
+        "syncing": "同步上游",
+        "building": "构建中"
       }
     },
     "i18n": {
