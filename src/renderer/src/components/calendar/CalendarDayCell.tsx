@@ -1,26 +1,6 @@
 import { cn } from '@/lib/utils'
-import { translate } from '@/i18n/i18n'
-import { isTaiwanDayOff, type TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
-
-function holidayLabel(day: TaiwanCalendarDay): string {
-  switch (day.kind) {
-    case 'makeup-workday':
-      return translate('auto.components.mondayCalendar.holidays.makeupWorkday', 'Make-up workday')
-    case 'substitute':
-      return day.name
-        ? translate(
-            'auto.components.mondayCalendar.holidays.substituteFor',
-            '{{value0}} (day off)',
-            {
-              value0: day.name
-            }
-          )
-        : translate('auto.components.mondayCalendar.holidays.substitute', 'Day off in lieu')
-    case 'holiday':
-    case 'observance':
-      return day.name ?? ''
-  }
-}
+import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
+import { describeCalendarDay } from './calendar-day-off'
 
 /** One background cell of a week row: date number, Taiwan holiday label, and day-off shading. */
 export function CalendarDayCell(props: {
@@ -32,12 +12,10 @@ export function CalendarDayCell(props: {
   striped: boolean
   holidays: readonly TaiwanCalendarDay[]
 }): React.JSX.Element {
-  const weekend = props.column === 0 || props.column === 6
-  const makeupWorkday = props.holidays.some((day) => day.kind === 'makeup-workday')
-  const holidayOff = props.holidays.some((day) => isTaiwanDayOff(day.kind))
-  // Why: a Saturday 補班 is a working day, so it must not read as a weekend.
-  const dayOff = holidayOff || (weekend && !makeupWorkday)
-  const label = props.holidays.map(holidayLabel).filter(Boolean).join('、')
+  const { holidayOff, makeupWorkday, dayOff, label } = describeCalendarDay(
+    props.column,
+    props.holidays
+  )
   return (
     <div
       data-day-off={holidayOff ? 'holiday' : dayOff ? 'weekend' : undefined}
@@ -56,11 +34,16 @@ export function CalendarDayCell(props: {
       <span
         className={cn(
           'inline-flex size-5 shrink-0 items-center justify-center rounded-full text-xs tabular-nums',
+          // Why: days off read red, as on a printed Taiwan calendar; overdue red is on task titles.
           props.today
             ? 'bg-primary font-semibold text-primary-foreground'
-            : props.outsideMonth || dayOff
-              ? 'text-muted-foreground/60'
-              : 'text-muted-foreground'
+            : dayOff
+              ? props.outsideMonth
+                ? 'text-destructive/60'
+                : 'text-destructive'
+              : props.outsideMonth
+                ? 'text-muted-foreground/60'
+                : 'text-muted-foreground'
         )}
       >
         {Number(props.day.slice(8))}
