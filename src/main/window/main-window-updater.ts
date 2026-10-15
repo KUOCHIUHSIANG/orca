@@ -34,6 +34,7 @@ import {
   startForkUpdateChecks,
   syncAndBuild
 } from '../fork-update'
+import { registerForkSyncSummaryHandlers } from '../fork-sync-summary'
 
 const UPDATER_SETUP_FALLBACK_MS = 15_000
 
@@ -224,6 +225,7 @@ export function registerUpdaterHandlers(_store: Store): void {
       }
     }
   )
+  registerForkSyncSummaryHandlers()
 }
 
 function assertTrustedUpdaterRecoverySender(event: IpcMainInvokeEvent): void {

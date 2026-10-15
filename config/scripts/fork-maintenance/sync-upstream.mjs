@@ -20,14 +20,16 @@
 //                    every conflicting commit from a merge-tree dry run in the conflict event.
 //                    Typecheck errors after the rebase also go to Claude and its fix is committed;
 //                    any failure before the typecheck passes resets the branch to where it started.
-//                    Claude's summaries ride on the done event and in .git/orca-sync-summary.md.
+//                    Claude's summaries go to .git/orca-sync-summary.md, which the updated app
+//                    shows once after its install restarts it.
 import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync, writeFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
+import { writeSyncSummary } from './sync-summary-file.mjs'
 
 // Why: Orca runs this script through its own binary as Node; the build's Electron children must not inherit that.
 delete process.env.ELECTRON_RUN_AS_NODE
@@ -332,12 +334,11 @@ function verifyTypecheck(base) {
   notes.push(`修正型別錯誤\n${repair.summary}`)
 }
 
-/** Overwrites the last sync's summary so a later session can tell the user what Claude did. */
 function writeSummary() {
   const file = path.resolve(repoRoot, git('rev-parse', '--git-path', 'orca-sync-summary.md'))
-  const body = notes.length > 0 ? notes.join('\n\n') : '不需要 Claude Code 介入。'
-  writeFileSync(file, `# 同步上游 ${targetTag}\n\n${body}\n`)
-  console.log(`[sync-upstream] Summary saved to ${file}`)
+  if (writeSyncSummary({ file, targetTag, notes })) {
+    console.log(`[sync-upstream] Summary saved to ${file}`)
+  }
 }
 
 if (!targetTag || !RELEASE_TAG.test(targetTag)) {
@@ -418,8 +419,7 @@ if (shouldBuild) {
   run('node', [path.join('config', 'scripts', 'fork-maintenance', 'build-mac-local-arm64.mjs')])
   emit({
     type: 'done',
-    manifestPath: path.join(repoRoot, 'dist', 'latest-mac.yml'),
-    summary: notes.join('\n\n')
+    manifestPath: path.join(repoRoot, 'dist', 'latest-mac.yml')
   })
 }
 
