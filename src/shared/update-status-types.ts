@@ -97,6 +97,8 @@ export type UpdateStatus = (
       activeNudgeId?: string
       /** Install preparation is in progress; older clients can still render downloaded. */
       installing?: boolean
+      /** Fork builds only: what the upstream sync changed on its own (e.g. conflicts Claude resolved). */
+      notes?: string
     }
   | {
       state: 'error'

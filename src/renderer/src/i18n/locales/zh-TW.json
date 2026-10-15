@@ -1188,6 +1188,9 @@
       }
     },
     "components": {
+      "forkUpdate": {
+        "syncNotesTitle": "同步時自動處理的內容"
+      },
       "todoPanel": {
         "steps": {
           "remove": "移除步驟"

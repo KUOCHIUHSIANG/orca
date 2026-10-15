@@ -113,6 +113,7 @@ export function UpdateCardStateContent({
     ) : (
       <UpdateReadyToInstallContent
         version={status.version}
+        notes={status.notes}
         onRestart={onInstallRetry}
         onClose={onCollapse}
       />
