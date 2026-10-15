@@ -56,14 +56,23 @@ function stage(name) {
   emit({ type: 'stage', stage: name })
 }
 
-function run(command, commandArgs, cwd = repoRoot, env = process.env) {
+function exec(command, commandArgs, env) {
   console.log(`\n$ ${command} ${commandArgs.join(' ')}`)
-  execFileSync(command, commandArgs, { cwd, stdio: 'inherit', env })
+  execFileSync(command, commandArgs, { cwd: repoRoot, stdio: 'inherit', env })
+}
+
+function run(command, commandArgs) {
+  try {
+    exec(command, commandArgs, process.env)
+  } catch (error) {
+    // Why: Orca's update card shows only the stderr tail; an uncaught stack trace hides the failed step.
+    fail(`${command} ${commandArgs[0]} failed (exit ${error.status ?? error.signal}).`)
+  }
 }
 
 function succeeds(command, commandArgs, env) {
   try {
-    run(command, commandArgs, repoRoot, env)
+    exec(command, commandArgs, env)
     return true
   } catch {
     return false
@@ -113,6 +122,24 @@ function delegateToCustomBranchWorktree() {
     }
   )
   process.exit(child.status ?? 1)
+}
+
+/** Deletes upstream tracking refs outside the fetch refspec: --prune never reaches them, and once
+ *  their objects are gc'd, fetch negotiation dies on "bad object". */
+function dropStaleUpstreamRefs() {
+  const keep = `refs/remotes/${UPSTREAM_REMOTE}/main`
+  const stale = git('for-each-ref', '--format=%(refname)', `refs/remotes/${UPSTREAM_REMOTE}/`)
+    .split('\n')
+    .filter((ref) => ref && ref !== keep)
+  if (stale.length === 0) {
+    return
+  }
+  console.log(`[sync-upstream] Removing ${stale.length} stale ${UPSTREAM_REMOTE} tracking refs.`)
+  execFileSync('git', ['update-ref', '--no-deref', '--stdin'], {
+    cwd: repoRoot,
+    input: stale.map((ref) => `delete ${ref}\n`).join(''),
+    stdio: ['pipe', 'inherit', 'inherit']
+  })
 }
 
 function conflictedFiles() {
@@ -231,6 +258,7 @@ if (git('status', '--porcelain')) {
 }
 
 stage('fetch')
+dropStaleUpstreamRefs()
 // Why an explicit refspec: upstream has 10k+ branches (pr-assets etc.) that grew .git by GBs.
 run('git', [
   'fetch',
