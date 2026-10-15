@@ -3,7 +3,12 @@
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { FILE_TOOLS, READ_ONLY_GIT_TOOLS, runClaudeHeadless } from './claude-headless.mjs'
+import {
+  FILE_TOOLS,
+  READ_ONLY_GIT_TOOLS,
+  runClaudeHeadless,
+  SUMMARY_INSTRUCTION
+} from './claude-headless.mjs'
 
 // Why no staging tools beyond `git rm`: the script verifies the files before it stages and continues.
 const ALLOWED_TOOLS = [...FILE_TOOLS, ...READ_ONLY_GIT_TOOLS, 'Bash(git rm:*)']
@@ -56,7 +61,7 @@ function buildPrompt({ files, commit, subject, onto }) {
     'Only edit files. Do not stage, commit, or run git commands that change state; the sync script verifies and continues the rebase itself. If the right resolution is deleting a file, use `git rm <file>`.',
     'Do not run typecheck or tests: dependencies are not installed for the new upstream yet. The sync script typechecks after the rebase and asks for fixes if needed.',
     'If you cannot resolve a conflict with confidence, leave its markers in place so the update stops for a manual resolution.',
-    'Finish with a brief summary in Traditional Chinese, one short line per file you changed.'
+    SUMMARY_INSTRUCTION
   ].join('\n')
 }
 
