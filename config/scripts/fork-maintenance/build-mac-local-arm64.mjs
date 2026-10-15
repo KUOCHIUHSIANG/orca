@@ -7,6 +7,7 @@
 // - native Swift helpers build single-arch (arm64 only);
 // - packages only `--mac zip --arm64` (no DMG, no x64 slice, no install:release needed);
 // - reuses node_modules/electron/dist instead of re-downloading Electron from GitHub.
+// Only the two newest build zips stay in dist/ (the installed build and the one before it).
 import { execFileSync } from 'node:child_process'
 import { chmodSync, lstatSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -17,6 +18,7 @@ import {
   gitCommonDir,
   STARTED_AT_ENV
 } from './build-progress.mjs'
+import { pruneOldBuildZips } from './build-zip-retention.mjs'
 
 const repoRoot = path.resolve(import.meta.dirname, '..', '..', '..')
 
@@ -140,6 +142,11 @@ run(
   }
 )
 progress.finish('done')
+// Why two: the installed build plus the one before it, so a bad build can be swapped back without rebuilding.
+const removedZips = pruneOldBuildZips(path.join(repoRoot, 'dist'), 2)
+if (removedZips.length > 0) {
+  console.log(`\n[build-mac-local-arm64] Removed older build zips: ${removedZips.join(', ')}`)
+}
 console.log(
   '\n[build-mac-local-arm64] Done: dist/mac-arm64/Orca.app, dist/latest-mac.yml (+ zip for in-app install)'
 )
