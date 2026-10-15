@@ -27,32 +27,32 @@ function applyChanges(task: MicrosoftTodoTask, changes: TodoTaskChanges): Micros
 }
 
 export function useTodoTaskMutations(todo: MicrosoftTodoController): {
-  updateTask: (task: MicrosoftTodoTask, changes: TodoTaskChanges) => void
+  /** Resolves true once Microsoft accepted the edit. */
+  updateTask: (task: MicrosoftTodoTask, changes: TodoTaskChanges) => Promise<boolean>
   deleteTask: (task: MicrosoftTodoTask) => void
 } {
   const { replaceTask, removeTask, reportError } = todo
 
   const updateTask = useCallback(
-    (task: MicrosoftTodoTask, changes: TodoTaskChanges): void => {
+    async (task: MicrosoftTodoTask, changes: TodoTaskChanges): Promise<boolean> => {
       // Why: show the edit at once; put the old values back if Microsoft refuses it.
       const isNewest = beginTodoTaskWrite(task.id)
       replaceTask(applyChanges(task, changes))
-      void window.api.microsoftTodo
+      const result = await window.api.microsoftTodo
         .updateTask({ listId: task.listId, taskId: task.id, changes })
         .catch(ipcFailure)
-        .then((result) => {
-          const newest = isNewest()
-          if (result.ok) {
-            if (newest) {
-              replaceTask(result.task)
-            }
-          } else {
-            if (newest) {
-              replaceTask(task)
-            }
-            reportError(result)
-          }
-        })
+      const newest = isNewest()
+      if (result.ok) {
+        if (newest) {
+          replaceTask(result.task)
+        }
+        return true
+      }
+      if (newest) {
+        replaceTask(task)
+      }
+      reportError(result)
+      return false
     },
     [replaceTask, reportError]
   )

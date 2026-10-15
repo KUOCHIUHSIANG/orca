@@ -191,11 +191,12 @@ export function registerMicrosoftTodoHandlers(): void {
       typeof record.dueDate === 'string' && DATE_PATTERN.test(record.dueDate)
         ? record.dueDate
         : null
-    if (!listId || !title || title.length > MAX_TITLE_LENGTH) {
+    const notes = typeof record.notes === 'string' ? record.notes.trim() : ''
+    if (!listId || !title || title.length > MAX_TITLE_LENGTH || notes.length > MAX_NOTES_LENGTH) {
       return { ok: false, kind: 'api', message: 'Invalid task.' }
     }
     return withGraph(async (run) => ({
-      task: await createTodoTask(run, { listId, title, dueDate })
+      task: await createTodoTask(run, { listId, title, dueDate, notes: notes || null })
     }))
   })
 

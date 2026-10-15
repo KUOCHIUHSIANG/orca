@@ -20,6 +20,9 @@ function ipcFailure(error: unknown): MicrosoftTodoFailure {
   return { ok: false, kind: 'api', message: readIpcErrorMessage(error) ?? '' }
 }
 
+/** A task being added: notes are plain text, blank when the user wrote none. */
+export type TodoDraft = { title: string; dueDate: string | null; notes: string }
+
 export type MicrosoftTodoController = {
   status: MicrosoftTodoStatus | null
   lists: MicrosoftTodoList[] | null
@@ -34,7 +37,7 @@ export type MicrosoftTodoController = {
   selectList: (listId: string) => void
   refresh: () => void
   setCompleted: (task: MicrosoftTodoTask, completed: boolean) => void
-  createTask: (title: string, dueDate: string | null) => Promise<boolean>
+  createTask: (draft: TodoDraft) => Promise<boolean>
   /** Cache-and-view writers shared with the edit/delete mutations. */
   replaceTask: (task: MicrosoftTodoTask) => void
   removeTask: (task: MicrosoftTodoTask) => void
@@ -211,13 +214,13 @@ export function useMicrosoftTodo(isVisible: boolean): MicrosoftTodoController {
   )
 
   const createTask = useCallback(
-    async (title: string, dueDate: string | null): Promise<boolean> => {
+    async (draft: TodoDraft): Promise<boolean> => {
       const targetListId = listIdRef.current
       if (!targetListId) {
         return false
       }
       const result = await window.api.microsoftTodo
-        .createTask({ listId: targetListId, title, dueDate })
+        .createTask({ listId: targetListId, ...draft })
         .catch(ipcFailure)
       if (!result.ok) {
         if (mountedRef.current) {
