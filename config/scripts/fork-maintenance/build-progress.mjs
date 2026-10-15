@@ -17,7 +17,11 @@ export const TIMINGS_FILE = 'orca-build-timings.json'
 export const STARTED_AT_ENV = 'ORCA_BUILD_PROGRESS_STARTED_AT'
 /** First-run guess for a whole build, replaced by the measured total after one success. */
 export const DEFAULT_BUILD_MS = 10 * 60 * 1000
-const BUILD_TOTAL_KEY = 'build:total'
+/**
+ * Why two timing sets: a build right after an upstream sync starts from cold caches and takes
+ * several times longer than a rebuild after a small local change.
+ */
+export const BUILD_TIMING_PREFIX = { afterSync: 'update-build:', standalone: 'build:' }
 const RESTART_MS = 30_000
 
 export function gitCommonDir(cwd) {
@@ -55,8 +59,9 @@ export function writeBuildProgress(gitDir, { state, phase, startedAt, estimatedE
   })
 }
 
+/** How long the build after a sync should take, from the last one that ran after a sync. */
 export function estimatedBuildMs(gitDir) {
-  const total = readTimings(gitDir)[BUILD_TOTAL_KEY]
+  const total = readTimings(gitDir)[`${BUILD_TIMING_PREFIX.afterSync}total`]
   return typeof total === 'number' && total > 0 ? total : DEFAULT_BUILD_MS
 }
 
@@ -136,8 +141,6 @@ export function createProgressReporter({
     }
   }
 }
-
-export const BUILD_TIMINGS_TOTAL_KEY = BUILD_TOTAL_KEY
 
 if (import.meta.filename === process.argv[1]) {
   const [command, flag, value] = process.argv.slice(2)
