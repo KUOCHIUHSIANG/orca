@@ -20,6 +20,8 @@ import { SkillUpdateStatusSegment } from './SkillUpdateStatusSegment'
 import { NativeChatResumeStatusSegment } from './NativeChatResumeStatusSegment'
 import { CaffeinateStatusSegment } from './CaffeinateStatusSegment'
 import { BottomPanelStatusSegment } from './BottomPanelStatusSegment'
+import { ForkBuildStatusSegment } from './ForkBuildStatusSegment'
+import { useForkBuildProgress } from './use-fork-build-progress'
 import { RemoteServerUpdateStatusSegment } from './RemoteServerUpdateStatusSegment'
 import { TOGGLE_FLOATING_TERMINAL_EVENT } from '@/lib/floating-terminal'
 import { FloatingTerminalIconContextMenu } from '@/components/floating-terminal/FloatingTerminalIconContextMenu'
@@ -55,6 +57,7 @@ export function StatusBarSurface({
   floatingTerminalOpen
 }: StatusBarProps): React.JSX.Element | null {
   const controller = useStatusBarController(floatingTerminalOpen)
+  const forkBuildProgress = useForkBuildProgress()
   if (!controller) {
     return null
   }
@@ -272,6 +275,7 @@ export function StatusBarSurface({
         data-overflowing={overflowing}
       >
         <div ref={segmentsRef} className="flex w-max items-center gap-3">
+          <ForkBuildStatusSegment progress={forkBuildProgress} iconOnly={segmentsIconOnly} />
           <BottomPanelStatusSegment />
           {!isPairedWebClientWindow() ? (
             <CaffeinateStatusSegment iconOnly={segmentsIconOnly} />
@@ -279,7 +283,10 @@ export function StatusBarSurface({
           <RemoteServerUpdateStatusSegment iconOnly={segmentsIconOnly} />
           <SkillUpdateStatusSegment iconOnly={segmentsIconOnly} />
           <NativeChatResumeStatusSegment iconOnly={segmentsIconOnly} />
-          <UpdateStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
+          {/* Why: a fork build reports its own progress; the download percent would repeat it. */}
+          {forkBuildProgress ? null : (
+            <UpdateStatusSegment compact={compact} iconOnly={segmentsIconOnly} />
+          )}
           <React.Suspense fallback={null}>
             {petEnabled ? <PetStatusSegment /> : null}
             {showResourceUsage ? (
