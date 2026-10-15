@@ -5755,7 +5755,8 @@
           "fee535205b": "任务",
           "d599269755": "从侧边栏隐藏",
           "artifacts": "工件",
-          "skills": "技能"
+          "skills": "技能",
+          "todo": "待办"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "清除",
@@ -18427,6 +18428,20 @@
           "add": "添加目录",
           "body": "有链接请求显示此目录中的 {{value0}}。请只添加你信任的人的目录。"
         }
+      },
+      "todoCalendar": {
+        "addOn": "在 {{value0}} 新增待办",
+        "closeDetails": "关闭详情",
+        "view": {
+          "week": "周",
+          "month": "月"
+        },
+        "previousWeek": "上一周",
+        "nextWeek": "下一周",
+        "lists": "清单",
+        "allLists": "所有清单",
+        "showCompleted": "显示已完成",
+        "refresh": "刷新"
       }
     },
     "i18n": {

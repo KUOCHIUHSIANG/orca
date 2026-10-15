@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, RefreshCw, Settings } from 'lucide-react'
+import { ChevronLeft, ChevronRight, LayoutGrid, RefreshCw, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { getIntlLocale, translate } from '@/i18n/i18n'
 import { formatUiRelativeTime } from '@/i18n/relative-time-format'
 import type { MondayBoardSummary, MondayPerson } from '../../../../shared/monday-calendar-types'
-import { MondayBoardFilter } from './MondayBoardFilter'
-import { MondayIconAction } from './MondayIconAction'
+import { CalendarSourceFilter } from '../calendar/CalendarSourceFilter'
+import { CalendarIconAction } from '../calendar/CalendarIconAction'
 import { MondayPeopleFilter } from './MondayPeopleFilter'
-import { monthCursorOf, shiftMonth, type MonthCursor } from './monday-month-layout'
+import { monthCursorOf, shiftMonth, type MonthCursor } from '../calendar/calendar-dates'
 
 function useMinuteTick(): number {
   const [now, setNow] = useState(() => Date.now())
@@ -45,7 +45,7 @@ export function MondayCalendarToolbar(props: {
   return (
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
       <div className="flex items-center gap-1">
-        <MondayIconAction
+        <CalendarIconAction
           label={translate(
             'auto.components.mondayCalendar.toolbar.previousMonth',
             'Previous month'
@@ -53,14 +53,14 @@ export function MondayCalendarToolbar(props: {
           onClick={() => props.onCursorChange(shiftMonth(props.cursor, -1))}
         >
           <ChevronLeft />
-        </MondayIconAction>
+        </CalendarIconAction>
         <span className="w-28 text-center text-sm font-medium tabular-nums">{monthLabel}</span>
-        <MondayIconAction
+        <CalendarIconAction
           label={translate('auto.components.mondayCalendar.toolbar.nextMonth', 'Next month')}
           onClick={() => props.onCursorChange(shiftMonth(props.cursor, 1))}
         >
           <ChevronRight />
-        </MondayIconAction>
+        </CalendarIconAction>
         <Button
           type="button"
           variant="outline"
@@ -72,10 +72,13 @@ export function MondayCalendarToolbar(props: {
       </div>
       <div className="ml-auto flex flex-wrap items-center gap-2">
         {props.boards.length > 1 ? (
-          <MondayBoardFilter
-            boards={props.boards}
-            selectedBoardIds={props.selectedBoardIds}
+          <CalendarSourceFilter
+            sources={props.boards}
+            selectedIds={props.selectedBoardIds}
             onChange={props.onSelectedBoardIdsChange}
+            label={translate('auto.components.mondayCalendar.boards.label', 'Boards')}
+            allLabel={translate('auto.components.mondayCalendar.boards.all', 'All boards')}
+            icon={<LayoutGrid className="size-3.5 text-muted-foreground" />}
           />
         ) : null}
         <MondayPeopleFilter
@@ -99,19 +102,19 @@ export function MondayCalendarToolbar(props: {
                 })}
           </span>
         ) : null}
-        <MondayIconAction
+        <CalendarIconAction
           label={translate('auto.components.mondayCalendar.toolbar.refresh', 'Refresh')}
           disabled={props.loading}
           onClick={props.onRefresh}
         >
           <RefreshCw className={cn(props.loading && 'animate-spin')} />
-        </MondayIconAction>
-        <MondayIconAction
+        </CalendarIconAction>
+        <CalendarIconAction
           label={translate('auto.components.mondayCalendar.toolbar.settings', 'Monday settings')}
           onClick={props.onOpenSettings}
         >
           <Settings />
-        </MondayIconAction>
+        </CalendarIconAction>
       </div>
     </div>
   )

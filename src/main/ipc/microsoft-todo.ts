@@ -21,6 +21,7 @@ import {
   fetchTodoChecklist,
   setTodoChecklistItemChecked
 } from '../microsoft-todo/microsoft-graph-todo-checklist'
+import { fetchTodoCalendar } from '../microsoft-todo/microsoft-graph-todo-calendar'
 import {
   clearMicrosoftTokens,
   getMicrosoftTodoClientId,
@@ -164,6 +165,18 @@ export function registerMicrosoftTodoHandlers(): void {
   ipcMain.handle('todo:fetchLists', () =>
     withGraph(async (run) => ({ lists: await fetchTodoLists(run) }))
   )
+
+  ipcMain.handle('todo:fetchCalendar', (_event, args: unknown) => {
+    const record = readRecord(args)
+    const from = typeof record.completedFrom === 'string' ? record.completedFrom : null
+    const to = typeof record.completedTo === 'string' ? record.completedTo : null
+    // Why a range check: the dates go into a Graph filter string.
+    const completedRange =
+      from && to && DATE_PATTERN.test(from) && DATE_PATTERN.test(to) && from < to
+        ? { from, to }
+        : null
+    return withGraph(async (run) => await fetchTodoCalendar(run, completedRange))
+  })
 
   ipcMain.handle('todo:fetchTasks', (_event, args: unknown) => {
     const listId = readId(readRecord(args), 'listId')
