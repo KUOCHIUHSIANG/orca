@@ -9,7 +9,12 @@ const mocks = vi.hoisted(() => ({
   openSettingsTarget: vi.fn(),
   toastError: vi.fn(),
   toastSuccess: vi.fn(),
-  writeClipboardText: vi.fn()
+  writeClipboardText: vi.fn(),
+  imageSrc: vi.fn((): string | undefined => undefined)
+}))
+
+vi.mock('@/components/editor/document-images/useLocalImageSrc', () => ({
+  useLocalImageSrc: () => mocks.imageSrc()
 }))
 
 vi.mock('sonner', () => ({
@@ -59,16 +64,77 @@ vi.mock('@/components/ui/popover', () => ({
 
 import { LinkActionPopover } from './LinkActionPopover'
 
+const PREVIEW_CONTEXT = {
+  target: { kind: 'local' },
+  worktreeId: 'wt-1',
+  worktreePath: '/repo'
+} as const
+
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()
+  mocks.imageSrc.mockReset()
   vi.unstubAllGlobals()
 })
 
 describe('LinkActionPopover', () => {
+  it('shows a linked image above the rows and opens it like the primary row', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    mocks.imageSrc.mockReturnValue('blob:preview')
+    const onClose = vi.fn()
+    const restoreFocus = vi.fn()
+    const run = vi.fn()
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: 'file:///tmp/claude/images/1.png',
+      kind: 'file',
+      primary: { label: 'Open file', run },
+      imagePreview: {
+        filePath: '/tmp/claude/images/1.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus
+    }
+
+    render(<LinkActionPopover request={request} onClose={onClose} />)
+
+    const image = screen.getByRole('img', { name: '1.png' })
+    expect(image.getAttribute('src')).toBe('blob:preview')
+    const buttons = screen.getAllByRole('button', { name: 'Open file' })
+    expect(buttons[0]).toBe(image.closest('button'))
+    fireEvent.click(image)
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(restoreFocus).toHaveBeenCalledOnce()
+    expect(run).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the plain rows while the linked image is unreadable', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: '/tmp/missing.png',
+      kind: 'file',
+      primary: { label: 'Open file', run: vi.fn() },
+      imagePreview: {
+        filePath: '/tmp/missing.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus: vi.fn()
+    }
+
+    render(<LinkActionPopover request={request} onClose={vi.fn()} />)
+
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.getByText('Open file')).toBeTruthy()
+  })
+
   it('ignores duplicate copy clicks while the clipboard write is in flight', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
-    Object.assign(window, { api: { ui: { writeClipboardText: mocks.writeClipboardText } } })
+    Object.assign(window, {
+      api: { ui: { writeClipboardText: mocks.writeClipboardText } }
+    })
     let resolveWrite: (() => void) | undefined
     mocks.writeClipboardText.mockReturnValue(
       new Promise<void>((resolve) => {
@@ -98,7 +164,9 @@ describe('LinkActionPopover', () => {
 
   it('shows a failure toast when copying fails', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
-    Object.assign(window, { api: { ui: { writeClipboardText: mocks.writeClipboardText } } })
+    Object.assign(window, {
+      api: { ui: { writeClipboardText: mocks.writeClipboardText } }
+    })
     mocks.writeClipboardText.mockRejectedValue(new Error('denied'))
     const request: LinkActionRequest = {
       anchorX: 100,

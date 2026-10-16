@@ -10,6 +10,7 @@ import { useTranslate } from '@/i18n/use-translate'
 import { BROWSER_TERMINAL_LINK_ACTIONS_SETTINGS_TARGET_ID } from '@/components/settings/navigation/settings-navigation-types'
 import { useAppStore } from '@/store/index'
 import type { LinkAction, LinkActionRequest } from './link-action-request'
+import { LinkImagePreview } from './LinkImagePreview'
 
 type LinkActionPopoverProps<TRequest extends LinkActionRequest> = {
   request: TRequest | null
@@ -178,6 +179,14 @@ export function LinkActionPopover<TRequest extends LinkActionRequest>({
           onCloseAutoFocus={(event) => event.preventDefault()}
           onEscapeKeyDown={() => request.restoreFocus()}
         >
+          {request.imagePreview ? (
+            <LinkImagePreview
+              key={request.imagePreview.filePath}
+              preview={request.imagePreview}
+              openLabel={request.primary.label}
+              onOpen={() => runAction(request.primary)}
+            />
+          ) : null}
           <div className="mb-0.5 flex items-center gap-1 overflow-hidden border-b border-border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
             <span
               className="line-clamp-2 min-w-0 flex-1 break-all"

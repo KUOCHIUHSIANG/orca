@@ -11,6 +11,7 @@ import { isTerminalLinkDirectActivation } from '../gestures/terminal-link-activa
 import { requestTerminalLinkAction } from '../terminal-link-action-request'
 import type { TerminalLinkActionContext } from '../terminal-link-action-request'
 import { resolveKnownWorktreeRootPathLink } from './terminal-worktree-path-link'
+import { isImageDropPath } from '../../../../../../shared/image-path-paste'
 import { translate } from '@/i18n/i18n'
 import {
   getRevealInFileManagerLabel,
@@ -46,7 +47,7 @@ export type TerminalFileLinkActionDeps = {
 
 export type FileLinkActions = Pick<
   LinkActionRequest,
-  'destination' | 'kind' | 'primary' | 'alternate' | 'secondaryActions'
+  'destination' | 'kind' | 'primary' | 'alternate' | 'secondaryActions' | 'imagePreview'
 >
 
 export function handleTerminalFileLink(
@@ -205,6 +206,9 @@ export function buildFileLinkActions(
     destination: mappedPath,
     kind: worktreeRoot ? 'workspace' : 'file',
     ...rows,
-    ...(secondaryActions.length > 0 ? { secondaryActions } : {})
+    ...(secondaryActions.length > 0 ? { secondaryActions } : {}),
+    ...(!worktreeRoot && fileContext.sourceHostResolved && isImageDropPath(mappedPath)
+      ? { imagePreview: { filePath: mappedPath, context: fileContext } }
+      : {})
   }
 }
