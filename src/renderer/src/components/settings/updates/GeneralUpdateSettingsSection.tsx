@@ -1,4 +1,5 @@
 import { getUpdateInstallBlockGuidance } from '../../maintenance/update-card/update-install-block-guidance'
+import { getLatestUpstreamReleaseLink } from '../../maintenance/update-card/latest-upstream-release-link'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { Download, Loader2, RefreshCw } from 'lucide-react'
@@ -34,6 +35,7 @@ export function GeneralUpdateSettingsSection(): React.JSX.Element {
     updateVersionRef.current = null
   }
 
+  const latestUpstreamRelease = getLatestUpstreamReleaseLink(updateStatus)
   const [appVersion, setAppVersion] = useState<string | null>(null)
   const now = useNow(
     60_000,
@@ -231,6 +233,20 @@ export function GeneralUpdateSettingsSection(): React.JSX.Element {
                   'auto.components.settings.GeneralUpdateSettingsSection.f40d88390d',
                   'You’re on the latest version.'
                 ))}
+          {latestUpstreamRelease && (
+            <>
+              {' '}
+              <a
+                href={latestUpstreamRelease.url}
+                target="_blank"
+                onClick={openAppHttpLinkFromAnchor}
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground"
+              >
+                {latestUpstreamRelease.label}
+              </a>
+            </>
+          )}
           {updateStatus.state === 'downloading' &&
             translate(
               'auto.components.settings.GeneralUpdateSettingsSection.2a48034c4c',

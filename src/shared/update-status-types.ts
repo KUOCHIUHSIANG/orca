@@ -92,6 +92,8 @@ export type UpdateStatus = (
       userInitiated?: boolean
       /** Optional so older paired clients keep rendering "up to date". */
       delayedUpdate?: DelayedUpdate
+      /** Fork builds: newest upstream release; `skipped` when it can't be synced onto. */
+      latestUpstreamRelease?: { version: string; skipped: boolean }
     }
   | { state: 'downloading'; percent: number; version: string; activeNudgeId?: string }
   | {
