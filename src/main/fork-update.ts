@@ -6,7 +6,7 @@ import { spawnProcess } from '../shared/child-process/run-process'
 import { AUTO_UPDATE_CHECK_INTERVAL_MS } from './updater/updater-state'
 import { installForkBuild } from './fork-update-install'
 import { onForkBuildProgress } from './fork-build-progress'
-import { findSyncableUpstreamTag } from './fork-update-target'
+import { fetchLatestOfficialRelease } from './fork-official-release'
 
 type ForkSource = {
   repoRoot: string
@@ -63,70 +63,38 @@ export function checkForkUpdate(userInitiated = true): void {
     return
   }
   broadcastStatus({ state: 'checking', userInitiated })
-
-  const child = spawnProcess({
-    program: 'git',
-    args: ['ls-remote', '--tags', '--sort=-v:refname', fork.upstreamRemote],
-    cwd: fork.repoRoot
-  })
-
-  let stdout = ''
-  child.stdout.on('data', (chunk: Buffer) => {
-    stdout += chunk.toString()
-  })
-  child.stderr.on('data', () => {})
-  child.on('error', () => {
-    broadcastStatus({ state: 'error', message: '無法執行 git 檢查上游版本', userInitiated })
-  })
-
-  child.on('close', (code) => {
-    if (code !== 0) {
-      broadcastStatus({ state: 'error', message: '無法連線到上游倉庫', userInitiated })
-      return
-    }
-    const releases = stdout
-      .split('\n')
-      .map((line) => line.replace(/.*refs\/tags\//, '').trim())
-      .filter((tag) => /^v\d+\.\d+\.\d+$/.test(tag))
-      .sort((a, b) => compareVersions(b, a))
-    const newerTags = releases.filter((tag) => compareVersions(tag, fork.baseTag) > 0)
-    const latestRelease = {
-      version: releases[0] ?? fork.baseTag,
-      skipped: newerTags.length > 0
-    }
-
-    void findSyncableUpstreamTag(fork, newerTags)
-      .catch(() => newerTags[0] ?? null)
-      .then((newest) => announceForkUpdate(fork, newest, latestRelease, userInitiated))
-  })
+  void fetchLatestOfficialRelease()
+    .catch(() => null)
+    .then((latest) => announceForkUpdate(fork, latest, userInitiated))
 }
 
-function announceForkUpdate(
-  fork: ForkSource,
-  newest: string | null,
-  latestUpstreamRelease: { version: string; skipped: boolean },
-  userInitiated: boolean
-): void {
-  if (!newest) {
-    broadcastStatus({ state: 'not-available', userInitiated, latestUpstreamRelease })
+function announceForkUpdate(fork: ForkSource, latest: string | null, userInitiated: boolean): void {
+  if (!latest) {
+    broadcastStatus({ state: 'error', message: '無法取得官方正式版資訊', userInitiated })
     return
   }
-  latestUpstreamTag = newest
+  // Why "differs" rather than "newer": the fork follows upstream's official release even when
+  // upstream re-cuts it from an older base.
+  if (compareVersions(latest, fork.baseTag) === 0) {
+    broadcastStatus({ state: 'not-available', userInitiated, latestUpstreamVersion: latest })
+    return
+  }
+  latestUpstreamTag = latest
   broadcastStatus({
     state: 'available',
-    version: newest,
+    version: latest,
     changelog: {
       release: {
-        title: `上游更新 ${newest}`,
-        description: `從 ${fork.baseTag} 更新到 ${newest}，將重新 rebase 自訂 commits 並本地重建。`,
-        releaseNotesUrl: `https://github.com/stablyai/orca/releases/tag/${newest}`
+        title: `上游更新 ${latest}`,
+        description: `從 ${fork.baseTag} 更新到官方正式版 ${latest}，將重新 rebase 自訂 commits 並本地重建。`,
+        releaseNotesUrl: `https://github.com/stablyai/orca/releases/tag/${latest}`
       },
       releasesBehind: null
     }
   })
 }
 
-/** Fork builds skip electron-updater's release feed; upstream tags are their only update source. */
+/** Fork builds skip electron-updater's install flow; upstream's official releases are their only update source. */
 export function startForkUpdateChecks(): void {
   checkForkUpdate(false)
   setInterval(() => checkForkUpdate(false), AUTO_UPDATE_CHECK_INTERVAL_MS).unref()

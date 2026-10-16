@@ -1279,8 +1279,7 @@
         "dismiss": "关闭",
         "syncNotesTitle": "同步时自动处理的内容",
         "updatedTitle": "已更新到 {{value0}}",
-        "latestRelease": "官方最新正式版：{{value0}}",
-        "latestReleaseSkipped": "官方最新正式版：{{value0}}（从旧版分出的修补版，已略过）"
+        "latestRelease": "官方最新正式版：{{value0}}"
       },
       "hostPicker": {
         "searchHosts": "搜索主机…",

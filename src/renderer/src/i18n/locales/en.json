@@ -1477,8 +1477,7 @@
         "dismiss": "Dismiss",
         "syncNotesTitle": "Handled automatically during sync",
         "updatedTitle": "Updated to {{value0}}",
-        "latestRelease": "Latest official release: {{value0}}",
-        "latestReleaseSkipped": "Latest official release: {{value0}} (hotfix of an older release, skipped)"
+        "latestRelease": "Latest official release: {{value0}}"
       },
       "hostPicker": {
         "searchHosts": "Search hosts…",
