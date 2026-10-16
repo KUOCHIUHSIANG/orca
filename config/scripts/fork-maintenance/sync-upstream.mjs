@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Re-stacks this fork's own commits (custom) onto a newer upstream release tag.
+// Re-stacks this fork's own commits (custom) onto an official upstream release tag, even one
+// upstream re-cut from an older base.
 //
 //   node config/scripts/fork-maintenance/sync-upstream.mjs v1.4.221 [--push] [--build]
 //                                                          [--auto-worktree] [--events]
@@ -422,9 +423,14 @@ const plan = resolveRebaseBase({
   targetTag,
   upstreamMain: `${UPSTREAM_REMOTE}/main`
 })
-if (plan.kind === 'target-predates-fork') {
+if (plan.kind === 'unknown-base') {
   fail(
-    `${targetTag} predates ${git('describe', '--tags', '--always', plan.forkPoint)}, the upstream commit ${CUSTOM_BRANCH} builds on. Pick a newer tag.`
+    `${targetTag} predates ${git('describe', '--tags', '--always', plan.forkPoint)}, and ${CUSTOM_BRANCH}'s own commits have no single upstream base to move from.`
+  )
+}
+if (plan.rollsBack) {
+  console.log(
+    `\n[sync-upstream] ${targetTag} was cut from an older base than ${git('describe', '--tags', '--always', plan.base)}; upstream commits it leaves out are dropped too.`
   )
 }
 const startHead = git('rev-parse', 'HEAD')
