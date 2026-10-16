@@ -12,13 +12,11 @@ export function resolveRebaseBase({ cwd, branch, targetTag, upstreamMain }) {
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim()
   const target = git('rev-parse', `${targetTag}^{commit}`)
   const forkPoint = git('merge-base', branch, upstreamMain)
-  // A tag cut before the fork point would roll back upstream commits custom already builds on.
-  const contains = spawnSync('git', ['merge-base', '--is-ancestor', forkPoint, target], { cwd })
-  if (contains.status !== 0) {
-    return { kind: 'target-predates-fork', forkPoint }
-  }
+  const contains =
+    spawnSync('git', ['merge-base', '--is-ancestor', forkPoint, target], { cwd }).status === 0
   const mergeBase = git('merge-base', branch, target)
-  if (mergeBase === target) {
+  // Why `contains` too: an older target can still be an ancestor that custom has moved past.
+  if (contains && mergeBase === target) {
     return { kind: 'already-based', base: target }
   }
   // The newest upstream commit custom builds on: where history stops being reachable from upstream.
@@ -26,5 +24,18 @@ export function resolveRebaseBase({ cwd, branch, targetTag, upstreamMain }) {
     .split('\n')
     .filter((line) => line.startsWith('-'))
     .map((line) => line.slice(1))
-  return { kind: 'rebase', base: boundary.length === 1 ? boundary[0] : mergeBase }
+  if (contains) {
+    return {
+      kind: 'rebase',
+      base: boundary.length === 1 ? boundary[0] : mergeBase,
+      rollsBack: false
+    }
+  }
+  // Why follow it: the fork tracks official releases, and upstream can re-cut one from an older
+  // release (v1.4.227 from v1.4.224), dropping upstream commits custom builds on. The merge-base
+  // with such a target sits far back on main, so only a single boundary marks the fork's commits.
+  if (boundary.length !== 1) {
+    return { kind: 'unknown-base', forkPoint }
+  }
+  return { kind: 'rebase', base: boundary[0], rollsBack: true }
 }
