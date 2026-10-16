@@ -57,7 +57,7 @@ describe('resolveRebaseBase', () => {
     const forkPoint = createForkRepo()
     expect(
       resolveRebaseBase({ cwd: repo, branch: 'custom', targetTag: 'v2.0.0', upstreamMain: 'main' })
-    ).toEqual({ kind: 'rebase', base: forkPoint })
+    ).toEqual({ kind: 'rebase', base: forkPoint, rollsBack: false })
   })
 
   it('starts after the release tag when custom sits on a release branch', () => {
@@ -80,14 +80,39 @@ describe('resolveRebaseBase', () => {
     git('tag', 'v2.0.0')
     expect(
       resolveRebaseBase({ cwd: repo, branch: 'custom', targetTag: 'v2.0.0', upstreamMain: 'main' })
-    ).toEqual({ kind: 'rebase', base: releaseTag })
+    ).toEqual({ kind: 'rebase', base: releaseTag, rollsBack: false })
   })
 
-  it('refuses a tag cut before the fork point', () => {
+  it('moves only the fork commits onto a tag cut before the fork point', () => {
     const forkPoint = createForkRepo()
     expect(
       resolveRebaseBase({ cwd: repo, branch: 'custom', targetTag: 'v1.0.0', upstreamMain: 'main' })
-    ).toEqual({ kind: 'target-predates-fork', forkPoint })
+    ).toEqual({ kind: 'rebase', base: forkPoint, rollsBack: true })
+  })
+
+  it('starts at the release tag when the new release is re-cut from an older one', () => {
+    // main: m1 ─ m2 ─ m3; v1 off m1, v2 off m3 (custom = v2 ─ fork), then v3 re-cut off v1.
+    repo = mkdtempSync(path.join(os.tmpdir(), 'rebase-base-'))
+    git('init', '-q', '-b', 'main')
+    commit('m1')
+    git('switch', '-q', '-c', 'release/1')
+    commit('release: v1')
+    git('tag', 'v1.0.0')
+    git('switch', '-q', 'main')
+    commit('m2')
+    commit('m3')
+    git('switch', '-q', '-c', 'release/2')
+    const releaseTag = commit('release: v2')
+    git('tag', 'v2.0.0')
+    git('switch', '-q', '-c', 'custom')
+    commit('fork 1')
+    git('switch', '-q', '-c', 'release/3', 'v1.0.0')
+    commit('fix: picked from main')
+    commit('release: v3')
+    git('tag', 'v3.0.0')
+    expect(
+      resolveRebaseBase({ cwd: repo, branch: 'custom', targetTag: 'v3.0.0', upstreamMain: 'main' })
+    ).toEqual({ kind: 'rebase', base: releaseTag, rollsBack: true })
   })
 
   it('reports a branch already sitting on the target', () => {
