@@ -1476,7 +1476,9 @@
       "forkUpdate": {
         "dismiss": "Dismiss",
         "syncNotesTitle": "Handled automatically during sync",
-        "updatedTitle": "Updated to {{value0}}"
+        "updatedTitle": "Updated to {{value0}}",
+        "latestRelease": "Latest official release: {{value0}}",
+        "latestReleaseSkipped": "Latest official release: {{value0}} (hotfix of an older release, skipped)"
       },
       "hostPicker": {
         "searchHosts": "Search hosts…",

@@ -1240,7 +1240,9 @@
       "forkUpdate": {
         "dismiss": "關閉",
         "syncNotesTitle": "同步時自動處理的內容",
-        "updatedTitle": "已更新到 {{value0}}"
+        "updatedTitle": "已更新到 {{value0}}",
+        "latestRelease": "官方最新正式版：{{value0}}",
+        "latestReleaseSkipped": "官方最新正式版：{{value0}}（從舊版分出的修補版，已略過）"
       },
       "todoPanel": {
         "steps": {

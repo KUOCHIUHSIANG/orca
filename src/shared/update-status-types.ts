@@ -88,7 +88,12 @@ export type UpdateStatus = (
        *  Additive and optional — older clients simply keep offering their own download. */
       externallyManaged?: boolean
     }
-  | { state: 'not-available'; userInitiated?: boolean }
+  | {
+      state: 'not-available'
+      userInitiated?: boolean
+      /** Fork builds: newest upstream release; `skipped` when it can't be synced onto. */
+      latestUpstreamRelease?: { version: string; skipped: boolean }
+    }
   | { state: 'downloading'; percent: number; version: string; activeNudgeId?: string }
   | {
       state: 'downloaded'

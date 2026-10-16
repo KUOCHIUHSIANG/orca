@@ -9,6 +9,7 @@ import { UpdateErrorCardContent, type UpdateErrorCardModel } from '../../UpdateE
 import { LinuxPackageInstallRecoveryCard } from '../../LinuxPackageInstallRecoveryCard'
 import { translate } from '@/i18n/i18n'
 import { UpdateCheckFeedback } from './UpdateCheckFeedback'
+import { getLatestUpstreamReleaseLink } from './latest-upstream-release-link'
 import {
   UpdateAvailableRichContent,
   UpdateAvailableSimpleContent
@@ -64,6 +65,7 @@ export function UpdateCardStateContent({
       <UpdateCheckFeedback
         icon="check"
         text={translate('auto.components.UpdateCard.ea2a41adbe', "You're on the latest version.")}
+        action={getLatestUpstreamReleaseLink(status) ?? undefined}
       />
     )
   }
