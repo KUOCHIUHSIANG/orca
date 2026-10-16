@@ -1,8 +1,15 @@
 import type { HttpLinkAction } from '@/lib/http-link-destinations'
+import type { RuntimeFileOperationArgs } from '@/runtime/runtime-file-client-types'
 
 export type LinkActionKind = 'url' | 'file' | 'workspace' | 'terminal' | 'task'
 
 export type LinkAction = HttpLinkAction
+
+/** An image file the popover shows above its rows, read on the host that owns the link. */
+export type LinkImagePreviewTarget = {
+  filePath: string
+  context: RuntimeFileOperationArgs
+}
 
 /** A pending destination choice for one clicked link, anchored at the pointer. */
 export type LinkActionRequest = {
@@ -14,6 +21,7 @@ export type LinkActionRequest = {
   alternate?: LinkAction
   /** Rows after primary/alternate that have no click shortcut. */
   secondaryActions?: readonly LinkAction[]
+  imagePreview?: LinkImagePreviewTarget
   /** Hands focus back to the surface that owned the click (terminal, chat transcript). */
   restoreFocus: () => void
 }

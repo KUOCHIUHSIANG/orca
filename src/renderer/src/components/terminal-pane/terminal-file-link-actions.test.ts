@@ -181,6 +181,38 @@ describe('terminal file link actions', () => {
     expect(request.mock.calls[0][0]).not.toHaveProperty('alternate')
   })
 
+  it('previews an image file link on its own host and nothing else', () => {
+    const imageRequest = vi.fn()
+    handleTerminalFileLink(
+      '/tmp/claude/images/1.PNG',
+      null,
+      null,
+      plainEvent(),
+      deps,
+      context(imageRequest)
+    )
+    expect(imageRequest.mock.calls[0][0].imagePreview).toEqual({
+      filePath: '/tmp/claude/images/1.PNG',
+      context: { sourceHostResolved: true }
+    })
+
+    const sourceRequest = vi.fn()
+    handleTerminalFileLink(
+      '/repo/src/main.ts',
+      null,
+      null,
+      plainEvent(),
+      deps,
+      context(sourceRequest)
+    )
+    expect(sourceRequest.mock.calls[0][0]).not.toHaveProperty('imagePreview')
+
+    mocks.worktreeRoot = true
+    const rootRequest = vi.fn()
+    handleTerminalFileLink('/repo.png', null, null, plainEvent(), deps, context(rootRequest))
+    expect(rootRequest.mock.calls[0][0]).not.toHaveProperty('imagePreview')
+  })
+
   describe('reveal row', () => {
     const revealRow = (request: ReturnType<typeof vi.fn>) =>
       request.mock.calls[0][0].secondaryActions?.find(
