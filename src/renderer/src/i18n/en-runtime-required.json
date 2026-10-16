@@ -551,6 +551,9 @@
               }
             }
           },
+          "index": {
+            "83a10e3c44": "Checks"
+          },
           "pull": {
             "policy": {
               "notice": {
