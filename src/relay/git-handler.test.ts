@@ -9,6 +9,7 @@ import * as path from 'node:path'
 import { writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { GitHandler } from './git-handler'
+import { readGitBlameWireResult } from '../shared/git-blame-wire-result'
 import { RelayContext } from './context'
 import {
   gitInit,
@@ -42,6 +43,7 @@ describe('GitHandler', () => {
     expect(methods).toContain('git.status')
     expect(methods).toContain('git.checkIgnored')
     expect(methods).toContain('git.history')
+    expect(methods).toContain('git.blame')
     expect(methods).toContain('git.commit')
     expect(methods).toContain('git.diff')
     expect(methods).toContain('git.stage')
@@ -344,6 +346,41 @@ describe('GitHandler', () => {
       expect(result.items[0]?.displayId).toHaveLength(7)
       expect(result.hasMore).toBe(false)
       expect(result.limit).toBe(10)
+    })
+  })
+
+  describe('blame', () => {
+    it('blames the committed file, or an unsaved buffer piped through stdin', async () => {
+      gitInit(tmpDir)
+      writeFileSync(path.join(tmpDir, 'file.txt'), 'one\ntwo\n')
+      gitCommit(tmpDir, 'initial')
+
+      const committed = readGitBlameWireResult(
+        await dispatcher.callRequest('git.blame', { worktreePath: tmpDir, filePath: 'file.txt' })
+      )
+      expect(committed.commits.map((commit) => commit.summary)).toEqual(['initial'])
+      expect(committed.lines).toEqual([
+        [0, 1],
+        [0, 2]
+      ])
+
+      const draft = readGitBlameWireResult(
+        await dispatcher.callRequest('git.blame', {
+          worktreePath: tmpDir,
+          filePath: 'file.txt',
+          contents: 'zero\none\ntwo\n'
+        })
+      )
+      expect(draft.lines).toHaveLength(3)
+      expect(draft.commits[draft.lines[0]![0]]?.sha).toMatch(/^0{40}$/)
+      expect(draft.lines[1]).toEqual([draft.lines[2]![0], 1])
+    })
+
+    it('rejects a path outside the worktree', async () => {
+      gitInit(tmpDir)
+      await expect(
+        dispatcher.callRequest('git.blame', { worktreePath: tmpDir, filePath: '../outside.txt' })
+      ).rejects.toThrow('resolves outside the worktree')
     })
   })
 

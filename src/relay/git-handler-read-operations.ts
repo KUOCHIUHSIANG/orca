@@ -15,7 +15,8 @@ import {
 } from './git-handler-submodule-ops'
 import { computeDiff, type GitExec } from './git-handler-ops'
 import { checkIgnoredPathsOp } from './git-handler-check-ignore'
-import { loadGitHistoryFromExecutor } from '../shared/git-history'
+import { loadGitHistoryFromExecutor, normalizeGitHistoryRefs } from '../shared/git-history'
+import { loadGitBlameFromExecutor } from '../shared/git-blame'
 import { stableInFlightKey } from '../shared/in-flight-promise-dedupe'
 
 function resolveSubmoduleStatusArea(
@@ -25,6 +26,15 @@ function resolveSubmoduleStatusArea(
     return params.area
   }
   return 'unstaged'
+}
+
+// Why: validate relative paths to prevent traversal outside the worktree.
+function assertPathInsideWorktree(worktreePath: string, filePath: string): void {
+  const resolved = path.resolve(worktreePath, filePath)
+  const rel = path.relative(path.resolve(worktreePath), resolved)
+  if (rel === '..' || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
+    throw new Error(`Path "${filePath}" resolves outside the worktree`)
+  }
 }
 
 export class GitHandlerReadOperations extends GitHandlerOperationContext {
@@ -99,22 +109,36 @@ export class GitHandlerReadOperations extends GitHandlerOperationContext {
       worktreePath,
       {
         limit: typeof params.limit === 'number' ? params.limit : undefined,
-        baseRef: typeof params.baseRef === 'string' ? params.baseRef : null
+        baseRef: typeof params.baseRef === 'string' ? params.baseRef : null,
+        refs: normalizeGitHistoryRefs(params.refs)
       }
     )
     context?.signal?.throwIfAborted()
     return result
   }
 
+  async blame(params: Record<string, unknown>, context?: RequestContext) {
+    const worktreePath = typeof params.worktreePath === 'string' ? params.worktreePath : ''
+    const filePath = typeof params.filePath === 'string' ? params.filePath : ''
+    if (!worktreePath || !filePath) {
+      throw new Error('git.blame requires worktreePath and filePath')
+    }
+    assertPathInsideWorktree(worktreePath, filePath)
+    const git = this.gitForSignal(context?.signal)
+    const result = await loadGitBlameFromExecutor(
+      (args, cwd, stdin) => git(args, cwd, stdin === undefined ? undefined : { stdin }),
+      worktreePath,
+      filePath,
+      { contents: typeof params.contents === 'string' ? params.contents : undefined }
+    )
+    context?.signal?.throwIfAborted()
+    return this.maybeStreamResponse(result, params, context)
+  }
+
   async getDiff(params: Record<string, unknown>, context?: RequestContext) {
     const worktreePath = params.worktreePath as string
     const filePath = params.filePath as string
-    // Why: validate relative paths to prevent traversal outside the worktree.
-    const resolved = path.resolve(worktreePath, filePath)
-    const rel = path.relative(path.resolve(worktreePath), resolved)
-    if (rel === '..' || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
-      throw new Error(`Path "${filePath}" resolves outside the worktree`)
-    }
+    assertPathInsideWorktree(worktreePath, filePath)
     const staged = params.staged as boolean
     const compareAgainstHead = params.compareAgainstHead as boolean | undefined
     // Why: register dedupe before awaiting so identical reads coalesce.

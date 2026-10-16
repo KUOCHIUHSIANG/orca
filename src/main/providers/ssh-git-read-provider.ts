@@ -1,5 +1,7 @@
 import { InFlightPromiseDedupe, stableInFlightKey } from '../../shared/in-flight-promise-dedupe'
 import type { GitDiffResult } from '../../shared/git-diff-compare-types'
+import type { GitBlameOptions, GitBlameResult } from '../../shared/git-blame'
+import { readGitBlameWireResult } from '../../shared/git-blame-wire-result'
 import type {
   GitStagingArea,
   GitStatusResult,
@@ -172,6 +174,29 @@ export class SshGitReadProvider {
           ...args
         })) as GitDiffResult
     ) as Promise<GitDiffResult>
+  }
+
+  async getBlame(
+    worktreePath: string,
+    filePath: string,
+    options: GitBlameOptions = {}
+  ): Promise<GitBlameResult> {
+    try {
+      return readGitBlameWireResult(
+        await requestGitStreamable(this.mux, 'git.blame', {
+          worktreePath,
+          filePath,
+          ...(options.contents === undefined ? {} : { contents: options.contents })
+        })
+      )
+    } catch (error) {
+      if (isJsonRpcMethodNotFoundError(error)) {
+        throw new Error(
+          'Git blame is unavailable on this relay. Reconnect the SSH target to update Orca on the host, then try again.'
+        )
+      }
+      throw error
+    }
   }
 
   async getUpstreamStatus(

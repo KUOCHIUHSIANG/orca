@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { editor } from 'monaco-editor'
 import { useAppStore } from '@/store'
-import { getRuntimeGitBlame } from '@/runtime/runtime-git-diff-client'
+import { getRuntimeGitBlame } from '@/runtime/runtime-git-client'
 import { GIT_BLAME_MAX_CONTENT_LENGTH, type GitBlameResult } from '../../../../../shared/git-blame'
 import { toBlameRuntimeGitContext, type InlineBlameFile } from './inline-blame-file'
 
@@ -49,15 +49,11 @@ export function useInlineBlameResult(
       const isDirty =
         useAppStore.getState().openFiles.find((entry) => entry.id === file.fileId)?.isDirty === true
       const seq = ++requestSeq
-      // Why: defer so an unresolved file owner lands in the catch below instead of throwing here.
-      void Promise.resolve()
-        .then(() =>
-          getRuntimeGitBlame(toBlameRuntimeGitContext(file), {
-            filePath: file.relativePath,
-            // Why: a clean buffer matches disk, so skip shipping it over IPC or SSH.
-            contents: isDirty ? model.getValue() : undefined
-          })
-        )
+      getRuntimeGitBlame(toBlameRuntimeGitContext(file), {
+        filePath: file.relativePath,
+        // Why: a clean buffer matches disk, so skip shipping it over IPC or SSH.
+        contents: isDirty ? model.getValue() : undefined
+      })
         .then((result) => {
           if (!disposed && seq === requestSeq) {
             setSnapshot({ result, versionId })

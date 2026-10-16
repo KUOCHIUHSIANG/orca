@@ -1,5 +1,6 @@
 import { getRuntimeGitScope as getRuntimeGitScopeImplementation } from './runtime-git-client-context'
 import {
+  getRuntimeGitBlame as getRuntimeGitBlameImplementation,
   getRuntimeGitBranchCompare as getRuntimeGitBranchCompareImplementation,
   getRuntimeGitBranchDiff as getRuntimeGitBranchDiffImplementation,
   getRuntimeGitCommitCompare as getRuntimeGitCommitCompareImplementation,
@@ -66,6 +67,7 @@ export const abortRuntimeGitRebase = abortRuntimeGitRebaseImplementation
 export const getRuntimeGitDiff = getRuntimeGitDiffImplementation
 export const getRuntimeGitBranchCompare = getRuntimeGitBranchCompareImplementation
 export const getRuntimeGitCommitCompare = getRuntimeGitCommitCompareImplementation
+export const getRuntimeGitBlame = getRuntimeGitBlameImplementation
 export const getRuntimeGitUpstreamStatus = getRuntimeGitUpstreamStatusImplementation
 export const fetchRuntimeGit = fetchRuntimeGitImplementation
 export const syncRuntimeGitForkDefaultBranch = syncRuntimeGitForkDefaultBranchImplementation

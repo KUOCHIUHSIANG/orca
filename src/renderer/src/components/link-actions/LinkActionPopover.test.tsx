@@ -69,7 +69,7 @@ vi.mock('@/components/ui/popover', () => ({
 import { LinkActionPopover } from './LinkActionPopover'
 
 const PREVIEW_CONTEXT = {
-  target: { kind: 'local' },
+  settings: null,
   worktreeId: 'wt-1',
   worktreePath: '/repo'
 } as const

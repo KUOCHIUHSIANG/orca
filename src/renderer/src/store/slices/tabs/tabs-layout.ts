@@ -87,7 +87,10 @@ export function findSiblingGroupId(root: TabGroupLayoutNode, targetGroupId: stri
   )
 }
 
-export function removeLeaf(root: TabGroupLayoutNode, targetGroupId: string): TabGroupLayoutNode | null {
+export function removeLeaf(
+  root: TabGroupLayoutNode,
+  targetGroupId: string
+): TabGroupLayoutNode | null {
   if (root.type === 'leaf') {
     return root.groupId === targetGroupId ? null : root
   }

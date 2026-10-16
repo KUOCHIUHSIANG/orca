@@ -26,7 +26,7 @@ function refLabel(ref: string): string {
 /** Picks which branch the log lists: the current branch with its upstream, or any other ref. */
 export function GitLogRefPicker({ model }: { model: GitToolWindowModel }): React.JSX.Element {
   const { context, logRef } = model
-  const { activeRepo, activeWorktreeId, branchName, remoteStatus } = context
+  const { activeRepo, activeRepoSettings, activeWorktreeId, branchName, remoteStatus } = context
   const setLogRef = useGitToolWindowState((state) => state.setLogRef)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -36,12 +36,12 @@ export function GitLogRefPicker({ model }: { model: GitToolWindowModel }): React
   const hostId = activeRepo ? getRepoExecutionHostId(activeRepo) : undefined
 
   useEffect(() => {
-    if (!open || !repoId || !hostId || trimmedQuery.length < 2) {
+    if (!open || !repoId || trimmedQuery.length < 2) {
       return
     }
     let stale = false
     const timer = window.setTimeout(() => {
-      void searchRuntimeRepoBaseRefs(hostId, repoId, trimmedQuery, SEARCH_LIMIT)
+      void searchRuntimeRepoBaseRefs(activeRepoSettings, repoId, trimmedQuery, SEARCH_LIMIT, hostId)
         .then((refs) => {
           if (!stale) {
             setSearch({ query: trimmedQuery, refs })
@@ -57,7 +57,7 @@ export function GitLogRefPicker({ model }: { model: GitToolWindowModel }): React
       stale = true
       window.clearTimeout(timer)
     }
-  }, [hostId, open, repoId, trimmedQuery])
+  }, [activeRepoSettings, hostId, open, repoId, trimmedQuery])
 
   const currentLabel = branchName || 'HEAD'
   const searching = trimmedQuery.length >= 2 && search?.query !== trimmedQuery

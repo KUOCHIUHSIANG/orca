@@ -135,7 +135,13 @@ export function registerFilesystemGitDiffHandlers(context: FilesystemHandlerCont
       args: { worktreePath: string; filePath: string; contents?: string; connectionId?: string }
     ): Promise<GitBlameResult> => {
       const contents = typeof args.contents === 'string' ? args.contents : undefined
-      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      if (args.connectionId) {
+        const provider = getSshGitProvider(args.connectionId)
+        if (!provider) {
+          throw new Error(SSH_GIT_PROVIDER_UNAVAILABLE_MESSAGE)
+        }
+        return provider.getBlame(args.worktreePath, args.filePath, { contents })
+      }
       const worktreePath = await resolveRegisteredWorktreePath(args.worktreePath, store)
       const filePath = validateGitRelativeFilePath(worktreePath, args.filePath)
       const gitOptions = getLocalGitOptionsForRegisteredWorktree(

@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { getConnectionId } from '@/lib/connection-context'
-import { commitRuntimeGit } from '@/runtime/runtime-git-sync-client'
 import {
   bulkStageRuntimeGitPaths,
-  bulkUnstageRuntimeGitPaths
-} from '@/runtime/runtime-git-working-tree-client'
+  bulkUnstageRuntimeGitPaths,
+  commitRuntimeGit
+} from '@/runtime/runtime-git-client'
 import { resolveCommitDisabledReason } from '../../right-sidebar/source-control-commit-eligibility'
 import {
   buildGitChangeRows,
@@ -20,7 +20,7 @@ import type { GitToolWindowModel } from './use-git-tool-window'
 export function useGitCommitPane(model: GitToolWindowModel) {
   const { context, entryMutations, refreshActiveGitStatusAfterMutation, refreshGitHistoryRef } =
     model
-  const { activeRepoTarget, activeWorktreeId, entries, isRemoteOperationActive, worktreePath } =
+  const { activeRepoSettings, activeWorktreeId, entries, isRemoteOperationActive, worktreePath } =
     context
   const rows = useMemo(() => buildGitChangeRows(entries), [entries])
   const summary = useMemo(() => summarizeGitChangeRows(rows), [rows])
@@ -38,15 +38,15 @@ export function useGitCommitPane(model: GitToolWindowModel) {
 
   const runtimeContext = useCallback(
     () =>
-      activeWorktreeId && worktreePath && activeRepoTarget
+      activeWorktreeId && worktreePath
         ? {
-            target: activeRepoTarget,
+            settings: activeRepoSettings,
             worktreeId: activeWorktreeId,
             worktreePath,
             connectionId: getConnectionId(activeWorktreeId) ?? undefined
           }
         : null,
-    [activeRepoTarget, activeWorktreeId, worktreePath]
+    [activeRepoSettings, activeWorktreeId, worktreePath]
   )
 
   const enqueueIndexWrite = useCallback((paths: string[], write: () => Promise<void>) => {

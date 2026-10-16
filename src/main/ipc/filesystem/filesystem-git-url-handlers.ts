@@ -1,11 +1,11 @@
 import { ipcMain } from 'electron'
 import { awaitWindowsHostGitEnvironmentReady } from '../../git/runner'
 import { getRemoteCommitUrl, getRemoteFileUrl } from '../../git/repo'
+import { resolveCommitAuthorAvatar } from '../../git/commit-author-avatar'
 import {
   getSshGitProvider,
   SSH_GIT_PROVIDER_UNAVAILABLE_MESSAGE
 } from '../../providers/ssh-git-dispatch'
-import { resolveCommitAuthorAvatar } from '../../git/commit-author-avatar'
 import { resolveRegisteredWorktreePath } from '../registered-worktree-roots-cache'
 import { validateFullGitObjectId } from '../filesystem-path-containment'
 import type { FilesystemHandlerContext } from './filesystem-handler-context'

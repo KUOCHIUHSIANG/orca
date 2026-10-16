@@ -24,7 +24,7 @@ export function useGitToolWindow() {
   const context = useSourceControlWorktreeContext()
   const {
     activeGitStatusHead,
-    activeRepoTarget,
+    activeRepoSettings,
     activeWorktree,
     activeWorktreeId,
     activeConnectionId,
@@ -47,7 +47,7 @@ export function useGitToolWindow() {
   const limit = loadedPage.scope === limitScope ? loadedPage.limit : GIT_HISTORY_DEFAULT_LIMIT
 
   const statusRefresh = useSourceControlStatusRefresh({
-    activeRepoTarget,
+    activeRepoSettings,
     activeWorktreeId,
     worktreePath,
     activePushTarget: activeWorktree?.pushTarget,
@@ -59,13 +59,13 @@ export function useGitToolWindow() {
   })
   const { refreshActiveGitStatusAfterMutation } = statusRefresh
   const entryMutations = useSourceControlEntryMutations({
-    activeRepoTarget,
+    activeRepoSettings,
     activeWorktreeId,
     worktreePath,
     refreshActiveGitStatusAfterMutation
   })
   const history = useSourceControlGitHistory({
-    activeRepoTarget,
+    activeRepoSettings,
     activeWorktreeId,
     worktreePath,
     compareBaseRef: null,
@@ -88,11 +88,11 @@ export function useGitToolWindow() {
   const commitActions = useGitHistoryCommitActions({
     activeWorktreeId,
     worktreePath,
-    activeRepoTarget,
+    activeRepoSettings,
     resolveSplitTargetGroupId: rowOpening.resolveSplitTargetGroupId
   })
   useSourceControlUpstreamStatusFetch({
-    activeRepoTarget,
+    activeRepoSettings,
     activeWorktree,
     activeWorktreeId,
     fetchUpstreamStatus: useAppStore.getState().fetchUpstreamStatus,
@@ -130,7 +130,7 @@ export function useGitToolWindow() {
       }
       const connectionId = getConnectionId(activeWorktreeId) ?? undefined
       const pushTarget = activeWorktree?.pushTarget
-      const options = { runtimeTarget: activeRepoTarget }
+      const options = { runtimeTargetSettings: activeRepoSettings }
       try {
         if (kind === 'fetch') {
           await state.fetchBranch(activeWorktreeId, worktreePath, connectionId, pushTarget, options)
@@ -155,7 +155,7 @@ export function useGitToolWindow() {
       }
     },
     [
-      activeRepoTarget,
+      activeRepoSettings,
       activeWorktree?.pushTarget,
       activeWorktreeId,
       refreshAll,

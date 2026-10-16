@@ -4,6 +4,8 @@ import type {
   GitDiffResult
 } from '../../shared/git-diff-compare-types'
 import { assertGitDiffWithinTransportBudget } from '../../shared/git-diff-transport-budget'
+import type { GitBlameResult } from '../../shared/git-blame'
+import { getBlame } from '../git/blame'
 import { getRemoteCommitUrl, getRemoteFileUrl } from '../git/repo'
 import {
   getBranchCompare,
@@ -13,8 +15,6 @@ import {
   getDiff
 } from '../git/status'
 import { awaitWindowsHostGitEnvironmentReady } from '../git/runner'
-import type { GitBlameResult } from '../../shared/git-blame'
-import { getBlame } from '../git/blame'
 import type { GitAdmissionTier } from '../git/command-runner/git-exec-options'
 import { normalizeRuntimeRelativePath } from './runtime-relative-paths'
 import {
@@ -181,8 +181,8 @@ export class RuntimeGitDiffCommands {
       return provider.getBlame(target.worktree.path, relativePath, { contents })
     }
     return getBlame(target.worktree.path, relativePath, {
-      contents,
       ...localGitOptionsForTarget(target),
+      contents,
       admissionTier: 'interactive'
     })
   }

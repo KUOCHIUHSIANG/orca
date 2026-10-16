@@ -1,7 +1,7 @@
 import { app, shell } from 'electron'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { runProcess } from '@orca/process-host'
+import { runProcess } from '../shared/child-process/run-process'
 
 /** Default-browser app name → its user-data folder under ~/Library/Application Support. */
 const CHROMIUM_USER_DATA_DIRS: Record<string, string> = {

@@ -1,5 +1,5 @@
 import { useAppStore } from '@/store'
-import { requireRuntimeTargetForFileOwner } from '@/lib/file-owner-runtime-target'
+import { settingsForRuntimeOwner } from '@/runtime/runtime-rpc-client'
 import type { RuntimeGitContext } from '@/runtime/runtime-git-client-context'
 
 /** Where a blamed editor file lives; every git read for its blame routes through this. */
@@ -14,15 +14,10 @@ export type InlineBlameFile = {
   isFolderWorkspace: boolean
 }
 
-/** Throws when the file's owner can't be resolved, so callers must catch. */
 export function toBlameRuntimeGitContext(file: InlineBlameFile): RuntimeGitContext {
   return {
     // Why: route by the file's owning runtime, not whichever runtime is focused.
-    target: requireRuntimeTargetForFileOwner(
-      useAppStore.getState(),
-      file.worktreeId,
-      file.runtimeEnvironmentId
-    ),
+    settings: settingsForRuntimeOwner(useAppStore.getState().settings, file.runtimeEnvironmentId),
     worktreeId: file.worktreeId,
     worktreePath: file.worktreePath,
     connectionId: file.connectionId

@@ -1,6 +1,8 @@
-import { getRuntimeGitCommitDiff } from '@/runtime/runtime-git-diff-client'
-import { getRuntimeGitHistory } from '@/runtime/runtime-git-status-client'
-import { getRuntimeGitRemoteCommitUrl } from '@/runtime/runtime-git-working-tree-client'
+import {
+  getRuntimeGitCommitDiff,
+  getRuntimeGitHistory,
+  getRuntimeGitRemoteCommitUrl
+} from '@/runtime/runtime-git-client'
 import type { GitBlameCommit } from '../../../../../shared/git-blame'
 import type { GitDiffResult } from '../../../../../shared/git-diff-compare-types'
 import { findBlameLineHunk, type BlameHunk } from './blame-line-hunk'
@@ -55,7 +57,7 @@ export function loadBlameCommitRemoteUrl(
   file: InlineBlameFile,
   sha: string
 ): Promise<string | null> {
-  return cached(remoteUrlCache, `${blameFileScopeKey(file)}\0${sha}`, async () =>
+  return cached(remoteUrlCache, `${blameFileScopeKey(file)}\0${sha}`, () =>
     getRuntimeGitRemoteCommitUrl(toBlameRuntimeGitContext(file), { sha })
   )
 }
