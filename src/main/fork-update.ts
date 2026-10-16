@@ -6,6 +6,7 @@ import { spawnProcess } from '../shared/child-process/run-process'
 import { AUTO_UPDATE_CHECK_INTERVAL_MS } from './updater/updater-state'
 import { installForkBuild } from './fork-update-install'
 import { onForkBuildProgress } from './fork-build-progress'
+import { findSyncableUpstreamTag } from './fork-update-target'
 
 type ForkSource = {
   repoRoot: string
@@ -83,36 +84,45 @@ export function checkForkUpdate(userInitiated = true): void {
       broadcastStatus({ state: 'error', message: '無法連線到上游倉庫', userInitiated })
       return
     }
-    const tags = stdout
+    const releases = stdout
       .split('\n')
       .map((line) => line.replace(/.*refs\/tags\//, '').trim())
       .filter((tag) => /^v\d+\.\d+\.\d+$/.test(tag))
       .sort((a, b) => compareVersions(b, a))
-
-    if (tags.length === 0) {
-      broadcastStatus({ state: 'not-available', userInitiated })
-      return
+    const newerTags = releases.filter((tag) => compareVersions(tag, fork.baseTag) > 0)
+    const latestRelease = {
+      version: releases[0] ?? fork.baseTag,
+      skipped: newerTags.length > 0
     }
 
-    const newest = tags[0]
-    if (compareVersions(newest, fork.baseTag) <= 0) {
-      broadcastStatus({ state: 'not-available', userInitiated })
-      return
-    }
+    void findSyncableUpstreamTag(fork, newerTags)
+      .catch(() => newerTags[0] ?? null)
+      .then((newest) => announceForkUpdate(fork, newest, latestRelease, userInitiated))
+  })
+}
 
-    latestUpstreamTag = newest
-    broadcastStatus({
-      state: 'available',
-      version: newest,
-      changelog: {
-        release: {
-          title: `上游更新 ${newest}`,
-          description: `從 ${fork.baseTag} 更新到 ${newest}，將重新 rebase 自訂 commits 並本地重建。`,
-          releaseNotesUrl: `https://github.com/stablyai/orca/releases/tag/${newest}`
-        },
-        releasesBehind: null
-      }
-    })
+function announceForkUpdate(
+  fork: ForkSource,
+  newest: string | null,
+  latestUpstreamRelease: { version: string; skipped: boolean },
+  userInitiated: boolean
+): void {
+  if (!newest) {
+    broadcastStatus({ state: 'not-available', userInitiated, latestUpstreamRelease })
+    return
+  }
+  latestUpstreamTag = newest
+  broadcastStatus({
+    state: 'available',
+    version: newest,
+    changelog: {
+      release: {
+        title: `上游更新 ${newest}`,
+        description: `從 ${fork.baseTag} 更新到 ${newest}，將重新 rebase 自訂 commits 並本地重建。`,
+        releaseNotesUrl: `https://github.com/stablyai/orca/releases/tag/${newest}`
+      },
+      releasesBehind: null
+    }
   })
 }
 
