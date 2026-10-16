@@ -10,7 +10,15 @@ const mocks = vi.hoisted(() => ({
   openSettingsTarget: vi.fn(),
   toastError: vi.fn(),
   toastSuccess: vi.fn(),
-  writeClipboardText: vi.fn()
+  writeClipboardText: vi.fn(),
+  imageSrc: vi.fn((): string | undefined => undefined),
+  releaseImage: vi.fn()
+}))
+
+vi.mock('@/components/editor/useLocalImageSrc', () => ({
+  useLocalImageSrc: () => mocks.imageSrc(),
+  getLocalImageSrcCacheKey: (rawSrc: string) => `key:${rawSrc}`,
+  releaseLocalImageSrcByKey: mocks.releaseImage
 }))
 
 vi.mock('sonner', () => ({
@@ -60,9 +68,16 @@ vi.mock('@/components/ui/popover', () => ({
 
 import { LinkActionPopover } from './LinkActionPopover'
 
+const PREVIEW_CONTEXT = {
+  target: { kind: 'local' },
+  worktreeId: 'wt-1',
+  worktreePath: '/repo'
+} as const
+
 afterEach(() => {
   cleanup()
   vi.clearAllMocks()
+  mocks.imageSrc.mockReset()
   vi.unstubAllGlobals()
 })
 
@@ -103,6 +118,61 @@ describe('LinkActionPopover', () => {
     expect(onClose).toHaveBeenCalledOnce()
     expect(restoreFocus).toHaveBeenCalledOnce()
     expect(run).toHaveBeenCalledOnce()
+  })
+
+  it('shows a linked image above the rows and opens it like the primary row', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    mocks.imageSrc.mockReturnValue('blob:preview')
+    const onClose = vi.fn()
+    const restoreFocus = vi.fn()
+    const run = vi.fn()
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: 'file:///tmp/claude/images/1.png',
+      kind: 'file',
+      primary: { label: 'Open file', run },
+      imagePreview: {
+        filePath: '/tmp/claude/images/1.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus
+    }
+
+    const { unmount } = render(<LinkActionPopover request={request} onClose={onClose} />)
+
+    const image = screen.getByRole('img', { name: '1.png' })
+    expect(image.getAttribute('src')).toBe('blob:preview')
+    const buttons = screen.getAllByRole('button', { name: 'Open file' })
+    expect(buttons[0]).toBe(image.closest('button'))
+    fireEvent.click(image)
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(restoreFocus).toHaveBeenCalledOnce()
+    expect(run).toHaveBeenCalledOnce()
+
+    unmount()
+    expect(mocks.releaseImage).toHaveBeenCalledWith('key:/tmp/claude/images/1.png')
+  })
+
+  it('keeps the plain rows while the linked image is unreadable', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: '/tmp/missing.png',
+      kind: 'file',
+      primary: { label: 'Open file', run: vi.fn() },
+      imagePreview: {
+        filePath: '/tmp/missing.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus: vi.fn()
+    }
+
+    render(<LinkActionPopover request={request} onClose={vi.fn()} />)
+
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.getByText('Open file')).toBeTruthy()
   })
 
   it('lists secondary rows after the shortcut rows, without a shortcut, and runs them', () => {
@@ -180,7 +250,9 @@ describe('LinkActionPopover', () => {
 
   it('copies the resolved URL without closing the popover', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
-    Object.assign(window, { api: { ui: { writeClipboardText: mocks.writeClipboardText } } })
+    Object.assign(window, {
+      api: { ui: { writeClipboardText: mocks.writeClipboardText } }
+    })
     mocks.writeClipboardText.mockResolvedValue(undefined)
     const onClose = vi.fn()
     const restoreFocus = vi.fn()
@@ -205,7 +277,9 @@ describe('LinkActionPopover', () => {
 
   it('ignores duplicate copy clicks while the clipboard write is in flight', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
-    Object.assign(window, { api: { ui: { writeClipboardText: mocks.writeClipboardText } } })
+    Object.assign(window, {
+      api: { ui: { writeClipboardText: mocks.writeClipboardText } }
+    })
     let resolveWrite: (() => void) | undefined
     mocks.writeClipboardText.mockReturnValue(
       new Promise<void>((resolve) => {
@@ -235,7 +309,9 @@ describe('LinkActionPopover', () => {
 
   it('shows a failure toast when copying fails', async () => {
     vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
-    Object.assign(window, { api: { ui: { writeClipboardText: mocks.writeClipboardText } } })
+    Object.assign(window, {
+      api: { ui: { writeClipboardText: mocks.writeClipboardText } }
+    })
     mocks.writeClipboardText.mockRejectedValue(new Error('denied'))
     const request: LinkActionRequest = {
       anchorX: 100,
