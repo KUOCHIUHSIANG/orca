@@ -3,6 +3,7 @@
 import type { TabGroup } from '../tab-types'
 import type { LayoutGroup } from './workspace-layout-model'
 import { rootGroupSeed } from './workspace-layout-minted-ids'
+import { pickStoredFields } from './stored-record-fields'
 import { resolveTabGroupOwners } from './tab-group-owners'
 
 export type OrderCandidate = {
@@ -41,7 +42,7 @@ export function resolveGroupOrder(args: {
         tabOrder.push(tabId)
       }
     }
-    const group = { id: stored.id, tabOrder }
+    const group: LayoutGroup = { id: stored.id, tabOrder, ...pickStoredFields(stored, ['dock']) }
     groups.push(group)
     firstGroup.set(stored.id, group)
   }

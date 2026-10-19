@@ -7,7 +7,7 @@ import type { PersistedClientHostedBrowserPage } from '../workspace-session/clie
 import type { ClosedTerminalPanesByPaneKey } from './closed-terminal-panes'
 import type { ClosedTerminalTabTombstone } from './closed-terminal-tab-tombstones'
 import type { ExecutionHostId } from '../execution-host'
-import type { TabContentType, TabGroupLayoutNode } from '../tab-types'
+import type { TabContentType, TabGroup, TabGroupLayoutNode } from '../tab-types'
 import type { TerminalGrid, TerminalPaneLayoutNode, TerminalTab } from './terminal-tab-types'
 import type { PersistedOpenFile } from '../workspace-session/workspace-session-state-types'
 import type { BrowserWorkspace } from '../browser-workspace-types'
@@ -49,7 +49,7 @@ export type LayoutContentTab = LayoutTabFields & { kind: Exclude<TabContentType,
 
 export type LayoutTab = LayoutTerminalTab | LayoutContentTab
 
-export type LayoutGroup = { id: string; tabOrder: string[] }
+export type LayoutGroup = { id: string; tabOrder: string[]; dock?: TabGroup['dock'] }
 
 /** An open editor file minus its unsaved draft (the view's) and what its tab and workspace hold. */
 export type LayoutEditorFile = Omit<
