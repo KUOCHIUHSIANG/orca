@@ -1,5 +1,5 @@
-import { settingsForRuntimeOwner } from '@/runtime/runtime-rpc-client'
-import { getRuntimeGitDiff } from '@/runtime/runtime-git-client'
+import { requireRuntimeTargetForFileOwner } from '@/lib/file-owner-runtime-target'
+import { getRuntimeGitDiff } from '@/runtime/runtime-git-diff-client'
 import { useAppStore } from '@/store'
 import type { GitDiffResult } from '../../../../../shared/git-diff-compare-types'
 
@@ -30,7 +30,11 @@ export async function readGitChangeBaseline(file: GitChangeFile): Promise<string
   const result = await getRuntimeGitDiff(
     {
       // Why: route by the file's owning runtime, not whichever runtime is focused.
-      settings: settingsForRuntimeOwner(useAppStore.getState().settings, file.runtimeEnvironmentId),
+      target: requireRuntimeTargetForFileOwner(
+        useAppStore.getState(),
+        file.worktreeId,
+        file.runtimeEnvironmentId
+      ),
       worktreeId: file.worktreeId,
       worktreePath: file.worktreePath,
       connectionId: file.connectionId

@@ -14,6 +14,7 @@ import {
   tabsInOrder,
   type LayoutBrowserTab,
   type LayoutEditorFile,
+  type LayoutGroup,
   type LayoutTab,
   type LayoutTerminalCreation,
   type WorkspaceLayout
@@ -97,7 +98,7 @@ export type PublishedBrowserTab = Omit<LayoutBrowserTab, 'createdAt'> & { create
 export type PublishedWorkspaceLayout = {
   worktreeId: string
   /** In the one tab order. */
-  groups: { id: string; tabIds: string[] }[]
+  groups: ({ id: string; tabIds: string[] } & Pick<LayoutGroup, 'dock'>)[]
   groupLayout?: TabGroupLayoutNode
   /** In the one tab order. */
   tabs: PublishedTab[]
@@ -158,7 +159,11 @@ export function publishWorkspaceLayout(
 ): PublishedWorkspaceLayout {
   return {
     worktreeId: workspace.worktreeId,
-    groups: workspace.groups.map((group) => ({ id: group.id, tabIds: [...group.tabOrder] })),
+    groups: workspace.groups.map((group) => ({
+      id: group.id,
+      tabIds: [...group.tabOrder],
+      ...pickStoredFields(group, ['dock'])
+    })),
     ...(workspace.groupLayout ? { groupLayout: workspace.groupLayout } : {}),
     tabs: tabsInOrder(workspace).map((tab) => publishTab(tab, workspace, partition)),
     editorFiles: (workspace.editorFiles ?? []).map((file) => ({

@@ -85,7 +85,8 @@ function saveWorkspace(
           ? {
               recentTabIds: selection.recentTabIds.filter((tabId) => group.tabOrder.includes(tabId))
             }
-          : {})
+          : {}),
+        ...pickStoredFields(group, ['dock'])
       }
     })
   if (groups.length > 0) {

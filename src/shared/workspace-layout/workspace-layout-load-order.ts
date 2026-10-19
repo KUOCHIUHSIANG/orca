@@ -5,6 +5,7 @@
 import type { TabGroup } from '../tab-types'
 import type { LayoutGroup } from './workspace-layout-model'
 import { rootGroupSeed } from './workspace-layout-minted-ids'
+import { pickStoredFields } from './stored-record-fields'
 import { resolveTabGroupOwners } from './tab-group-owners'
 
 export type OrderCandidate = {
@@ -42,7 +43,7 @@ export function resolveGroupOrder(args: {
         tabOrder.push(tabId)
       }
     }
-    groups.push({ id: stored.id, tabOrder })
+    groups.push({ id: stored.id, tabOrder, ...pickStoredFields(stored, ['dock']) })
   }
   const unplaced = args.candidates.filter((candidate) => !placed.has(candidate.id))
   for (const candidate of [...unplaced].sort(compareUnplaced)) {

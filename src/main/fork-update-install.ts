@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { spawnProcess } from '../shared/child-process/run-process'
+import { spawnProcess } from '@orca/process-host'
 
 // Why staging + mv: a failed copy must never leave the installed app already deleted.
 const SWAP_SCRIPT = 'rm -rf "$3" && cp -R "$1" "$3" && rm -rf "$2" && mv "$3" "$2"'

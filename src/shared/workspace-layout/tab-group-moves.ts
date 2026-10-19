@@ -83,15 +83,15 @@ export function buildHeadlessTabGroupMove(args: {
 
   let groups: LayoutGroup[] = args.groups.map((group) => {
     if (group.id === sourceGroup.id) {
-      return { id: group.id, tabOrder: group.tabOrder.filter((id) => id !== args.tabId) }
+      return { ...group, tabOrder: group.tabOrder.filter((id) => id !== args.tabId) }
     }
     if (group.id === args.targetGroupId) {
       const tabOrder = group.tabOrder.filter((id) => id !== args.tabId)
       const at = Math.max(0, Math.min(args.index ?? tabOrder.length, tabOrder.length))
       tabOrder.splice(at, 0, args.tabId)
-      return { id: group.id, tabOrder }
+      return { ...group, tabOrder }
     }
-    return { id: group.id, tabOrder: group.tabOrder }
+    return group
   })
 
   groups = groups.filter((group) => group.tabOrder.length > 0)
@@ -153,10 +153,9 @@ export function buildHeadlessTabGroupSplit(args: {
   )
 
   const sourceOrder = sourceGroup.tabOrder.filter((id) => id !== args.tabId)
-  let groups: LayoutGroup[] = args.groups.map((group) => ({
-    id: group.id,
-    tabOrder: group.id === sourceGroup.id ? sourceOrder : group.tabOrder
-  }))
+  let groups: LayoutGroup[] = args.groups.map((group) =>
+    group.id === sourceGroup.id ? { ...group, tabOrder: sourceOrder } : group
+  )
   groups.push({ id: args.newGroupId, tabOrder: [args.tabId] })
   // Drop any group emptied by the move and collapse it out of the layout.
   groups = groups.filter((group) => group.tabOrder.length > 0)

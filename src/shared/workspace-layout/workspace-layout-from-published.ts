@@ -64,7 +64,11 @@ export function workspaceLayoutFromPublished(published: PublishedWorkspaceLayout
   return {
     worktreeId: published.worktreeId,
     tabs: published.tabs.map(layoutTab),
-    groups: published.groups.map((group) => ({ id: group.id, tabOrder: [...group.tabIds] })),
+    groups: published.groups.map((group) => ({
+      id: group.id,
+      tabOrder: [...group.tabIds],
+      ...pickStoredFields(group, ['dock'])
+    })),
     ...(published.groupLayout ? { groupLayout: published.groupLayout } : {}),
     editorFiles: published.editorFiles.map((file) => ({ ...file })),
     browserTabs: published.browserTabs.map((tab) => ({
