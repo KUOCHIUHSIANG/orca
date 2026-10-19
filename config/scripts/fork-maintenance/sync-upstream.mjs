@@ -24,12 +24,13 @@
 //                    Claude's summaries go to .git/orca-sync-summary.md, which the updated app
 //                    shows once after its install restarts it.
 import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, rmSync } from 'node:fs'
 import path from 'node:path'
 import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
+import { findLeftoverDirectories } from './rebase-leftover-directories.mjs'
 import {
   createProgressReporter,
   estimatedBuildMs,
@@ -387,8 +388,14 @@ if (git('rev-parse', '--abbrev-ref', 'HEAD') !== CUSTOM_BRANCH) {
   }
   fail(`Switch to ${CUSTOM_BRANCH} first (git switch ${CUSTOM_BRANCH}).`)
 }
-if (git('status', '--porcelain')) {
-  fail(`${repoRoot} has uncommitted changes on ${CUSTOM_BRANCH}. Commit or stash them first.`)
+const dirtyPaths = git('status', '--porcelain')
+  .split('\n')
+  .filter(Boolean)
+  .map((line) => line.replace(/^\s*\S+\s+/, ''))
+if (dirtyPaths.length > 0) {
+  const listed = dirtyPaths.slice(0, 3).join('、')
+  const more = dirtyPaths.length > 3 ? ` 等 ${dirtyPaths.length} 項` : ''
+  fail(`${CUSTOM_BRANCH} 有未提交或未追蹤的檔案，先 commit、stash 或刪除後再試：${listed}${more}`)
 }
 
 const progressGitDir = gitCommonDir(repoRoot)
@@ -439,6 +446,10 @@ if (plan.kind === 'already-based') {
 } else {
   stage('rebase')
   rebaseOnto(plan.base)
+  for (const dir of findLeftoverDirectories({ cwd: repoRoot, previousHead: startHead })) {
+    rmSync(path.join(repoRoot, dir), { recursive: true, force: true })
+    console.log(`[sync-upstream] Removed ${dir}/, which ${targetTag} no longer tracks.`)
+  }
 }
 // Why app mode only: run by hand, a failed step leaves the branch as-is for whoever runs it to fix.
 if (eventsMode) {
