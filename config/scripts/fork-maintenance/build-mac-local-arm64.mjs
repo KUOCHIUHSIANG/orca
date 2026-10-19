@@ -31,11 +31,29 @@ if (process.platform !== 'darwin' || process.arch !== 'arm64') {
 // replaced build:relay with build:wsl-guest). Mobile deps are not installed locally, so skip that step.
 const MOBILE_WEB_STEP = 'pnpm run build:mobile-web'
 const packageScripts = JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).scripts
+
+const scriptName = (step) => /^pnpm run ([\w:-]+)$/.exec(step)?.[1]
+const splitSteps = (command) => command.split('&&').map((part) => part.trim())
+const reachesMobileStep = (command) =>
+  splitSteps(command).some((step) => {
+    const body = packageScripts[scriptName(step)]
+    return step === MOBILE_WEB_STEP || (body !== undefined && reachesMobileStep(body))
+  })
+
+/** Drops the mobile step, inlining only the scripts that lead to it (v1.4.229 nests it a level down).
+ *  Why not inline everything: leaf commands such as `tsc` resolve only through `pnpm run`'s PATH. */
+function expandSteps(command) {
+  return splitSteps(command).flatMap((step) => {
+    if (step === MOBILE_WEB_STEP) {
+      return []
+    }
+    const body = packageScripts[scriptName(step)]
+    return body && reachesMobileStep(body) ? expandSteps(body) : [step]
+  })
+}
+
 const steps = [
-  ...packageScripts['build:desktop']
-    .split('&&')
-    .map((part) => part.trim())
-    .filter((step) => step !== MOBILE_WEB_STEP),
+  ...expandSteps(packageScripts['build:desktop']),
   'node config/scripts/build-computer-macos.mjs',
   'node config/scripts/build-keyboard-layout-macos.mjs --single-arch',
   'node config/scripts/build-notification-status-macos.mjs --single-arch',
