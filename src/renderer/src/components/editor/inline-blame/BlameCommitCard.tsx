@@ -148,31 +148,35 @@ export function BlameCommitCard({
           icon={Copy}
           onClick={run(() => void copyBlameCommitHash(commit.sha))}
         />
-        <CardAction
-          label="Open changes"
-          icon={FileDiff}
-          onClick={run(() => openBlameCommitDiff(file, commit))}
-        />
-        {!file.isFolderWorkspace && (
+        {!file.submodulePath && (
+          <CardAction
+            label="Open changes"
+            icon={FileDiff}
+            onClick={run(() => openBlameCommitDiff(file, commit))}
+          />
+        )}
+        {!file.isFolderWorkspace && !file.submodulePath && (
           <CardAction
             label="Show in Git log"
             icon={Crosshair}
             onClick={run(() => revealBlameCommitInGitLog(file, commit.sha))}
           />
         )}
-        <CardAction
-          label={translate(
-            'auto.components.right.sidebar.GitHistoryCommitContextMenu.7b1c4e9a02',
-            'Open commit in browser'
-          )}
-          icon={Globe}
-          disabled={!details.remoteUrl}
-          onClick={run(() => {
-            if (details.remoteUrl) {
-              openBlameCommitRemote(details.remoteUrl)
-            }
-          })}
-        />
+        {!file.submodulePath && (
+          <CardAction
+            label={translate(
+              'auto.components.right.sidebar.GitHistoryCommitContextMenu.7b1c4e9a02',
+              'Open commit in browser'
+            )}
+            icon={Globe}
+            disabled={!details.remoteUrl}
+            onClick={run(() => {
+              if (details.remoteUrl) {
+                openBlameCommitRemote(details.remoteUrl)
+              }
+            })}
+          />
+        )}
         {(details.message === undefined || details.hunk === undefined) && (
           <Loader2 className="ml-auto size-3.5 animate-spin text-muted-foreground" />
         )}

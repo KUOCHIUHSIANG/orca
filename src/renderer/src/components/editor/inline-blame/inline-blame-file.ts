@@ -12,6 +12,8 @@ export type InlineBlameFile = {
   connectionId: string | undefined
   /** Folder workspaces have no git tool window to reveal a commit in. */
   isFolderWorkspace: boolean
+  /** Set once blame finds the file in a submodule; the worktree's git reads can't see its commits. */
+  submodulePath?: string
 }
 
 /** Throws when the file's owner can't be resolved, so callers must catch. */
