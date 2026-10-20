@@ -132,15 +132,20 @@ export function MonacoInlineBlame({
       : undefined
   const commit = entry ? snapshot?.result.commits[entry[0]] : undefined
   const node = useInlineBlameWidget(editorInstance, commit ? cursor.line : null)
+  const submodulePath = snapshot?.result.submodulePath
+  const blameFile = useMemo(
+    () => (file && submodulePath ? { ...file, submodulePath } : file),
+    [file, submodulePath]
+  )
 
-  if (!node || !file || !commit || !entry) {
+  if (!node || !blameFile || !commit || !entry) {
     return null
   }
   const line = cursor.line
   return createPortal(
     <InlineBlameAnnotation
       key={`${line}\0${commit.sha}`}
-      file={file}
+      file={blameFile}
       commit={commit}
       originalLine={entry[1]}
       onPlaceCaret={() => {

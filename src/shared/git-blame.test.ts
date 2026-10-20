@@ -107,4 +107,55 @@ describe('loadGitBlameFromExecutor', () => {
     await expect(loadGitBlameFromExecutor(git, '/repo', '--output=x')).rejects.toThrow()
     expect(git).not.toHaveBeenCalled()
   })
+
+  it('blames a submodule file inside the submodule and reports where it lives', async () => {
+    const git = vi.fn(async (args: string[], cwd: string) => {
+      if (args[0] === 'rev-parse') {
+        return { stdout: 'src/utils/\n' }
+      }
+      if (cwd === '/repo/') {
+        throw new Error("fatal: no such path 'app/Vue/src/utils/a.js' in HEAD")
+      }
+      return { stdout: PORCELAIN }
+    })
+    const result = await loadGitBlameFromExecutor(git, '/repo/', 'app/Vue/src/utils/a.js')
+    expect(git).toHaveBeenCalledWith(['rev-parse', '--show-prefix'], '/repo/app/Vue/src/utils')
+    expect(git).toHaveBeenLastCalledWith(
+      ['blame', '--porcelain', '--', 'src/utils/a.js'],
+      '/repo/app/Vue',
+      undefined
+    )
+    expect(result.submodulePath).toBe('app/Vue')
+    expect(result.lines).toEqual(parseGitBlamePorcelain(PORCELAIN).lines)
+  })
+
+  it('finds a file at the submodule root', async () => {
+    const git = vi.fn(async (args: string[], cwd: string) => {
+      if (args[0] === 'rev-parse') {
+        return { stdout: '\n' }
+      }
+      if (cwd === '/repo') {
+        throw new Error('outer repo cannot blame it')
+      }
+      return { stdout: PORCELAIN }
+    })
+    const result = await loadGitBlameFromExecutor(git, '/repo', 'libs/sub/a.js')
+    expect(git).toHaveBeenLastCalledWith(
+      ['blame', '--porcelain', '--', 'a.js'],
+      '/repo/libs/sub',
+      undefined
+    )
+    expect(result.submodulePath).toBe('libs/sub')
+  })
+
+  it('keeps the original error for a file the worktree itself cannot blame', async () => {
+    const git = vi.fn(async (args: string[]) => {
+      if (args[0] === 'rev-parse') {
+        return { stdout: 'src/\n' }
+      }
+      throw new Error('untracked')
+    })
+    await expect(loadGitBlameFromExecutor(git, '/repo', 'src/new.ts')).rejects.toThrow('untracked')
+    expect(git).toHaveBeenCalledTimes(2)
+  })
 })
