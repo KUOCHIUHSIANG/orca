@@ -60,8 +60,11 @@ export function readGitBlameWireResult(value: unknown): GitBlameResult {
   ) {
     throw new Error('Invalid git blame response')
   }
+  const submodulePath: unknown =
+    value && typeof value === 'object' ? Reflect.get(value, 'submodulePath') : undefined
   return {
     commits: commits.filter((commit): commit is GitBlameCommit => commit !== null),
-    lines: lines.filter((line): line is [number, number] => line !== null)
+    lines: lines.filter((line): line is [number, number] => line !== null),
+    ...(typeof submodulePath === 'string' ? { submodulePath } : {})
   }
 }

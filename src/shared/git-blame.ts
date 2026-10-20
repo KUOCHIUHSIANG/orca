@@ -23,6 +23,8 @@ export type GitBlameResult = {
   commits: GitBlameCommit[]
   /** `lines[i]` describes line i + 1 as [index into `commits`, 1-based line in that commit's file]. */
   lines: [commitIndex: number, originalLine: number][]
+  /** Set when the file lives in a submodule: its path from the worktree root; SHAs belong to it. */
+  submodulePath?: string
 }
 
 export type GitBlameOptions = {
@@ -117,16 +119,56 @@ export async function loadGitBlameFromExecutor(
   if (contents !== undefined && contents.length > GIT_BLAME_MAX_CONTENT_LENGTH) {
     throw new Error('File is too large to blame')
   }
-  const { stdout } = await git(
-    [
-      'blame',
-      '--porcelain',
-      ...(contents === undefined ? [] : ['--contents', '-']),
-      '--',
-      relativePath
-    ],
-    cwd,
-    contents
-  )
-  return parseGitBlamePorcelain(stdout)
+  const blame = async (repoCwd: string, path: string): Promise<GitBlameResult> => {
+    const { stdout } = await git(
+      ['blame', '--porcelain', ...(contents === undefined ? [] : ['--contents', '-']), '--', path],
+      repoCwd,
+      contents
+    )
+    return parseGitBlamePorcelain(stdout)
+  }
+  try {
+    return await blame(cwd, relativePath)
+  } catch (error) {
+    // Why only on failure: the outer repo can't blame a submodule's file, and asking first would
+    // cost every other blame an extra git process.
+    const submodule = await findBlameSubmodule(git, cwd, relativePath)
+    if (!submodule) {
+      throw error
+    }
+    const result = await blame(
+      `${cwd.replace(/[\\/]+$/, '')}/${submodule.path}`,
+      submodule.innerPath
+    )
+    return { ...result, submodulePath: submodule.path }
+  }
+}
+
+/** The innermost repo holding `relativePath` when it isn't the worktree's own, via git's prefix. */
+async function findBlameSubmodule(
+  git: GitBlameExecutor,
+  cwd: string,
+  relativePath: string
+): Promise<{ path: string; innerPath: string } | null> {
+  const slash = relativePath.lastIndexOf('/')
+  if (slash <= 0) {
+    return null
+  }
+  const directory = relativePath.slice(0, slash)
+  const fileName = relativePath.slice(slash + 1)
+  let prefix: string
+  try {
+    const { stdout } = await git(
+      ['rev-parse', '--show-prefix'],
+      `${cwd.replace(/[\\/]+$/, '')}/${directory}`
+    )
+    prefix = stdout.trim().replace(/\/$/, '')
+  } catch {
+    return null
+  }
+  if (prefix === directory || !(prefix === '' || directory.endsWith(`/${prefix}`))) {
+    return null
+  }
+  const path = prefix === '' ? directory : directory.slice(0, -prefix.length - 1)
+  return { path, innerPath: prefix === '' ? fileName : `${prefix}/${fileName}` }
 }

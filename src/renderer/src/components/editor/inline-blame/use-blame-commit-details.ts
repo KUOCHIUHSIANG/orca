@@ -39,6 +39,14 @@ export function useBlameCommitDetails(
         setDetails((previous) => ({ ...previous, ...next }))
       }
     }
+    if (file.submodulePath) {
+      // Why: these reads run in the worktree's repo, which doesn't have the submodule's commits.
+      patch({ message: null, hunk: null, remoteUrl: null })
+      void loadBlameAuthorAvatar(commit.authorEmail, null).then((avatarUrl) => patch({ avatarUrl }))
+      return () => {
+        stale = true
+      }
+    }
     loadBlameCommitMessage(file, commit.sha).then(
       (message) => patch({ message }),
       () => patch({ message: null })
