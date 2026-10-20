@@ -39,7 +39,10 @@
       },
       "providers": {
         "title": "提供方",
-        "antigravityDescription": "Antigravity 聊天執行在 Orca 下載到此主機的伺服器上，與 agy CLI 相互獨立。"
+        "antigravityDescription": "Antigravity 聊天執行在 Orca 下載到此主機的伺服器上，與 agy CLI 相互獨立。",
+        "antigravityNotSignedIn": "未登入。聊天需要單獨的 Antigravity 登入，與終端機中的 agy 帳號分開。",
+        "antigravityAccount": "帳號",
+        "antigravitySignInNeeded": "聊天需要單獨的 Antigravity 登入，與終端機中的 agy 帳號分開。"
       }
     },
     "terminal": {
@@ -582,7 +585,8 @@
             "76deec8f58": "切換組織失敗",
             "7d4bc516ee": "切換設定檔失敗",
             "f518e89aa5": "該專案已存在於那個設定檔中",
-            "f03ae7f27b": "轉移專案失敗"
+            "f03ae7f27b": "轉移專案失敗",
+            "signInTimedOut": "登入超時"
           }
         },
         "runtime": {
@@ -2310,6 +2314,8 @@
         "851017590d": "新增 Linear 存取",
         "228b25028f": "直接從這裡瀏覽並開始處理分配給您的 Linear 議題。",
         "6d56559467": "連線您的 Linear 帳號",
+        "linearLoginUnreadableTitle": "重新連線 Linear",
+        "linearLoginUnreadableBody": "無法讀取已儲存的 Linear 登入資訊。請在設定中重新連線。",
         "eee68073b2": "在 Jira 中開啟",
         "9497f2787c": "啟動工作區",
         "eba87f2edb": "未發現 Jira 議題",
@@ -3069,6 +3075,7 @@
               "93e1f6bfca": "載入中",
               "98730088a6": "。在 Linear 中搜尋或開啟以檢視完整列表。",
               "06b887d622": "首先顯示",
+              "linearLoginUnreadable": "無法讀取已儲存的 Linear 登入資訊。請在設定中重新連線。",
               "2c4b1c2c08": "數字",
               "f2cc1e0ff6": "Linear/專案",
               "906b5e4cb8": "Linear/專案/{{value0}}",
@@ -3437,6 +3444,7 @@
             "retry": "重試",
             "retrying": "正在重試...",
             "retryUnavailable": "重試仍無法重新連線。稍後再試。",
+            "openNewTerminal": "開啟新終端機",
             "ownerUnknown": "Orca 無法驗證該終端機的所有者。",
             "42b283ecfc": "Orca 無法安全地重新連線此終端機，因為主機無法驗證其儲存的工作階段。 Orca 保持儲存的工作階段不變。按一下「重試」立即嘗試重新連線。如果仍然無法重新連線，請開啟一個新終端機。",
             "e16012e31e": "擁有該工作階段的終端機守護程式已結束，因此該工作階段及其回滾無法恢復。開啟新終端機以繼續。",
@@ -3592,6 +3600,8 @@
           },
           "TerminalRemoteRuntimeReconnectBanner": {
             "retryingTitle": "正在重新連線到遠端執行時",
+            "pairingRefusedTitle": "此主機不再接受這臺電腦",
+            "pairingRefusedBody": "Orca 無法透過 SSH 重新與其配對。主機上沒有任何內容被停止。請重新連線以重試。",
             "disconnectedTitle": "遠端執行時已中斷連線",
             "retryingBody": "Orca 正在自動重試。如果連線恢復，此終端機將恢復。",
             "disconnectedBody": "自動重試已停止。重新連線以恢復此終端機工作階段。",
@@ -3614,7 +3624,9 @@
             "copiedLink": "已複製連結",
             "copyLinkFailed": "複製連結失敗",
             "downloadOpenWithDefaultApp": "下載並使用預設應用程式開啟",
-            "downloadOpenFailed": "無法下載「{{value0}}」。"
+            "downloadOpenFailed": "無法下載「{{value0}}」。",
+            "openInThisGroup": "在此分組中開啟",
+            "openInThisGroupRefused": "無法在此分組中開啟 {{value0}}"
           },
           "TerminalQuickCommandsSubmenu": {
             "3ccc7981bb": "主機不可用",
@@ -3679,7 +3691,7 @@
         "bar": {
           "BrowserTab": {
             "6e0bc8f3a8": "在瀏覽器中開啟",
-            "9dd880bd56": "關閉右側的分頁",
+            "9dd880bd56": "關閉右側的所有分頁",
             "1611a1324b": "關閉",
             "5d6e89891f": "複製分頁",
             "966feb9ad5": "向右分割",
@@ -3696,7 +3708,7 @@
             "52ce4f4605": "複製相對路徑",
             "5b85754786": "複製路徑",
             "bfd5797ef4": "開啟 Markdown 預覽",
-            "e5ff31ccaf": "關閉右側的分頁",
+            "e5ff31ccaf": "關閉右側的所有分頁",
             "ba1369dd24": "關閉所有編輯器分頁",
             "1ba8492c5b": "關閉",
             "68cc610e7f": "重新命名",
@@ -3729,7 +3741,7 @@
           "SortableTabContextMenu": {
             "35e8892fd0": "標籤顏色",
             "2f697b3c31": "變更標題",
-            "c1ee099c7e": "關閉右側的分頁",
+            "c1ee099c7e": "關閉右側的所有分頁",
             "8d16f9cd30": "關閉其他",
             "89359a36f7": "關閉",
             "21132389e9": "向右分割",
@@ -4080,7 +4092,11 @@
             "97957ad3a3": "連線 AI 提供商帳號，即可即時檢視使用量並在帳號間快速切換。",
             "9a542f46c7": "從狀態列隱藏",
             "84c3b15dca": "代理用量限制",
-            "d663430cf9": "設定用量追蹤"
+            "d663430cf9": "設定用量追蹤",
+            "remoteLabel": "{{host}} 上沒有用量",
+            "remoteTitle": "{{host}} 上的用量",
+            "remoteBody": "此工作區執行在 {{host}} 上，因此狀態列顯示的是該主機的用量。請在該主機上登入代理，或切換到本機工作區以檢視這臺電腦的用量。",
+            "remoteOpenAccounts": "開啟 {{host}} 的帳號"
           },
           "UpdateStatusSegment": {
             "5cd13105a3": "更新失敗。按一下以展開。",
@@ -4267,7 +4283,11 @@
                 "label": "登入已過期",
                 "message": "Claude 用量已過期。請在此帳號中啟動 Claude 以重新整理。"
               }
-            }
+            },
+            "remoteOwnerNotConfigured": "未在 {{server}} 上設定",
+            "remoteOwnerSignInSavedHere": "其登入資訊僅儲存在此電腦上。",
+            "claudeNoUsageFromHost": "{{server}} 無用量資料",
+            "claudeUnknownOnHost": "無法從 {{server}} 取得 Claude 用量。可能未在那裡登入，或使用的是 API 金鑰計費。"
           },
           "SshTargetStatusRow": {
             "sshHost": "SSH 主機"
@@ -4371,6 +4391,8 @@
             "access_revoked": "Access revoked",
             "access_revoked_summary": "This server revoked access for this computer",
             "access_revoked_explanation": "Re-pair with a new pairing link from the server to reconnect.",
+            "managed_access_revoked_explanation": "Orca 無法透過 SSH 重新與其配對。請連線以重試。",
+            "connect_access_revoked_explanation": "請連線以重試。",
             "update_required": "Update required",
             "update_required_summary": "Orca versions are not compatible",
             "update_required_explanation": "Update Orca on this computer or on the server, then connect again.",
@@ -6635,8 +6657,7 @@
         },
         "MarkdownImageLightbox": {
           "image": "Image",
-          "expand": "Expand image",
-          "close": "Close"
+          "expand": "Expand image"
         },
         "WorktreeDeveloperMenu": {
           "developer": "Developer",
@@ -7036,7 +7057,8 @@
               "help": "用於在狀態列中顯示 OpenCode Go 使用情況。下面的工作階段 Cookie 僅舊版控制台 (OpenCode Black) 帳號需要。"
             }
           },
-          "remoteScopeLocalAccountsKeptHostPicker": "在此桌面上管理的帳號保持不變。請在設定頂端的「主機」選單中選擇此電腦以檢視它們。"
+          "remoteScopeLocalAccountsKeptHostPicker": "在此桌面上管理的帳號保持不變。請在設定頂端的「主機」選單中選擇此電腦以檢視它們。",
+          "apiKeyUpdateFailed": "MiniMax API 金鑰更新失敗。"
         },
         "AdvancedPane": {
           "40b29e0bf3": "重新啟動",
@@ -7103,8 +7125,6 @@
           "0d9e293a02": "重新整理",
           "c9b33eb5c0": "重新整理中…",
           "13647f9f80": "重新讀取 shell PATH 並重新檢測已安裝的代理",
-          "dc4a2ffdc0": "擴充套件指令覆蓋",
-          "cea7d97be1": "摺疊指令覆蓋",
           "db9e9e5887": "自訂指令",
           "959b67385b": "設定預設值",
           "24e032fa34": "預設",
@@ -7114,9 +7134,6 @@
           "8fbe1f37c1": "環境",
           "2d133152fa": "無預設環境",
           "agentPermissions": "代理權限",
-          "agentPermissionsInfo": "代理權限資訊",
-          "agentPermissionsTooltip": "切換模式時，自訂代理引數保持不變。",
-          "agentPermissionsDescription": "選擇 Orca 是以更少的權限提示啟動代理，還是手動檢查。",
           "agentPermissionsYolo": "Yolo",
           "agentPermissionsManual": "手動",
           "3f1bdf3cb4": "環境文字過長，無法安全解析。",
@@ -8462,6 +8479,7 @@
           "e57dde9d93": "未儲存的變更"
         },
         "RuntimeAccessGrantList": {
+          "sshAccessCaveat": "在此撤銷並不能阻止擁有這臺電腦 SSH 存取權限的人重新配對。要徹底阻止，請移除其 SSH 存取權限。",
           "8b82879581": "任何擁有有效授權的人都可以連線，直到您撤銷授權為止。撤銷共享存取會立即中斷活動用戶端的連線。",
           "68ec21309f": "撤銷存取權限",
           "6f6d5188ed": "撤銷 {{value0}}",
@@ -8572,6 +8590,8 @@
           "serverRuntimeUnavailableDescription": "SSH 傳輸已連線，但 Orca 執行時未應答。主機可能仍在執行。",
           "serverReconnecting": "重新連線",
           "accessRevoked": "{{value0}} no longer accepts this computer. Re-pair it with a new access link.",
+          "managedAccessRevoked": "{{value0}} 不再接受這臺電腦，且 Orca 無法透過 SSH 重新與其配對。請連線以重試。",
+          "connectAccessRevoked": "{{value0}} 不再接受這臺電腦。請連線以重試。",
           "repair": "Re-pair…",
           "serverAccessRevoked": "Access revoked",
           "orcaVersionLastSeen": "Orca v{{value0}} (last seen)"
@@ -9472,7 +9492,6 @@
             "a79d266f71": "工作階段",
             "afbf35be68": "穩定工作階段",
             "agentPermissions": "代理權限",
-            "agentPermissionsDescription": "在 Yolo 和手動之間切換代理權限預設值。",
             "agentRuntime": "代理執行時",
             "agentRuntimeDescription": "選擇預設在 Windows 還是 WSL 中檢測並啟動代理。",
             "runtime": "執行時",
@@ -12649,7 +12668,11 @@
           "planLevel": "方案：{{value0}}",
           "hostOnly": "請在執行 Orca 的電腦上的桌面應用程式中變更方案站點和 API 金鑰。",
           "detailsUnavailable": "計劃憑據詳細資訊只能在執行 Orca 的電腦上讀取。",
-          "siteUnavailable": "主機計劃網站不可用"
+          "siteUnavailable": "主機計劃網站不可用",
+          "keyStoredOnHostHelp": "儲存在 {{host}}，重新整理用量時僅從那裡傳送到所選站點。它優先於 ZCode CLI 登入。",
+          "usingCliOnHostHelp": "Orca 從 {{host}} 上的 ZCode CLI 憑據儲存讀取所選的 Coding Plan。在下方儲存 API 金鑰即可在那裡關聯該方案。",
+          "notConfiguredOnHostHelp": "在下方儲存方案 API 金鑰，或在 {{host}} 上使用 ZCode CLI 登入。",
+          "keyOnHostDescription": "從所選控制台的 API Keys 頁面貼上 API 金鑰。儲存在 {{host}}，重新整理用量時僅從那裡傳送到該站點。"
         },
         "NotificationHostToggles": {
           "offCount": "{{count}} 臺已關閉",
@@ -12859,6 +12882,20 @@
           "submit": "Re-pair",
           "success": "Re-paired with {{name}}",
           "failed": "Re-pair failed"
+        },
+        "usageCredentialHost": {
+          "outdated": "請更新 {{host}} 上的 Orca，才能將此金鑰儲存在那裡。",
+          "unreachable": "無法連線 {{host}}，因此不確定那裡是否已儲存金鑰。",
+          "storedOnHost": "已儲存在 {{host}}",
+          "miniMaxStorage": "儲存在 {{host}}，並在重新整理用量時從那裡傳送到所選的 MiniMax 端點。",
+          "cookieNeedsDesktop": "{{host}} 上沒有可傳送工作階段 Cookie 的 Orca 桌面應用程式。請改為儲存 API 金鑰。",
+          "checking": "正在檢查 {{host}}…",
+          "sealedElsewhereForgettable": "由 {{host}} 上的另一個 Orca 應用程式儲存，此應用程式無法讀取。請在該應用程式中變更，或在此處忘記它。",
+          "unreadableKey": "{{host}} 上的 Orca 無法讀取已儲存的金鑰。請替換或忘記它。",
+          "miniMaxApiKeyDescription": "從 MiniMax 控制台 → API keys 貼上 API 金鑰。儲存在 {{host}}，並在重新整理用量時從那裡傳送到所選的 MiniMax 端點。API 金鑰優先於 Cookie。"
+        },
+        "useUsageHostSettings": {
+          "updateFailed": "無法更新 {{host}} 上的設定。"
         }
       },
       "right": {
@@ -14213,8 +14250,8 @@
             "deleteReasonNonLocalHost": "只能刪除此裝置上的工作階段。",
             "deleteReasonSyntheticPath": "此工作階段無法在 Orca 中刪除。",
             "deleteReasonUnsupportedAgent": "{{value0}} 工作階段無法在 Orca 中刪除。",
-            "resumeInNewNativeChat": "在新的本機聊天中恢復",
-            "resumeInNewCli": "在新的 CLI 中恢復",
+            "resumeInNewNativeChat": "在新聊天中恢復",
+            "resumeInNewCli": "在新終端機中恢復",
             "resumeInNewCliTooltipFork": "將此對話派生到新的 CLI 工作階段中。",
             "resumeInNewCliTooltipChat": "本機聊天保持不變。"
           },
@@ -14679,7 +14716,9 @@
             "jiraMode": "Jira",
             "jiraSelectBindFailed": "無法關聯此 Jira 議題。請選擇符合的站點或重新連線 Jira，然後重試。",
             "emoji": "Emoji",
-            "loadingLinearIssue": "正在載入 Linear 議題..."
+            "loadingLinearIssue": "正在載入 Linear 議題...",
+            "linearLoginUnreadableTitle": "重新連線 Linear",
+            "linearLoginUnreadableBody": "無法讀取已儲存的 Linear 登入資訊。請在設定中重新連線。"
           },
           "ProjectCombobox": {
             "empty": "沒有符合搜尋的專案。",
@@ -15190,7 +15229,7 @@
             "61ffda7601": "建立工作區"
           },
           "WorkbenchAnimatedVisual": {
-            "633a91e358": "思維…",
+            "633a91e358": "思考中…",
             "932c4b3a97": ">",
             "ca2cfbf188": "向下分割終端機",
             "e370fa8c2b": "向右分割終端機",
@@ -15272,23 +15311,6 @@
                 "shared": {
                   "e7894927a2": "Codex",
                   "9deecb021c": "Claude"
-                },
-                "notes": {
-                  "styles": {
-                    "db6691aa0a": ".ravs-window { position: absolute; inset: 0; --ravs-soft-surface: color-mix(in srgb, var(--foreground) 2%, var(--card)); --ravs-soft-fill: color-mix(in srgb, var(--foreground) 6%, transparent); --ravs-panel-border: color-mix(in srgb, var(--foreground) 18%, var(--border)); --ravs-emphasis-border: color-mix(in srgb, var(--foreground) 44%, var(--border)); --ravs-floating-shadow: 0 14px 30px rgb(0 0 0 / 0.22), 0 2px 6px rgb(0 0 0 / 0.12); background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); } .ravs-difftoolbar { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--border); background: var(--ravs-soft-surface); font-size: 11px; color: var(--muted-foreground); } .ravs-diff-path { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--foreground); } .ravs-ai-chip { margin-left: auto; display: inline-flex; align-items: stretch; overflow: hidden; border-radius: 6px; border: 1px solid var(--border); background: var(--ravs-soft-surface); opacity: 0; transform: translateY(-2px); transition: opacity 320ms ease, transform 320ms ease; } .ravs-ai-chip.is-visible { opacity: 1; transform: none; } .ravs-ai-chip .ravs-count-btn, .ravs-ai-chip .ravs-send-btn { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; font-size: 11px; color: var(--muted-foreground); background: transparent; line-height: 1; } .ravs-ai-chip .ravs-count-btn { border-right: 1px solid var(--border); } .ravs-ai-chip .ravs-send-btn { padding: 3px 7px; position: relative; } .ravs-send-glow { position: absolute; inset: 0; background: rgba(34, 197, 94, 0.18); opacity: 0; transition: opacity 280ms ease; pointer-events: none; } .ravs-ai-chip .ravs-send-btn.is-flash .ravs-send-glow { opacity: 1; } .ravs-count-num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--foreground); font-weight: 600; } .ravs-diffbody { flex: 1; min-height: 0; position: relative; background: var(--editor-surface, var(--card)); } .ravs-diffscroll { position: absolute; inset: 0; overflow: hidden; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.55; color: var(--foreground); padding: 4px 0 8px; transition: opacity 240ms ease; } .ravs-diffscroll.is-hidden { opacity: 0; pointer-events: none; } .ravs-term { position: absolute; inset: 0; background: var(--editor-surface, var(--card)); color: var(--foreground); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; line-height: 1.45; overflow: hidden; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 240ms ease; z-index: 4; } .ravs-term.is-visible { opacity: 1; } .ravs-term-body { flex: 1; min-height: 0; padding: 10px 12px; overflow: hidden; display: flex; flex-direction: column; gap: 6px; } .ravs-term-line { white-space: pre-wrap; word-break: break-word; line-height: 1.45; } .ravs-term-muted { color: var(--muted-foreground); } .ravs-term-glyph { color: rgb(217 119 6); margin-right: 6px; } .ravs-term-check { color: rgb(16 185 129); font-weight: 700; margin-right: 6px; } .ravs-term-spinner { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--foreground) 20%, transparent); border-top-color: var(--foreground); vertical-align: -1px; animation: ravs-term-spin 0.9s linear infinite; } @keyframes ravs-term-spin { to { transform: rotate(360deg) } } .ravs-hunk-header { display: grid; grid-template-columns: 36px 36px 16px minmax(0,1fr); align-items: center; padding: 1px 8px 1px 0; background: rgba(99, 102, 241, 0.06); color: var(--muted-foreground); font-size: 10.5px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); } .ravs-hunk-header .ravs-text { grid-column: 4 / -1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgb(99 102 241); font-size: 10.5px; } .ravs-diff-line { display: grid; grid-template-columns: 36px 36px 16px minmax(0,1fr); align-items: stretch; position: relative; } .ravs-ln { text-align: right; padding: 0 6px 0 0; color: var(--muted-foreground); font-size: 10.5px; user-select: none; opacity: 0.85; } .ravs-marker { text-align: center; color: var(--muted-foreground); font-weight: 700; opacity: 0.7; } .ravs-text-cell { padding-right: 8px; white-space: pre; overflow: hidden; } .ravs-tok-kw { color: #a855f7; } .ravs-tok-id { color: #2563eb; } .ravs-tok-str { color: #16a34a; } .ravs-diff-line.is-add { background: color-mix(in srgb, var(--git-decoration-added) 14%, transparent); } .ravs-diff-line.is-add .ravs-marker { color: color-mix(in srgb, var(--git-decoration-added) 72%, transparent); opacity: 1; } .ravs-diff-line.is-rem { background: color-mix(in srgb, var(--git-decoration-deleted) 14%, transparent); } .ravs-diff-line.is-rem .ravs-marker { color: color-mix(in srgb, var(--git-decoration-deleted) 72%, transparent); opacity: 1; } .ravs-add-note-btn { position: absolute; left: 4px; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1px solid color-mix(in srgb, currentColor 22%, var(--border)); border-radius: 4px; background: var(--ravs-soft-fill); color: var(--foreground); z-index: 5; opacity: 0; box-shadow: 0 1px 2px rgb(0 0 0 / 0.14); pointer-events: none; transition: opacity 160ms ease; } .ravs-add-note-btn.is-visible { opacity: 1; } .ravs-note-row { padding: 4px 8px 4px 0; max-height: 0; overflow: hidden; opacity: 0; transition: max-height 360ms cubic-bezier(.4,0,.2,1), opacity 280ms ease 60ms, padding 360ms cubic-bezier(.4,0,.2,1); } .ravs-note-row.is-visible { max-height: 90px; opacity: 1; } .ravs-note-card { margin: 0 12px; position: relative; border: 1px solid var(--ravs-panel-border); border-left: 3px solid var(--ravs-emphasis-border); border-radius: 6px; background-color: var(--card); padding: 5px 8px 5px 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.16); } .ravs-note-meta { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); } .ravs-note-body { font-size: 11.5px; color: var(--foreground); line-height: 1.35; margin-top: 2px; } .ravs-popover { position: absolute; left: 12px; right: 12px; max-width: none; z-index: 20; padding: 8px 10px; border: 1px solid var(--ravs-panel-border); border-left: 3px solid var(--ravs-emphasis-border); border-radius: 6px; background-color: var(--card); color: var(--foreground); box-shadow: var(--ravs-floating-shadow); display: flex; flex-direction: column; gap: 6px; opacity: 0; transform: translateY(-4px) scale(0.985); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; } .ravs-popover.is-visible { opacity: 1; transform: none; pointer-events: auto; } .ravs-pop-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); } .ravs-pop-input { min-height: 38px; max-height: 80px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--editor-surface, var(--card)); font-size: 12px; line-height: 1.4; color: var(--foreground); white-space: pre-wrap; word-break: break-word; overflow: hidden; } .ravs-pop-footer { display: flex; justify-content: flex-end; gap: 6px; } .ravs-pop-btn { font-size: 11px; font-weight: 500; padding: 4px 9px; border-radius: 5px; line-height: 1; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 5px; } .ravs-pop-btn.is-cancel { color: var(--muted-foreground); background: transparent; } .ravs-pop-btn.is-add { color: var(--primary-foreground); background: var(--primary); } .ravs-send-menu { position: absolute; z-index: 30; right: 8px; top: 6px; min-width: 200px; background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: 8px; padding: 4px; box-shadow: var(--ravs-floating-shadow); opacity: 0; transform: translateY(-4px) scale(0.985); pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; } .ravs-send-menu.is-visible { opacity: 1; transform: none; pointer-events: auto; } .ravs-menu-section { padding: 4px 8px 2px; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); } .ravs-menu-row { display: grid; grid-template-columns: 16px minmax(0,1fr); align-items: center; gap: 8px; padding: 6px 8px; border-radius: 5px; font-size: 12px; color: var(--popover-foreground); } .ravs-menu-row.is-hot { background: var(--accent); box-shadow: inset 0 0 0 1px var(--border); } .ravs-cursor { position: absolute; z-index: 40; pointer-events: none; transition: transform 600ms cubic-bezier(.45,.05,.2,1), opacity 200ms ease; transform: translate(-30px, 220px); opacity: 0; } .ravs-cursor.is-visible { opacity: 1; } .ravs-cursor .ravs-ripple { position: absolute; left: -6px; top: -6px; width: 28px; height: 28px; border-radius: 999px; border: 2px solid color-mix(in srgb, var(--foreground) 52%, transparent); opacity: 0; } .ravs-cursor.is-clicking .ravs-ripple { animation: ravs-ripple 460ms ease-out forwards; } @keyframes ravs-ripple { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(1.4); opacity: 0; } } .ravs-caret { display: inline-block; width: 1.5px; height: 1em; background: currentColor; vertical-align: -2px; margin-left: 1px; animation: ravs-caret-blink 1.05s steps(1) infinite; } @keyframes ravs-caret-blink { 0%, 50% { opacity: 1 } 51%, 100% { opacity: 0 } }"
-                  }
-                },
-                "pr": {
-                  "view": {
-                    "styles": {
-                      "fc9a23c83d": ".ravpr-stage { position: absolute; inset: 0; overflow: hidden; } .ravpr-stack { position: absolute; inset: 0; display: flex; justify-content: flex-end; padding: 4px 34px 4px 2px; overflow: hidden; } .ravpr-sidebar, .ravpr-card { position: absolute; top: 4px; right: 2px; width: 464px; height: calc(100% - 8px); background: var(--card, #fff); border: 1px solid var(--border); border-radius: 10px; color: var(--foreground, #18181b); overflow: hidden; box-shadow: 0 1px 2px rgba(24,24,27,0.04); } .ravpr-sidebar { opacity: 0; transition: opacity 220ms ease; } .ravpr-sidebar.is-visible { opacity: 1; } .ravpr-sidebar.is-hiding { opacity: 0; } .ravpr-card { display: flex; flex-direction: column; min-width: 0; opacity: 0; transition: opacity 260ms ease; } .ravpr-card.is-visible { opacity: 1; } .ravpr-tabs { position: relative; display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 14px; background: rgba(24,24,27,0.015); color: var(--muted-foreground, #71717a); } .ravpr-tab { position: relative; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; color: var(--muted-foreground, #71717a); } .ravpr-tab.is-active, .ravpr-tab.is-hovered { color: var(--foreground, #18181b); } .ravpr-tab.is-active::after { content: ''; position: absolute; left: -5px; right: -5px; bottom: -10px; height: 1px; background: var(--foreground, #18181b); } .ravpr-tooltip { position: absolute; top: 34px; left: 106px; z-index: 6; padding: 7px 11px; border-radius: 8px; background: var(--card, #fff); color: var(--foreground, #18181b); font-size: 12px; line-height: 1; box-shadow: 0 8px 22px rgba(0,0,0,0.22); opacity: 0; transform: translateY(-3px); pointer-events: none; transition: opacity 160ms ease, transform 160ms ease; } .ravpr-tooltip.is-visible { opacity: 1; transform: translateY(0); } .ravpr-explorer { padding: 10px 12px 12px; } .ravpr-heading { color: var(--muted-foreground, #71717a); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; } .ravpr-file-list { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; } .ravpr-file { display: grid; grid-template-columns: 14px minmax(0,1fr) 22px; align-items: center; gap: 8px; min-height: 28px; padding: 4px 6px; border-radius: 6px; } .ravpr-file.is-active { background: rgba(24,24,27,0.06); box-shadow: inset 0 0 0 1px rgba(24,24,27,0.06); } .ravpr-file-icon { width: 12px; height: 12px; border-radius: 3px; background: rgba(24,24,27,0.14); } .ravpr-file-name { height: 8px; border-radius: 999px; background: rgba(24,24,27,0.14); } .ravpr-file-status { width: 14px; height: 8px; border-radius: 999px; background: rgba(24,24,27,0.12); } .ravpr-body { padding: 10px 12px 18px; display: flex; flex-direction: column; gap: 5px; min-height: 0; } .ravpr-number-row { display: flex; align-items: center; gap: 7px; } .ravpr-number { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-weight: 700; } .ravpr-open { display: inline-flex; align-items: center; justify-content: center; height: 18px; padding: 0 7px; border-radius: 5px; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.28); color: rgb(4 120 87); font-size: 9px; font-weight: 700; line-height: 1; } .ravpr-title { font-size: 12px; font-weight: 600; line-height: 1.35; color: var(--foreground, #18181b); margin-bottom: 2px; } .ravpr-merge { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 30px; min-height: 30px; flex: 0 0 30px; border-radius: 7px; background: rgb(22 163 74); color: #fff; font-size: 11.5px; font-weight: 700; margin-bottom: 2px; box-shadow: 0 1px 2px rgba(22,163,74,0.18); transition: box-shadow 220ms ease, filter 220ms ease; } .ravpr-merge.is-ready { box-shadow: 0 0 0 3px rgba(34,197,94,0.22), 0 1px 2px rgba(22,163,74,0.18); } .ravpr-section-row, .ravpr-check-row { display: grid; grid-template-columns: 18px minmax(0,1fr) auto; align-items: center; gap: 7px; padding: 5px 0; font-size: 11.5px; color: var(--foreground, #18181b); } .ravpr-check-row { padding: 5px 7px; font-size: 10.5px; } .ravpr-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ravpr-meta, .ravpr-check-state { color: var(--muted-foreground, #71717a); font-size: 10.5px; } .ravpr-check-state { font-size: 10px; } .ravpr-ring { display: inline-block; width: 14px; height: 14px; border-radius: 999px; border: 2px solid rgba(245,158,11,0.35); border-top-color: rgb(245 158 11); animation: ravpr-spin 1.1s linear infinite; } .ravpr-check { width: 15px; height: 15px; border-radius: 999px; display: none; align-items: center; justify-content: center; background: rgba(34,197,94,0.14); color: rgb(22 163 74); } .ravpr-section-row.is-done .ravpr-ring, .ravpr-check-row.is-done .ravpr-ring { display: none; } .ravpr-section-row.is-done .ravpr-check, .ravpr-check-row.is-done .ravpr-check { display: inline-flex; } .ravpr-reveal { display: flex; flex-direction: column; gap: 3px; opacity: 0; transform: translateY(4px); transition: opacity 260ms ease, transform 260ms ease; pointer-events: none; } .ravpr-reveal.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; } .ravpr-check-list, .ravpr-comment-list { display: flex; flex-direction: column; gap: 4px; min-height: 0; } .ravpr-comment-card { border: 1px solid var(--border); border-radius: 8px; background: var(--card, #fff); overflow: hidden; opacity: 0; transform: translateY(4px); transition: opacity 260ms ease, transform 260ms ease; } .ravpr-comment-card.is-visible { opacity: 1; transform: translateY(0); } .ravpr-comment-head { display: grid; grid-template-columns: 18px minmax(0,1fr) auto; align-items: center; gap: 7px; padding: 5px 7px; background: rgba(24,24,27,0.015); } .ravpr-avatar { width: 16px; height: 16px; border-radius: 999px; background: rgba(24,24,27,0.16); } .ravpr-author { width: 78px; height: 8px; border-radius: 999px; background: rgba(24,24,27,0.18); } .ravpr-comment-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9.5px; color: var(--muted-foreground, #71717a); } .ravpr-comment-body { padding: 5px 7px 6px; font-size: 11px; line-height: 1.32; color: var(--foreground, #18181b); } .ravpr-comment-body code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10.5px; padding: 1px 4px; border-radius: 4px; background: rgba(24,24,27,0.06); } .ravpr-cursor { position: absolute; z-index: 40; pointer-events: none; transition: transform 600ms cubic-bezier(.45,.05,.2,1), opacity 200ms ease; transform: translate(-30px, 220px); opacity: 0; } .ravpr-cursor.is-visible { opacity: 1; } .ravpr-ripple { position: absolute; left: -6px; top: -6px; width: 28px; height: 28px; border-radius: 999px; border: 2px solid rgba(24,24,27,0.5); opacity: 0; } .ravpr-cursor.is-clicking .ravpr-ripple { animation: ravpr-ripple 460ms ease-out forwards; } @keyframes ravpr-ripple { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(1.4); opacity: 0; } } @keyframes ravpr-spin { to { transform: rotate(360deg); } }"
-                    }
-                  }
-                },
-                "ship": {
-                  "styles": {
-                    "90cdcd2ecc": ".ravs-ship-root { position: absolute; inset: 0; } .ravs-ship-stack { position: absolute; inset: 0; display: grid; grid-template-columns: 232px minmax(0,1fr); gap: 14px; padding: 4px 2px; /* Why: cards size to their content rather than stretch to the parent's full height, so the two cards don't show empty space below their content. */ align-items: start; } /* Source Control mini-sidebar — ahead-count header, commit textarea + split Commit button, then a CHANGES section with file rows. The file rows are the surface the \"reading\" pulse animates over. */ .ravs-sc-card { display: flex; flex-direction: column; background: var(--card, #fff); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(24,24,27,0.04); } /* Both card headers share the same fixed height so the SC card and PR dialog align across the top edge regardless of header content. */ .ravs-sc-header, .ravs-pr-head { height: 36px; box-sizing: border-box; } .ravs-sc-header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; border-bottom: 1px solid var(--border); } .ravs-sc-ahead { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--foreground, #18181b); } .ravs-sc-ahead svg { color: var(--muted-foreground, #71717a); } .ravs-sc-commit-area { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; } .ravs-sc-textarea { position: relative; border: 1px solid var(--border); border-radius: 6px; background: var(--editor-surface, var(--card)); padding: 6px 26px 6px 8px; min-height: 56px; font-size: 12px; line-height: 1.45; color: var(--foreground, #18181b); white-space: pre-wrap; word-break: break-word; overflow: hidden; } .ravs-sc-textarea .ravs-placeholder { color: rgba(113,113,122,0.7); } .ravs-sc-sparkle { position: absolute; right: 6px; top: 6px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; color: var(--muted-foreground, #71717a); background: transparent; transition: color 160ms ease, background 160ms ease; } .ravs-sc-sparkle.is-scanning { color: rgb(109 40 217); background: color-mix(in srgb, rgb(139 92 246) 18%, transparent); } .ravs-sc-split { display: flex; align-items: stretch; } /* Why: Commit + Create PR are surrounding chrome — the violet AI affordances are the focal points. Render them as quiet secondary buttons so they don't compete with the sparkle/scan signals. */ .ravs-sc-split .ravs-primary { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 5px 10px; background: var(--secondary, #f5f5f5); color: var(--secondary-foreground, #171717); font-size: 11px; font-weight: 500; border-radius: 6px 0 0 6px; border: 1px solid var(--border); transition: background 240ms ease, border-color 240ms ease, color 240ms ease; } .ravs-sc-split .ravs-chev { display: inline-flex; align-items: center; justify-content: center; width: 22px; background: var(--secondary, #f5f5f5); color: var(--muted-foreground, #71717a); border-radius: 0 6px 6px 0; border: 1px solid var(--border); border-left: 1px solid var(--border); transition: background 240ms ease, border-color 240ms ease, color 240ms ease; } /* Why: when AI has filled the commit message, tint the Commit button green to signal \"ready to commit\". Uses the same success-green family as the PR flash so the two beats rhyme. Mix is intentionally strong (~28%) — at 14% it disappeared next to the violet sparkle and PR flash, so users only saw the PR change color. */ .ravs-sc-split.is-ready .ravs-primary, .ravs-sc-split.is-ready .ravs-chev { background: color-mix(in srgb, rgb(34 197 94) 28%, var(--secondary, #f5f5f5)); border-color: rgb(34 197 94); color: rgb(21 128 61); transition: background 220ms ease, border-color 220ms ease, color 220ms ease; } .ravs-sc-split.is-ready .ravs-chev { border-left-color: rgba(34, 197, 94, 0.55); } .ravs-sc-changes-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground, #71717a); } .ravs-sc-changes-count { color: var(--foreground, #18181b); font-weight: 600; margin-left: 2px; } .ravs-sc-view-all { font-size: 10px; font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--muted-foreground, #71717a); } .ravs-sc-files { display: flex; flex-direction: column; padding: 2px 6px 8px; flex: 1; min-height: 0; overflow: hidden; } .ravs-sc-file { display: grid; grid-template-columns: 14px minmax(0,1fr) 12px; align-items: center; gap: 6px; padding: 3px 6px; border-radius: 4px; font-size: 11px; line-height: 1.35; color: var(--foreground, #18181b); position: relative; transition: background 220ms ease; } .ravs-sc-ficon { color: rgb(180 83 9); display: inline-flex; } .ravs-sc-fname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ravs-sc-fmark { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10px; text-align: right; color: rgb(180 83 9); } .ravs-sc-file.is-reading { background: color-mix(in srgb, rgb(139 92 246) 14%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, rgb(139 92 246) 28%, transparent); } /* PR dialog — matches the .ravs-sc-card chrome (same border, radius, elevation) so the two cards read as one design language. */ .ravs-pr-dialog { background: var(--card, #fff); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 1px 2px rgba(24,24,27,0.04); display: flex; flex-direction: column; min-width: 0; overflow: hidden; } .ravs-pr-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 10px; border-bottom: 1px solid var(--border); } .ravs-pr-title-text { font-size: 11px; font-weight: 500; color: var(--foreground, #18181b); } /* Icon-only AI-assist chip — mirrors .ravs-sc-sparkle so the affordance reads identically across both cards. */ .ravs-pr-gen-btn { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border-radius: 4px; color: var(--muted-foreground, #71717a); background: transparent; border: 0; cursor: pointer; transition: color 160ms ease, background 160ms ease; } .ravs-pr-gen-btn:hover { background: rgba(24,24,27,0.06); color: var(--foreground, #18181b); } .ravs-pr-gen-btn.is-scanning { color: rgb(109 40 217); background: color-mix(in srgb, rgb(139 92 246) 18%, transparent); } .ravs-pr-body { display: flex; flex-direction: column; gap: 8px; padding: 10px; } .ravs-pr-field { display: flex; flex-direction: column; gap: 4px; } .ravs-pr-field-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-foreground, #71717a); } .ravs-pr-base { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--foreground, #18181b); background: var(--editor-surface, var(--card)); align-self: flex-start; } .ravs-pr-base svg { color: var(--muted-foreground, #71717a); } .ravs-pr-input { position: relative; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--editor-surface, var(--card)); min-height: 28px; font-size: 12px; line-height: 1.45; color: var(--foreground, #18181b); white-space: pre-wrap; word-break: break-word; overflow: hidden; } .ravs-pr-input.is-body { min-height: 50px; font-size: 11px; line-height: 1.4; } .ravs-pr-input .ravs-placeholder { color: rgba(113,113,122,0.7); } .ravs-pr-footer { display: flex; align-items: center; gap: 6px; justify-content: flex-end; margin-top: 2px; } .ravs-pr-btn { font-size: 11px; font-weight: 500; padding: 5px 10px; border-radius: 6px; line-height: 1; border: 1px solid transparent; outline: none; } .ravs-pr-btn:focus, .ravs-pr-btn:focus-visible { outline: none; } /* Cancel reads as a quiet ghost button so it doesn't compete with the affirmative Create PR action. */ .ravs-pr-btn.is-outline { background: transparent; color: var(--muted-foreground, #71717a); border-color: transparent; } .ravs-pr-btn.is-outline:hover { background: rgba(24,24,27,0.05); color: var(--foreground, #18181b); } /* Quiet secondary fill — see the .ravs-sc-split note above. The flash ring still uses success-green so the \"PR created\" beat reads. The Create-PR button is slightly larger than Cancel so the affirmative action remains the bigger target. */ .ravs-pr-btn.is-solid { background: var(--secondary, #f5f5f5); color: var(--secondary-foreground, #171717); border-color: var(--border); font-size: 12px; padding: 7px 14px; transition: background 220ms ease, border-color 220ms ease, color 220ms ease, box-shadow 220ms ease; } .ravs-pr-btn.is-solid.is-ready { background: color-mix(in srgb, rgb(34 197 94) 28%, var(--secondary, #f5f5f5)); border-color: rgb(34 197 94); color: rgb(21 128 61); } .ravs-pr-btn.is-solid.is-flash { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.30); } .ravs-cursor { position: absolute; z-index: 40; pointer-events: none; transition: transform 600ms cubic-bezier(.45,.05,.2,1), opacity 200ms ease; transform: translate(-30px, 220px); opacity: 0; } .ravs-cursor.is-visible { opacity: 1; } .ravs-cursor .ravs-ripple { position: absolute; left: -6px; top: -6px; width: 28px; height: 28px; border-radius: 999px; border: 2px solid rgba(24,24,27,0.5); opacity: 0; } .ravs-cursor.is-clicking .ravs-ripple { animation: ravs-ripple 460ms ease-out forwards; } @keyframes ravs-ripple { 0% { transform: scale(0.4); opacity: 0.9; } 100% { transform: scale(1.4); opacity: 0; } } .ravs-caret { display: inline-block; width: 1.5px; height: 1em; background: currentColor; vertical-align: -2px; margin-left: 1px; animation: ravs-caret-blink 1.05s steps(1) infinite; } @keyframes ravs-caret-blink { 0%, 50% { opacity: 1 } 51%, 100% { opacity: 0 } }"
-                  }
                 }
               }
             },
@@ -15877,7 +15899,9 @@
           "1829437fce": "新 Markdown"
         },
         "DiagramViewerModal": {
-          "title": "圖表",
+          "title": "圖表"
+        },
+        "PanZoomImageDialog": {
           "zoomOut": "縮小",
           "zoomIn": "放大",
           "fit": "適應螢幕",
@@ -18143,6 +18167,14 @@
         "c77189bc0c": "Update filter",
         "19af906d12": "Save filter"
       },
+      "OrcaSignInProgress": {
+        "waiting": "正在等待在瀏覽器中登入",
+        "copyLink": "複製登入連結",
+        "copied": "已複製登入連結",
+        "copyFailed": "無法複製連結。",
+        "signingIn": "正在登入…",
+        "cancel": "取消"
+      },
       "todoCalendar": {
         "addOn": "在 {{value0}} 新增待辦",
         "closeDetails": "關閉詳情",
@@ -18269,12 +18301,15 @@
         "couldNotStart": "{{agent}} 無法啟動。",
         "editSavedArguments": "請在設定 > 代理 > 引數中編輯。",
         "couldNotRestart": "{{agent}} 無法重新啟動。",
+        "startTimedOut": "{{agent}} 啟動時間過長（{{seconds}} 秒後 {{method}} 仍無響應）。",
+        "startTimedOutKeepsHappening": "如果此問題持續出現，執行此聊天的電腦可能負載過重。",
         "codexCliTooOld": "Codex {{installedVersion}} 版本過舊，無法用於聊天。請更新到 {{minimumVersion}} 或更高版本。",
         "notSignedIn": "{{agent}} 尚未登入。",
         "claudeSystemNotSignedIn": "Claude 尚未登入。請執行 `{{loginCommand}}`，或在 Claude 帳號設定中選擇帳號。",
         "claudeManagedNotSignedIn": "此 Claude 帳號尚未登入。請在 Claude 帳號設定中重新登入。",
         "codexSystemNotSignedIn": "Codex 尚未登入。請執行 `{{loginCommand}}`。",
         "codexManagedNotSignedIn": "此 Codex 帳號尚未登入。請在 Codex 帳號設定中重新登入。",
+        "antigravityNotSignedIn": "尚未登入 Antigravity。請在設定 → 帳號 → Antigravity中登入，然後重新傳送訊息。",
         "cliMissing": "在執行此聊天的電腦上找不到 {{agent}}。請安裝它，或檢查設定 → 代理中的指令。",
         "signInFirst": "請先登入。",
         "signInThenRunCommand": "請登入，然後重新執行 /{{command}}。",
@@ -18345,6 +18380,14 @@
         "providerRetryNumber": "第 {{attempt}} 次重試。",
         "providerRetryNumberOf": "第 {{attempt}} 次重試，共 {{maxRetries}} 次。",
         "providerRetryLastError": "上次錯誤：{{detail}}。",
+        "usageLimitReached": "{{agent}} 已達到使用上限。",
+        "usageLimitReachedNamed": "{{agent}} 已達到{{window}}上限。",
+        "usageLimitWindowSession": "工作階段",
+        "usageLimitWindowWeekly": "每週",
+        "usageLimitWindowWeeklyModel": "模型每週",
+        "usageLimitWindowCredits": "額外用量",
+        "usageLimitResetsAt": "將在 {{when}} 重設。",
+        "usageLimitSendAfterReset": "重設後傳送訊息即可繼續。",
         "previousExitUnverifiable": "無法停止之前的 {{agent}}。",
         "sessionNotRestored": "{{agent}} 無法重新開啟之前的工作階段，因此此聊天將在新工作階段中繼續。{{agent}} 不記得之前的訊息。",
         "agentCommandNotSignedIn": "請在執行此聊天的電腦上使用 `{{loginCommand}}` 登入 {{agent}}。",
@@ -18370,6 +18413,7 @@
         "capacity": "執行此聊天的電腦上的 Orca 已達到請求上限。請在那臺電腦上更新 Orca，然後重試。",
         "outcomeUnknown": "Orca 無法確認發生了什麼。請檢視聊天。",
         "sendOutcomeLost": "Orca 無法確認你的訊息已送達代理。請檢視聊天，如有需要請重新傳送。",
+        "continuationSuperseded": "This chat has moved on. Check the latest messages before continuing.",
         "questionChanged": "此問題已被回答或已變更。",
         "cancelNotSaved": "無法取消此問題或審批。",
         "historyUnreadable": "Orca 無法讀取此聊天的已儲存歷史記錄。",
@@ -18502,7 +18546,6 @@
         "imageSaving": "儲存貼上的影像...",
         "pendingAttachmentLimit": "太多附件正在等待。在附加更多內容之前先完成創作。",
         "viewAttachment": "檢檢視片",
-        "imagePreview": "全尺寸影像預覽",
         "imagePreviewUnavailable": "預覽不可用",
         "copyImage": "複製圖片",
         "copyImageFailed": "無法複製圖片",
@@ -18634,7 +18677,7 @@
         "stopping": "正在停止…",
         "queueAfterStop": "將訊息加入佇列，在停止後執行",
         "sendAfterStop": "傳送訊息，在停止後執行",
-        "thinking": "思維",
+        "thinking": "思考中",
         "workingFor": "已工作 {{value0}}",
         "workedFor": "工作了 {{value0}}",
         "interruptedAfter": "{{value0}} 後中斷",
@@ -18948,7 +18991,9 @@
       "interruptedContinue": {
         "continue": "繼續",
         "failed": "無法繼續此聊天。請重試，或傳送一條訊息。",
-        "explanation": "繼續後，代理會先檢查其上一步是否已完成。"
+        "explanation": "繼續後，代理會先檢查其上一步是否已完成。",
+        "unconfirmed": "Couldn't confirm whether {{agent}} received Continue. Check the chat before trying again.",
+        "usageLimitExplanation": "讓代理從中斷處繼續。請在上限重設後使用。"
       },
       "rewind": {
         "unsupported": "此聊天無法返回到更早的訊息。",
@@ -18974,6 +19019,17 @@
       "visualUnavailable": "視覺化不可用",
       "visualLoading": "正在載入視覺化",
       "visualOpenInNewTab": "在新分頁中開啟",
+      "resumeCommand": {
+        "description": "開啟代理工作階段歷史",
+        "argumentHint": "[搜尋]",
+        "workspaceUnavailable": "此聊天的工作區尚未載入。請稍後再試一次 /resume。",
+        "replaceTitle": "替換此聊天？",
+        "replaceDescription": "在此恢復「{{title}}」將停止 {{agent}} 在此聊天中正在進行的工作。",
+        "replace": "替換"
+      },
+      "antigravitySignIn": {
+        "sentence": "尚未登入 Antigravity。請在<settings>設定 → 帳號 → Antigravity</settings>中登入，然後重新傳送訊息。"
+      },
       "claudeSignIn": {
         "signingIn": "正在登入…"
       }
@@ -18981,22 +19037,30 @@
     "tab": {
       "bar": {
         "SortableTabContextMenu": {
-          "switchToTerminalView": "切換到終端機檢視",
-          "switchToChatView": "切換到聊天檢視",
-          "closeTabsToLeft": "關閉左側的分頁"
+          "switchToTerminalView": "切換到終端機",
+          "switchToChatView": "切換到聊天",
+          "closeTabsToLeft": "關閉左側的所有分頁"
         },
         "BrowserTab": {
           "closeOthers": "關閉其他",
-          "closeTabsToLeft": "關閉左側的分頁"
+          "closeTabsToLeft": "關閉左側的所有分頁"
         },
         "EditorFileTabContextMenu": {
           "closeOthers": "關閉其他",
-          "closeTabsToLeft": "關閉左側的分頁"
+          "closeTabsToLeft": "關閉左側的所有分頁"
         },
         "CopyTabIdMenuItem": {
           "copied": "已複製分頁 ID",
           "failed": "無法複製分頁 ID",
           "copy": "複製分頁 ID"
+        },
+        "bulkClose": {
+          "others": "關閉其他分頁？",
+          "right": "關閉右側分頁？",
+          "left": "關閉左側分頁？",
+          "editors": "關閉所有編輯器分頁？",
+          "description": "選取的分頁將關閉。固定的分頁將保持開啟。",
+          "confirm": "關閉分頁"
         }
       }
     },
@@ -19455,12 +19519,14 @@
       "cancelFailed": "無法取消安裝。請重試。",
       "install": "安裝 {{agent}}",
       "installManaged": "安裝 Orca 的副本",
-      "installed": "已安裝。",
+      "installed": "已安裝",
       "notInstalled": "未安裝。",
       "progress": "{{agent}} 下載",
       "readFailed": "無法檢查此主機上的 {{agent}}。正在重試。",
-      "reinstall": "重新安裝",
+      "reinstall": "重新安裝 {{agent}}",
+      "reinstallShort": "重新安裝",
       "remove": "移除已下載的執行時",
+      "moreActions": "{{agent}} 的更多操作",
       "removeConfirm": "移除",
       "removeDescription": "正在執行的 {{agent}} 聊天會停止。其歷史記錄會保留。",
       "removeKeep": "取消",
@@ -19943,6 +20009,10 @@
       "openInSidebarCopy": "輸入您記得的內容，或詢問代理：「找到我們修復登入超時的工作階段。」",
       "open": "開啟",
       "enableOnAll": "在所有電腦上啟用"
+    },
+    "dialog": {
+      "select": "選擇",
+      "open": "開啟"
     }
   },
   "aiVault": {
@@ -20039,6 +20109,27 @@
       "cancel": "取消"
     },
     "antigravity": {
+      "chatTitle": "Antigravity 聊天",
+      "chatDescription": "聊天使用自己的 Antigravity 登入，與上方的 agy 帳號分開。在此裝置上登入一次即可。",
+      "chatSignIn": "登入",
+      "chatChangeAccount": "更換帳號",
+      "chatRetry": "重試登入",
+      "chatCancel": "取消",
+      "chatCopyLink": "複製登入連結",
+      "chatCopyFailed": "無法複製連結。",
+      "chatStarting": "正在開始登入…",
+      "chatWaiting": "請在瀏覽器中完成登入。",
+      "chatOpenFailed": "複製連結並在瀏覽器中開啟。",
+      "chatVerifying": "正在完成登入…",
+      "chatPasteHelp": "如果登入後的最後一個頁面無法載入，請從瀏覽器複製它的完整地址並貼上到這裡。",
+      "chatContinue": "繼續",
+      "chatSignedInOn": "已在 {{host}} 上登入。",
+      "chatCancelled": "已取消登入。",
+      "chatExpired": "登入超時。請重試。",
+      "chatFailed": "登入失敗。請重試。",
+      "chatNotSignedIn": "未在 {{host}} 上登入。",
+      "chatOtherClient": "另一個用戶端正在登入。",
+      "chatReadFailed": "無法檢查 {{host}} 上的登入。",
       "scope": "管理 {{host}} 上的本機 agy 帳號。",
       "signIn": "在此主機上啟動 agy 並完成其瀏覽器登入，然後儲存目前帳號。要新增其他帳號，請在 agy 中使用 /logout 並再次登入。",
       "docs": "登入說明",
