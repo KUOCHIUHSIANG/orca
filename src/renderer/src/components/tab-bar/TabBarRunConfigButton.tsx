@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { ChevronDown, Play, Square } from 'lucide-react'
+import { ChevronDown, Play, RotateCw, Square } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import type { RunConfiguration } from '../../../../shared/run-configuration-types'
 import {
   rerunConfigurationInTab,
+  restartRunTab,
   runConfigurationInNewTab,
   stopRunTab
 } from '@/lib/run-configuration-in-new-tab'
@@ -40,6 +41,7 @@ export function TabBarRunConfigButton({
 }: TabBarRunConfigButtonProps): React.JSX.Element | null {
   const [menuOpen, setMenuOpen] = useState(false)
   const [recentConfigId, setRecentConfigId] = useState<string | null>(null)
+  const [restarting, setRestarting] = useState(false)
   const {
     repoId,
     configs,
@@ -163,6 +165,23 @@ export function TabBarRunConfigButton({
     }
   }, [primary, runTabs, runningTabIds, runConfig])
 
+  // Why: npm dev servers hot-reload; a running `dotnet run` needs a restart to pick up changes.
+  const restartConfig =
+    primary?.running && primary.config?.type === 'dotnet' ? primary.config : null
+
+  const handleRestartClick = useCallback(() => {
+    if (!primary || !restartConfig) {
+      return
+    }
+    const tabIds = primary.tabId
+      ? [primary.tabId]
+      : findRunningTabIds(runTabs, primary.label, runningTabIds)
+    setRestarting(true)
+    void Promise.all(
+      tabIds.map((tabId) => restartRunTab({ config: restartConfig, tabId, worktreeId }))
+    ).finally(() => setRestarting(false))
+  }, [primary, restartConfig, runTabs, runningTabIds, worktreeId])
+
   if (!repoId) {
     return null
   }
@@ -202,7 +221,7 @@ export function TabBarRunConfigButton({
           <button
             type="button"
             onClick={handlePrimaryClick}
-            disabled={!primary}
+            disabled={!primary || restarting}
             className={cn(innerButtonBase, 'gap-1.5 rounded-l-md rounded-r-none px-1.5')}
             aria-label={
               primary
@@ -235,6 +254,27 @@ export function TabBarRunConfigButton({
             : 'Run configuration'}
         </TooltipContent>
       </Tooltip>
+      {restartConfig || restarting ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={handleRestartClick}
+              disabled={restarting}
+              className={cn(
+                innerButtonBase,
+                'justify-center rounded-none border-l border-border/60 px-1.5 disabled:opacity-60'
+              )}
+              aria-label={`Restart: ${primary?.label ?? ''}`}
+            >
+              <RotateCw className={cn('size-3.5', restarting && 'animate-spin')} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={6}>
+            {restarting ? `Restarting ${primary?.label ?? ''}...` : `Restart: ${primary?.label}`}
+          </TooltipContent>
+        </Tooltip>
+      ) : null}
       <DropdownMenu modal={false} open={menuOpen} onOpenChange={handleOpenChange}>
         <DropdownMenuTrigger asChild>
           <button
