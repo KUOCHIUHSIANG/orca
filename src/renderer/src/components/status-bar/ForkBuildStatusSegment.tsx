@@ -34,6 +34,7 @@ export function ForkBuildStatusSegment({
     return null
   }
   const view = describeForkBuildProgress(progress, now)
+  const restarting = progress.phase === 'restart'
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -41,7 +42,10 @@ export function ForkBuildStatusSegment({
           role="status"
           tabIndex={0}
           aria-label={view.label}
-          className="inline-flex items-center gap-1.5 rounded px-1 py-0.5 text-muted-foreground"
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded px-1 py-0.5 text-muted-foreground',
+            restarting && 'animate-fork-build-breathe'
+          )}
         >
           {view.percent === null ? (
             <Loader2 className="size-3 animate-spin text-status-warning" />
@@ -50,15 +54,30 @@ export function ForkBuildStatusSegment({
             // here (plain sync, blue build, green restart) without restyling the primitive.
             <span
               className={cn(
-                'w-14',
+                'relative w-14',
                 progress.phase === 'build' && '[--primary:var(--chart-2)]',
-                progress.phase === 'restart' && '[--primary:var(--status-success)]'
+                restarting && '[--primary:var(--status-success)]'
               )}
             >
               <Progress value={view.percent} aria-hidden />
+              {!restarting && (
+                // Why two clips: the bar's rounded outline, then the square-ended filled width, so the
+                // light runs over finished work only and is round only where the bar itself is.
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+                >
+                  <span
+                    className="absolute inset-y-0 left-0 overflow-hidden"
+                    style={{ width: `${view.percent}%` }}
+                  >
+                    <span className="animate-fork-build-shimmer absolute inset-0" />
+                  </span>
+                </span>
+              )}
             </span>
           )}
-          {!iconOnly && <span className="text-[11px] tabular-nums">{view.label}</span>}
+          {!iconOnly && <span className="text-2xs tabular-nums">{view.label}</span>}
         </span>
       </TooltipTrigger>
       <TooltipContent side="top" sideOffset={6}>
