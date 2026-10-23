@@ -2720,6 +2720,46 @@ html.native-shell .app-layout {
   animation: update-card-exit 150ms ease-in both;
 }
 
+/* Why: a light sweeping over the filled part of the fork build bar shows the build is still moving. */
+@keyframes fork-build-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-fork-build-shimmer {
+  /* A highlight over a colored bar, not a theme color, so it stays white in both themes. */
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+  animation: fork-build-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Why: the full restart bar and its label breathe together so an imminent restart is hard to miss. */
+@keyframes fork-build-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-fork-build-breathe {
+  animation: fork-build-breathe 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fork-build-shimmer {
+    display: none;
+  }
+  .animate-fork-build-breathe {
+    animation: none;
+  }
+}
+
 /* Waveform bars in the FeatureTipsModal voice tip — purely decorative. */
 @keyframes waveform {
   0%,
