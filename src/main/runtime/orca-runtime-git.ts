@@ -19,6 +19,7 @@ export class RuntimeGitCommands {
   readonly getRuntimeGitBranchDiff: RuntimeGitDiffCommands['getRuntimeGitBranchDiff']
   readonly getRuntimeGitCommitDiff: RuntimeGitDiffCommands['getRuntimeGitCommitDiff']
   readonly getRuntimeGitBlame: RuntimeGitDiffCommands['getRuntimeGitBlame']
+  readonly getRuntimeGitBlameSubmoduleCommit: RuntimeGitDiffCommands['getRuntimeGitBlameSubmoduleCommit']
   readonly getRuntimeGitRemoteFileUrl: RuntimeGitDiffCommands['getRuntimeGitRemoteFileUrl']
   readonly getRuntimeGitRemoteCommitUrl: RuntimeGitDiffCommands['getRuntimeGitRemoteCommitUrl']
   readonly abortRuntimeGitMerge: RuntimeGitSyncCommands['abortRuntimeGitMerge']
@@ -63,6 +64,7 @@ export class RuntimeGitCommands {
     this.getRuntimeGitBranchDiff = diff.getRuntimeGitBranchDiff.bind(diff)
     this.getRuntimeGitCommitDiff = diff.getRuntimeGitCommitDiff.bind(diff)
     this.getRuntimeGitBlame = diff.getRuntimeGitBlame.bind(diff)
+    this.getRuntimeGitBlameSubmoduleCommit = diff.getRuntimeGitBlameSubmoduleCommit.bind(diff)
     this.getRuntimeGitRemoteFileUrl = diff.getRuntimeGitRemoteFileUrl.bind(diff)
     this.getRuntimeGitRemoteCommitUrl = diff.getRuntimeGitRemoteCommitUrl.bind(diff)
     this.abortRuntimeGitMerge = sync.abortRuntimeGitMerge.bind(sync)

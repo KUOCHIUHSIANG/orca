@@ -5,7 +5,7 @@ import { detectLanguage } from '@/lib/language-detect'
 import { useBottomPanelState } from '@/lib/bottom-panel-state'
 import type { GitBlameCommit } from '../../../../../shared/git-blame'
 import { useGitToolWindowState } from '../../bottom-panel/git/git-tool-window-state'
-import type { InlineBlameFile } from './inline-blame-file'
+import { blameWorktreePath, type InlineBlameFile } from './inline-blame-file'
 
 export async function copyBlameCommitHash(sha: string): Promise<void> {
   const label = translate('auto.components.right.sidebar.SourceControl.d172a4f068', 'Commit hash')
@@ -34,10 +34,12 @@ export function openBlameCommitDiff(file: InlineBlameFile, commit: GitBlameCommi
     file.worktreeId,
     file.worktreePath,
     {
-      path: commit.path,
+      // Why worktree-relative: the diff tab's commit read routes a submodule's path into its repo.
+      path: blameWorktreePath(file, commit.path),
       // Why: blame omits `previous` exactly when this commit created the file.
       status: commit.previousSha ? (renamed ? 'renamed' : 'modified') : 'added',
-      oldPath: renamed ? commit.previousPath : undefined
+      oldPath:
+        renamed && commit.previousPath ? blameWorktreePath(file, commit.previousPath) : undefined
     },
     {
       commitOid: commit.sha,

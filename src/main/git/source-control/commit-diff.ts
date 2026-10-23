@@ -5,6 +5,11 @@ import { gitRuntimeOptionsKey } from './git-runtime-options-cache-key'
 import { gitDiffReadDedupe } from './git-read-cache-invalidation'
 import { buildDiffResult } from './diff-result'
 import { readGitBlobAtOidPath } from './git-blob-read'
+import {
+  findContainingSubmodule,
+  listSubmodulePaths,
+  resolveSubmoduleWorktreePath
+} from './submodule-paths'
 
 export async function getCommitDiff(
   worktreePath: string,
@@ -40,6 +45,10 @@ async function loadCommitDiff(
   },
   options: GitRuntimeOptions
 ): Promise<GitDiffResult> {
+  const submoduleRoute = await routeIntoSubmodule(worktreePath, args, options)
+  if (submoduleRoute) {
+    return loadCommitDiff(submoduleRoute.worktreePath, submoduleRoute.args, options)
+  }
   try {
     const leftPath = args.oldPath ?? args.filePath
     // Why concurrent: the two sides are independent `git show` spawns. A root
@@ -65,6 +74,37 @@ async function loadCommitDiff(
       modifiedContent: '',
       originalIsBinary: false,
       modifiedIsBinary: false
+    }
+  }
+}
+
+/**
+ * A file inside a submodule lives in that submodule's repo; the parent's trees only hold its
+ * gitlink, so a parent read would come back empty. Nested submodules recurse one level at a time.
+ */
+async function routeIntoSubmodule(
+  worktreePath: string,
+  args: { commitOid: string; parentOid?: string | null; filePath: string; oldPath?: string },
+  options: GitRuntimeOptions
+): Promise<{ worktreePath: string; args: typeof args } | null> {
+  const filePath = args.filePath.replace(/\\/g, '/')
+  const submodule = findContainingSubmodule(
+    await listSubmodulePaths(worktreePath, options),
+    filePath
+  )
+  if (!submodule || filePath === submodule) {
+    return null
+  }
+  const oldPath = args.oldPath?.replace(/\\/g, '/')
+  return {
+    // Why: validate the .gitmodules-derived path so a crafted one can't escape the worktree.
+    worktreePath: resolveSubmoduleWorktreePath(worktreePath, submodule),
+    args: {
+      ...args,
+      filePath: filePath.slice(submodule.length + 1),
+      oldPath: oldPath?.startsWith(`${submodule}/`)
+        ? oldPath.slice(submodule.length + 1)
+        : undefined
     }
   }
 }

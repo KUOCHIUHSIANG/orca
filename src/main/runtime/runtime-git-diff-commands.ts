@@ -5,7 +5,8 @@ import type {
 } from '../../shared/git-diff-compare-types'
 import { assertGitDiffWithinTransportBudget } from '../../shared/git-diff-transport-budget'
 import { getBranchDiff } from '../git/status'
-import type { GitBlameResult } from '../../shared/git-blame'
+import type { GitBlameResult, GitBlameSubmoduleCommit } from '../../shared/git-blame'
+import { getBlameSubmoduleCommit } from '../git/blame-submodule-commit'
 import type { GitAdmissionTier } from '../git/command-runner/git-exec-options'
 import { normalizeRuntimeRelativePath } from './runtime-relative-paths'
 import {
@@ -116,6 +117,19 @@ export class RuntimeGitDiffCommands {
     const relativePath = normalizeRuntimeGitRelativePath(filePath)
     return requireRuntimeGitProvider(target).getBlame(target.worktree.path, relativePath, {
       contents
+    })
+  }
+
+  async getRuntimeGitBlameSubmoduleCommit(
+    worktreeSelector: string,
+    submodulePath: string,
+    sha: string
+  ): Promise<GitBlameSubmoduleCommit> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    requireLocalRuntimeGitRoute(target)
+    return getBlameSubmoduleCommit(target.worktree.path, submodulePath, sha, {
+      ...localGitOptionsForTarget(target),
+      admissionTier: 'interactive'
     })
   }
 

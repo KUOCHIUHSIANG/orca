@@ -1,4 +1,4 @@
-import type { GitBlameResult } from '../../../shared/git-blame'
+import type { GitBlameResult, GitBlameSubmoduleCommit } from '../../../shared/git-blame'
 import type {
   GitBranchCompareResult,
   GitCommitCompareResult,
@@ -146,6 +146,26 @@ export async function getRuntimeGitBlame(
   return callRuntimeRpc<GitBlameResult>(
     target,
     'git.blame',
+    { worktree: toRuntimeWorktreeSelector(context.worktreeId), ...args },
+    { timeoutMs: 15_000 }
+  )
+}
+
+export async function getRuntimeGitBlameSubmoduleCommit(
+  context: RuntimeGitContext,
+  args: { submodulePath: string; sha: string }
+): Promise<GitBlameSubmoduleCommit> {
+  const target = context.target
+  if (target.kind === 'local' || !context.worktreeId) {
+    return window.api.git.blameSubmoduleCommit({
+      worktreePath: resolveLocalWorktreePath(context),
+      ...args,
+      connectionId: context.connectionId
+    })
+  }
+  return callRuntimeRpc<GitBlameSubmoduleCommit>(
+    target,
+    'git.blameSubmoduleCommit',
     { worktree: toRuntimeWorktreeSelector(context.worktreeId), ...args },
     { timeoutMs: 15_000 }
   )

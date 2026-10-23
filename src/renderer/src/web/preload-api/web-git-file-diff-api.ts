@@ -8,7 +8,7 @@ type WebGitApi = NonNullable<Partial<PreloadApi>['git']>
 /** Per-file reads (diffs and blame) the web client forwards to the runtime host. */
 export function createGitFileDiffApi(): Pick<
   WebGitApi,
-  'diff' | 'branchDiff' | 'commitDiff' | 'blame'
+  'diff' | 'branchDiff' | 'commitDiff' | 'blame' | 'blameSubmoduleCommit'
 > {
   return {
     diff: async ({ worktreePath, filePath, staged, compareAgainstHead }) => {
@@ -45,6 +45,14 @@ export function createGitFileDiffApi(): Pick<
         worktree: toRuntimeWorktreeSelector(file.worktree.id),
         filePath: file.relativePath,
         contents
+      })
+    },
+    blameSubmoduleCommit: async ({ worktreePath, submodulePath, sha }) => {
+      const file = await resolveRuntimeFilePath(submodulePath, worktreePath)
+      return callRuntimeResult('git.blameSubmoduleCommit', {
+        worktree: toRuntimeWorktreeSelector(file.worktree.id),
+        submodulePath: file.relativePath,
+        sha
       })
     }
   }

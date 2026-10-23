@@ -112,6 +112,15 @@ export const GitBlame = WorktreeSelector.extend({
   contents: z.string().max(GIT_BLAME_MAX_CONTENT_LENGTH).optional()
 })
 
+export const GitBlameSubmoduleCommit = WorktreeSelector.extend({
+  submodulePath: z
+    .string()
+    .min(1, 'Missing submodule path')
+    // Why: never let a submodule path be parsed as a git flag (arg injection).
+    .refine((value) => !value.startsWith('-'), 'Submodule path must not start with -'),
+  sha: FullGitObjectId
+})
+
 export const GitCommit = WorktreeSelector.extend({
   message: z
     .unknown()

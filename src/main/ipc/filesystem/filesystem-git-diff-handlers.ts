@@ -1,7 +1,8 @@
 import { ipcMain } from 'electron'
-import type { GitBlameResult } from '../../../shared/git-blame'
+import type { GitBlameResult, GitBlameSubmoduleCommit } from '../../../shared/git-blame'
 import type { GitDiffResult } from '../../../shared/git-diff-compare-types'
 import { getBlame } from '../../git/blame'
+import { getBlameSubmoduleCommit } from '../../git/blame-submodule-commit'
 import { getBranchDiff, getCommitDiff } from '../../git/status'
 import { resolveRegisteredWorktreePath } from '../registered-worktree-roots-cache'
 import { getLocalGitOptionsForRegisteredWorktree } from '../local-worktree-runtime-options'
@@ -115,6 +116,30 @@ export function registerFilesystemGitDiffHandlers(context: FilesystemHandlerCont
         contents,
         admissionTier: 'interactive'
       })
+    }
+  )
+  ipcMain.handle(
+    'git:blameSubmoduleCommit',
+    async (
+      _event,
+      args: { worktreePath: string; submodulePath: unknown; sha: string; connectionId?: string }
+    ): Promise<GitBlameSubmoduleCommit> => {
+      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      const worktreePath = await resolveRegisteredWorktreePath(args.worktreePath, store)
+      if (typeof args.submodulePath !== 'string') {
+        throw new Error('Access denied: invalid submodule path')
+      }
+      const gitOptions = getLocalGitOptionsForRegisteredWorktree(
+        store,
+        args.worktreePath,
+        worktreePath
+      )
+      return getBlameSubmoduleCommit(
+        worktreePath,
+        args.submodulePath,
+        validateFullGitObjectId(args.sha, 'sha'),
+        { ...gitOptions, admissionTier: 'interactive' }
+      )
     }
   )
 }
