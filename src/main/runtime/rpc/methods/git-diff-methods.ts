@@ -2,6 +2,7 @@ import { defineMethod } from '../core'
 import { remoteRpcContentBudget } from '../../../../shared/remote-rpc-content-budget'
 import {
   GitBlame,
+  GitBlameSubmoduleCommit,
   GitBranchDiff,
   GitCommitDiff,
   GitDiff
@@ -65,5 +66,12 @@ export const GIT_DIFF_METHODS = [
     params: GitBlame,
     handler: async (params, { runtime }) =>
       runtime.getRuntimeGitBlame(params.worktree, params.filePath, params.contents)
+  }),
+  defineMethod({
+    name: 'git.blameSubmoduleCommit',
+    permission: 'workspace',
+    params: GitBlameSubmoduleCommit,
+    handler: async (params, { runtime }) =>
+      runtime.getRuntimeGitBlameSubmoduleCommit(params.worktree, params.submodulePath, params.sha)
   })
 ]

@@ -24,6 +24,7 @@ type RuntimeGitCommandName =
   | 'getRuntimeGitBranchDiff'
   | 'getRuntimeGitCommitDiff'
   | 'getRuntimeGitBlame'
+  | 'getRuntimeGitBlameSubmoduleCommit'
   | 'commitRuntimeGit'
   | 'completeRuntimeGitMerge'
   | 'generateRuntimeCommitMessage'
@@ -71,6 +72,7 @@ export function installRuntimeGitCommandSurface(
     getRuntimeGitBranchDiff: commands.getRuntimeGitBranchDiff.bind(commands),
     getRuntimeGitCommitDiff: commands.getRuntimeGitCommitDiff.bind(commands),
     getRuntimeGitBlame: commands.getRuntimeGitBlame.bind(commands),
+    getRuntimeGitBlameSubmoduleCommit: commands.getRuntimeGitBlameSubmoduleCommit.bind(commands),
     commitRuntimeGit: commands.commitRuntimeGit.bind(commands),
     completeRuntimeGitMerge: commands.completeRuntimeGitMerge.bind(commands),
     generateRuntimeCommitMessage: commands.generateRuntimeCommitMessage.bind(commands),
