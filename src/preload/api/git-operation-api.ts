@@ -1,5 +1,6 @@
 import type { GitForkSyncExpectedUpstream, GitForkSyncResult } from '../../shared/git-fork-sync'
 import type { TuiAgent } from '../../shared/tui-agent'
+import type { RuntimeGitLocalBranches } from '../../shared/runtime-worktree-contracts'
 import type { GitPushTarget } from '../../shared/worktree/types'
 import type { GitStageWorktreeScope } from '../../shared/git-stage-worktree-scope'
 import type { ConflictResolution } from '../../shared/source-control-entry-actions'
@@ -12,6 +13,16 @@ export type GitOperationApi = {
   appendGitignore: (args: { worktreePath: string; folderName: string }) => Promise<boolean>
   abortMerge: (args: { worktreePath: string; connectionId?: string }) => Promise<void>
   abortRebase: (args: { worktreePath: string; connectionId?: string }) => Promise<void>
+  localBranches: (args: {
+    worktreePath: string
+    connectionId?: string
+  }) => Promise<RuntimeGitLocalBranches>
+  checkout: (args: { worktreePath: string; branch: string; connectionId?: string }) => Promise<void>
+  createBranch: (args: {
+    worktreePath: string
+    branch: string
+    connectionId?: string
+  }) => Promise<void>
   fetch: (args: {
     worktreePath: string
     connectionId?: string

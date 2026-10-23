@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Check, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,13 +11,13 @@ import {
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-import { searchRuntimeRepoBaseRefs } from '@/runtime/runtime-repo-client'
 import { getRepoExecutionHostId } from '../../../../../shared/execution-host'
 import { useGitToolWindowState } from './git-tool-window-state'
 import type { GitToolWindowModel } from './use-git-tool-window'
+import { useRepoRefSearch } from './use-repo-ref-search'
 
-const SEARCH_DEBOUNCE_MS = 200
 const SEARCH_LIMIT = 30
+const MIN_QUERY_LENGTH = 2
 
 function refLabel(ref: string): string {
   return ref.replace(/^refs\/heads\//, '')
@@ -30,38 +30,21 @@ export function GitLogRefPicker({ model }: { model: GitToolWindowModel }): React
   const setLogRef = useGitToolWindowState((state) => state.setLogRef)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [search, setSearch] = useState<{ query: string; refs: string[] } | null>(null)
   const trimmedQuery = query.trim()
   const repoId = activeRepo?.id ?? null
   const hostId = activeRepo ? getRepoExecutionHostId(activeRepo) : undefined
-
-  useEffect(() => {
-    if (!open || !repoId || !hostId || trimmedQuery.length < 2) {
-      return
-    }
-    let stale = false
-    const timer = window.setTimeout(() => {
-      void searchRuntimeRepoBaseRefs(hostId, repoId, trimmedQuery, SEARCH_LIMIT)
-        .then((refs) => {
-          if (!stale) {
-            setSearch({ query: trimmedQuery, refs })
-          }
-        })
-        .catch(() => {
-          if (!stale) {
-            setSearch({ query: trimmedQuery, refs: [] })
-          }
-        })
-    }, SEARCH_DEBOUNCE_MS)
-    return () => {
-      stale = true
-      window.clearTimeout(timer)
-    }
-  }, [hostId, open, repoId, trimmedQuery])
+  const search = useRepoRefSearch({
+    hostId,
+    repoId,
+    query: trimmedQuery,
+    enabled: open,
+    minQueryLength: MIN_QUERY_LENGTH,
+    limit: SEARCH_LIMIT
+  })
 
   const currentLabel = branchName || 'HEAD'
-  const searching = trimmedQuery.length >= 2 && search?.query !== trimmedQuery
-  const results = trimmedQuery.length >= 2 && search?.query === trimmedQuery ? search.refs : []
+  const searching = search.searching && search.results.length === 0
+  const results = search.results.map((entry) => entry.refName)
   const suggestions = [remoteStatus?.upstreamName].filter(
     (ref): ref is string => Boolean(ref) && ref !== logRef
   )
@@ -81,12 +64,12 @@ export function GitLogRefPicker({ model }: { model: GitToolWindowModel }): React
           <ChevronDown className="size-3 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-72">
+      <PopoverContent side="top" align="start" className="w-72">
         <Command shouldFilter={false}>
           <CommandInput value={query} onValueChange={setQuery} placeholder="Search branches…" />
           <CommandList className="max-h-72">
             <CommandEmpty>{searching ? 'Searching branches…' : 'No branches found.'}</CommandEmpty>
-            {trimmedQuery.length < 2 && (
+            {trimmedQuery.length < MIN_QUERY_LENGTH && (
               <CommandGroup>
                 <CommandItem value="__current__" onSelect={() => select(null)}>
                   <Check className={cn('size-4', logRef === null ? 'opacity-100' : 'opacity-0')} />

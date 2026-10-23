@@ -18,6 +18,7 @@ import { registerFilesystemGitPullRequestGenerationHandlers } from './filesystem
 import { registerFilesystemGitRemoteHandlers } from './filesystem-git-remote-handlers'
 import { registerFilesystemGitDiffHandlers } from './filesystem-git-diff-handlers'
 import { registerFilesystemGitIndexHandlers } from './filesystem-git-index-handlers'
+import { registerFilesystemGitBranchHandlers } from './filesystem-git-branch-handlers'
 import { registerFilesystemGitUrlHandlers } from './filesystem-git-url-handlers'
 
 export function registerFilesystemHandlers(
@@ -43,6 +44,7 @@ export function registerFilesystemHandlers(
   registerFilesystemGitRemoteHandlers(context)
   registerFilesystemGitDiffHandlers(context)
   registerFilesystemGitIndexHandlers(context)
+  registerFilesystemGitBranchHandlers(context)
   registerFilesystemGitUrlHandlers(context)
   registerLocalLogTailHandlers(store)
 }
