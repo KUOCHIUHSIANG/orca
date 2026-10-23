@@ -27,6 +27,12 @@ export type GitBlameResult = {
   submodulePath?: string
 }
 
+/** What the hover card shows for a submodule commit, read in the submodule's own repo. */
+export type GitBlameSubmoduleCommit = {
+  message: string | null
+  remoteUrl: string | null
+}
+
 export type GitBlameOptions = {
   /** Unsaved buffer to blame instead of the working-tree file, so line numbers match the editor. */
   contents?: string

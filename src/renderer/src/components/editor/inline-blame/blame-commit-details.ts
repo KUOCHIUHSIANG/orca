@@ -1,11 +1,15 @@
-import { getRuntimeGitCommitDiff } from '@/runtime/runtime-git-diff-client'
+import {
+  getRuntimeGitBlameSubmoduleCommit,
+  getRuntimeGitCommitDiff
+} from '@/runtime/runtime-git-diff-client'
 import { getRuntimeGitHistory } from '@/runtime/runtime-git-status-client'
 import { getRuntimeGitRemoteCommitUrl } from '@/runtime/runtime-git-working-tree-client'
-import type { GitBlameCommit } from '../../../../../shared/git-blame'
+import type { GitBlameCommit, GitBlameSubmoduleCommit } from '../../../../../shared/git-blame'
 import type { GitDiffResult } from '../../../../../shared/git-diff-compare-types'
 import { findBlameLineHunk, type BlameHunk } from './blame-line-hunk'
 import {
   blameFileScopeKey,
+  blameWorktreePath,
   toBlameRuntimeGitContext,
   type InlineBlameFile
 } from './inline-blame-file'
@@ -17,6 +21,7 @@ const MAX_CACHED_DIFFS = 8
 const messageCache = new Map<string, Promise<string | null>>()
 const remoteUrlCache = new Map<string, Promise<string | null>>()
 const diffCache = new Map<string, Promise<GitDiffResult>>()
+const submoduleCommitCache = new Map<string, Promise<GitBlameSubmoduleCommit>>()
 
 function cached<T>(
   cache: Map<string, Promise<T>>,
@@ -40,7 +45,21 @@ function cached<T>(
   return pending
 }
 
+// Why one read for both: the worktree's history and remote-URL reads can't see submodule commits.
+function loadSubmoduleCommit(
+  file: InlineBlameFile,
+  submodulePath: string,
+  sha: string
+): Promise<GitBlameSubmoduleCommit> {
+  return cached(submoduleCommitCache, `${blameFileScopeKey(file)}\0${submodulePath}\0${sha}`, () =>
+    getRuntimeGitBlameSubmoduleCommit(toBlameRuntimeGitContext(file), { submodulePath, sha })
+  )
+}
+
 export function loadBlameCommitMessage(file: InlineBlameFile, sha: string): Promise<string | null> {
+  if (file.submodulePath) {
+    return loadSubmoduleCommit(file, file.submodulePath, sha).then((commit) => commit.message)
+  }
   return cached(messageCache, `${blameFileScopeKey(file)}\0${sha}`, async () => {
     const history = await getRuntimeGitHistory(toBlameRuntimeGitContext(file), {
       limit: 1,
@@ -55,6 +74,9 @@ export function loadBlameCommitRemoteUrl(
   file: InlineBlameFile,
   sha: string
 ): Promise<string | null> {
+  if (file.submodulePath) {
+    return loadSubmoduleCommit(file, file.submodulePath, sha).then((commit) => commit.remoteUrl)
+  }
   return cached(remoteUrlCache, `${blameFileScopeKey(file)}\0${sha}`, async () =>
     getRuntimeGitRemoteCommitUrl(toBlameRuntimeGitContext(file), { sha })
   )
@@ -68,13 +90,17 @@ export async function loadBlameLineHunk(
 ): Promise<BlameHunk | null> {
   const diff = await cached(
     diffCache,
-    `${blameFileScopeKey(file)}\0${commit.sha}\0${commit.path}`,
+    `${blameFileScopeKey(file)}\0${commit.sha}\0${blameWorktreePath(file, commit.path)}`,
     () =>
+      // Why worktree-relative: the commit-diff read routes a submodule's path into its repo.
       getRuntimeGitCommitDiff(toBlameRuntimeGitContext(file), {
         commitOid: commit.sha,
         parentOid: commit.previousSha ?? null,
-        filePath: commit.path,
-        oldPath: commit.previousPath !== commit.path ? commit.previousPath : undefined
+        filePath: blameWorktreePath(file, commit.path),
+        oldPath:
+          commit.previousPath && commit.previousPath !== commit.path
+            ? blameWorktreePath(file, commit.previousPath)
+            : undefined
       }),
     MAX_CACHED_DIFFS
   )

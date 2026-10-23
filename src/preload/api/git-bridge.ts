@@ -16,7 +16,7 @@ import type {
   GitHistoryOptions,
   GitHistoryResult
 } from '../../shared/git/history/git-history-types'
-import type { GitBlameResult } from '../../shared/git-blame'
+import type { GitBlameResult, GitBlameSubmoduleCommit } from '../../shared/git-blame'
 import type { PreloadApi } from '../api-types'
 
 export const gitApi = {
@@ -152,6 +152,12 @@ export const gitApi = {
     contents?: string
     connectionId?: string
   }): Promise<GitBlameResult> => ipcRenderer.invoke('git:blame', args),
+  blameSubmoduleCommit: (args: {
+    worktreePath: string
+    submodulePath: string
+    sha: string
+    connectionId?: string
+  }): Promise<GitBlameSubmoduleCommit> => ipcRenderer.invoke('git:blameSubmoduleCommit', args),
   commit: (args: {
     worktreePath: string
     message: string

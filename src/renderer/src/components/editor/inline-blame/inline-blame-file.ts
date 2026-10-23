@@ -12,7 +12,7 @@ export type InlineBlameFile = {
   connectionId: string | undefined
   /** Folder workspaces have no git tool window to reveal a commit in. */
   isFolderWorkspace: boolean
-  /** Set once blame finds the file in a submodule; the worktree's git reads can't see its commits. */
+  /** Set once blame finds the file in a submodule: its path from the worktree root. */
   submodulePath?: string
 }
 
@@ -29,6 +29,11 @@ export function toBlameRuntimeGitContext(file: InlineBlameFile): RuntimeGitConte
     worktreePath: file.worktreePath,
     connectionId: file.connectionId
   }
+}
+
+/** The worktree-relative path of a path blame reported inside `file`'s submodule, if any. */
+export function blameWorktreePath(file: InlineBlameFile, commitPath: string): string {
+  return file.submodulePath ? `${file.submodulePath}/${commitPath}` : commitPath
 }
 
 /** Blame data is only comparable within one host + worktree, since SHAs and paths are per-repo. */

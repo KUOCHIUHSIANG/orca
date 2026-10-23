@@ -274,6 +274,7 @@ import {
 } from './folder-workspace-params'
 import {
   GitBlame,
+  GitBlameSubmoduleCommit,
   GitBranchCompare,
   GitBranchDiff,
   GitBulkPaths,
@@ -1100,6 +1101,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'git.abortMerge': WorktreeSelectorOfGitParams,
   'git.abortRebase': WorktreeSelectorOfGitParams,
   'git.blame': GitBlame,
+  'git.blameSubmoduleCommit': GitBlameSubmoduleCommit,
   'git.branchCompare': GitBranchCompare,
   'git.branchDiff': GitBranchDiff,
   'git.bulkDiscard': GitBulkPaths,
