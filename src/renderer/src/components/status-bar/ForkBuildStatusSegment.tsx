@@ -60,21 +60,24 @@ export function ForkBuildStatusSegment({
               )}
             >
               <Progress value={view.percent} aria-hidden />
-              {!restarting && (
-                // Why two clips: the bar's rounded outline, then the square-ended filled width, so the
-                // light runs over finished work only and is round only where the bar itself is.
+              {/* Why two clips: the bar's rounded outline, then the square-ended filled width, so
+                  the light runs over finished work only and is round only where the bar itself is.
+                  It fades out instead of unmounting so a sweep in flight hands off to the breathe. */}
+              <span
+                aria-hidden
+                className={cn(
+                  'pointer-events-none absolute inset-0 overflow-hidden rounded-full transition-opacity duration-500',
+                  restarting && 'opacity-0'
+                )}
+              >
                 <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+                  // Matches the Progress indicator's 300ms ease-out so the clip grows with the fill.
+                  className="absolute inset-y-0 left-0 overflow-hidden transition-[width] duration-300 ease-out"
+                  style={{ width: `${view.percent}%` }}
                 >
-                  <span
-                    className="absolute inset-y-0 left-0 overflow-hidden"
-                    style={{ width: `${view.percent}%` }}
-                  >
-                    <span className="animate-fork-build-shimmer absolute inset-0" />
-                  </span>
+                  <span className="animate-fork-build-shimmer absolute inset-0" />
                 </span>
-              )}
+              </span>
             </span>
           )}
           {!iconOnly && <span className="text-2xs tabular-nums">{view.label}</span>}
