@@ -1,11 +1,5 @@
-#!/usr/bin/env node
 // Reports a fork sync/build's progress to a file Orca's status bar reads, and learns how long each
 // step takes so the next run can say how much time is left.
-//
-//   node config/scripts/fork-maintenance/build-progress.mjs restarting --pid <pid>
-//   node config/scripts/fork-maintenance/build-progress.mjs done
-//
-// The CLI does by hand what reinstall-local-build.mjs does: tell the running app a restart is coming.
 // src/main/fork-build-progress.ts reads PROGRESS_FILE; keep the two in step.
 import { execFileSync } from 'node:child_process'
 import { readFileSync, renameSync, writeFileSync } from 'node:fs'
@@ -161,17 +155,4 @@ export function markRestartDone(gitDir) {
     startedAt: Date.now(),
     estimatedEndAt: null
   })
-}
-
-if (import.meta.filename === process.argv[1]) {
-  const [command, flag, value] = process.argv.slice(2)
-  const gitDir = gitCommonDir(path.resolve(import.meta.dirname, '..', '..', '..'))
-  if (command === 'restarting' && flag === '--pid' && /^\d+$/.test(value ?? '')) {
-    markRestarting(gitDir, Number(value))
-  } else if (command === 'done') {
-    markRestartDone(gitDir)
-  } else {
-    console.error('Usage: build-progress.mjs restarting --pid <pid> | done')
-    process.exit(1)
-  }
 }
