@@ -5,7 +5,7 @@
 //   node config/scripts/fork-maintenance/build-progress.mjs restarting --pid <pid>
 //   node config/scripts/fork-maintenance/build-progress.mjs done
 //
-// The CLI is for a manual reinstall: it tells the running app a restart is coming.
+// The CLI does by hand what reinstall-local-build.mjs does: tell the running app a restart is coming.
 // src/main/fork-build-progress.ts reads PROGRESS_FILE; keep the two in step.
 import { execFileSync } from 'node:child_process'
 import { readFileSync, renameSync, writeFileSync } from 'node:fs'
@@ -142,25 +142,34 @@ export function createProgressReporter({
   }
 }
 
+/** Shows "restarting" in the status bar until `pid` exits or the restart is marked done. */
+export function markRestarting(gitDir, pid) {
+  const now = Date.now()
+  writeBuildProgress(gitDir, {
+    state: 'running',
+    phase: 'restart',
+    startedAt: now,
+    estimatedEndAt: now + RESTART_MS,
+    pid
+  })
+}
+
+export function markRestartDone(gitDir) {
+  writeBuildProgress(gitDir, {
+    state: 'done',
+    phase: 'restart',
+    startedAt: Date.now(),
+    estimatedEndAt: null
+  })
+}
+
 if (import.meta.filename === process.argv[1]) {
   const [command, flag, value] = process.argv.slice(2)
   const gitDir = gitCommonDir(path.resolve(import.meta.dirname, '..', '..', '..'))
   if (command === 'restarting' && flag === '--pid' && /^\d+$/.test(value ?? '')) {
-    const now = Date.now()
-    writeBuildProgress(gitDir, {
-      state: 'running',
-      phase: 'restart',
-      startedAt: now,
-      estimatedEndAt: now + RESTART_MS,
-      pid: Number(value)
-    })
+    markRestarting(gitDir, Number(value))
   } else if (command === 'done') {
-    writeBuildProgress(gitDir, {
-      state: 'done',
-      phase: 'restart',
-      startedAt: Date.now(),
-      estimatedEndAt: null
-    })
+    markRestartDone(gitDir)
   } else {
     console.error('Usage: build-progress.mjs restarting --pid <pid> | done')
     process.exit(1)
