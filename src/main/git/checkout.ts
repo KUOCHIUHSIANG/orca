@@ -1,5 +1,6 @@
 import type { GitRuntimeOptions } from './git-runtime-options'
 import { gitOptionsForWorktree } from './git-runtime-options'
+import { toBranchSwitchError } from './branch-switch-error'
 import { gitExecFileAsync } from './runner'
 import { runWithGitReadCacheInvalidation } from './status'
 
@@ -30,7 +31,23 @@ export async function checkoutBranch(
   assertValidBranchName(branch)
   await runWithGitReadCacheInvalidation(() =>
     gitExecFileAsync(['checkout', branch, '--'], gitOptionsForWorktree(worktreePath, options))
-  )
+  ).catch((error: unknown) => {
+    throw toBranchSwitchError(error, branch)
+  })
+}
+
+/** Create `branch` at HEAD and switch to it, carrying uncommitted changes along. */
+export async function createBranch(
+  worktreePath: string,
+  branch: string,
+  options: GitRuntimeOptions = {}
+): Promise<void> {
+  assertValidBranchName(branch)
+  await runWithGitReadCacheInvalidation(() =>
+    gitExecFileAsync(['checkout', '-b', branch, '--'], gitOptionsForWorktree(worktreePath, options))
+  ).catch((error: unknown) => {
+    throw toBranchSwitchError(error, branch)
+  })
 }
 
 /**

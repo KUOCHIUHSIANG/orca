@@ -65,6 +65,15 @@ export class RuntimeGitStatusCommands {
     return { ok: true, branch }
   }
 
+  async createRuntimeGitBranch(
+    worktreeSelector: string,
+    branch: string
+  ): Promise<RuntimeGitCheckoutResult> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    await requireRuntimeGitProvider(target).createBranch(target.worktree.path, branch)
+    return { ok: true, branch }
+  }
+
   async listRuntimeGitLocalBranches(worktreeSelector: string): Promise<RuntimeGitLocalBranches> {
     const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
     return requireRuntimeGitProvider(target).listLocalBranches(target.worktree.path)

@@ -2,7 +2,6 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   CloudDownload,
-  GitBranch,
   Loader2,
   PanelLeft,
   RefreshCw
@@ -11,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { formatCountLabel } from '../../right-sidebar/source-control-dropdown-labels'
+import { GitBranchSwitcher } from './GitBranchSwitcher'
 import { GitLogRefPicker } from './GitLogRefPicker'
 import { useGitToolWindowState } from './git-tool-window-state'
 import type { GitToolWindowModel, GitToolWindowRemoteAction } from './use-git-tool-window'
@@ -69,9 +69,8 @@ export function GitToolWindowToolbar({ model }: { model: GitToolWindowModel }): 
           {commitPaneLabel}
         </TooltipContent>
       </Tooltip>
-      <div className="flex min-w-0 items-center gap-1 px-1 text-xs text-muted-foreground">
-        <GitBranch className="size-3.5 shrink-0" />
-        <span className="truncate text-foreground">{branchName || 'Detached HEAD'}</span>
+      <GitBranchSwitcher model={model} />
+      <div className="flex min-w-0 items-center gap-1 pr-1 text-xs text-muted-foreground">
         {remoteStatus?.upstreamName && (
           <span className="truncate">→ {remoteStatus.upstreamName}</span>
         )}

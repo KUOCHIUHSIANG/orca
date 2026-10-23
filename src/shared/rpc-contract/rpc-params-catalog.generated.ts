@@ -955,6 +955,7 @@ export const RPC_PARAMS_BY_METHOD = {
   'git.commitCompare': GitCommitCompare,
   'git.commitDiff': GitCommitDiff,
   'git.conflictOperation': WorktreeSelectorOfGitParams,
+  'git.createBranch': GitCheckout,
   'git.diff': GitDiff,
   'git.discard': GitFilePath,
   'git.discoverCommitMessageModels': GitDiscoverCommitMessageModels,

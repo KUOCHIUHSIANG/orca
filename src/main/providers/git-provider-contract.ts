@@ -52,6 +52,7 @@ export type IGitProvider = {
   abortMerge(worktreePath: string): Promise<void>
   abortRebase(worktreePath: string): Promise<void>
   checkoutBranch(worktreePath: string, branch: string): Promise<void>
+  createBranch(worktreePath: string, branch: string): Promise<void>
   listLocalBranches(worktreePath: string): Promise<{ current: string | null; branches: string[] }>
   getBranchCompare(
     worktreePath: string,

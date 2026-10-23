@@ -116,6 +116,26 @@ export function createGitApi(): NonNullable<Partial<PreloadApi>['git']> {
         worktree: toRuntimeWorktreeSelector(worktree.id)
       })
     },
+    localBranches: async ({ worktreePath }) => {
+      const worktree = await resolveRuntimeWorktreeByPath(worktreePath)
+      return callRuntimeResult('git.localBranches', {
+        worktree: toRuntimeWorktreeSelector(worktree.id)
+      })
+    },
+    checkout: async ({ worktreePath, branch }) => {
+      const worktree = await resolveRuntimeWorktreeByPath(worktreePath)
+      await callRuntimeResult('git.checkout', {
+        worktree: toRuntimeWorktreeSelector(worktree.id),
+        branch
+      })
+    },
+    createBranch: async ({ worktreePath, branch }) => {
+      const worktree = await resolveRuntimeWorktreeByPath(worktreePath)
+      await callRuntimeResult('git.createBranch', {
+        worktree: toRuntimeWorktreeSelector(worktree.id),
+        branch
+      })
+    },
     ...createGitFileDiffApi(),
     branchCompare: async ({ worktreePath, baseRef, admissionTier }) => {
       const worktree = await resolveRuntimeWorktreeByPath(worktreePath)

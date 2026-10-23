@@ -9,6 +9,7 @@ type RuntimeGitCommandName =
   | 'abortRuntimeGitMerge'
   | 'abortRuntimeGitRebase'
   | 'checkoutRuntimeGitBranch'
+  | 'createRuntimeGitBranch'
   | 'listRuntimeGitLocalBranches'
   | 'getRuntimeGitDiff'
   | 'getRuntimeGitBranchCompare'
@@ -54,6 +55,7 @@ export function installRuntimeGitCommandSurface(
     abortRuntimeGitMerge: commands.abortRuntimeGitMerge.bind(commands),
     abortRuntimeGitRebase: commands.abortRuntimeGitRebase.bind(commands),
     checkoutRuntimeGitBranch: commands.checkoutRuntimeGitBranch.bind(commands),
+    createRuntimeGitBranch: commands.createRuntimeGitBranch.bind(commands),
     listRuntimeGitLocalBranches: commands.listRuntimeGitLocalBranches.bind(commands),
     getRuntimeGitDiff: commands.getRuntimeGitDiff.bind(commands),
     getRuntimeGitBranchCompare: commands.getRuntimeGitBranchCompare.bind(commands),

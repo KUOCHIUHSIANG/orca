@@ -12,6 +12,7 @@ export class RuntimeGitCommands {
   readonly getRuntimeGitHistory: RuntimeGitStatusCommands['getRuntimeGitHistory']
   readonly getRuntimeGitConflictOperation: RuntimeGitStatusCommands['getRuntimeGitConflictOperation']
   readonly checkoutRuntimeGitBranch: RuntimeGitStatusCommands['checkoutRuntimeGitBranch']
+  readonly createRuntimeGitBranch: RuntimeGitStatusCommands['createRuntimeGitBranch']
   readonly listRuntimeGitLocalBranches: RuntimeGitStatusCommands['listRuntimeGitLocalBranches']
   readonly getRuntimeGitDiff: RuntimeGitDiffCommands['getRuntimeGitDiff']
   readonly getRuntimeGitBranchCompare: RuntimeGitDiffCommands['getRuntimeGitBranchCompare']
@@ -57,6 +58,7 @@ export class RuntimeGitCommands {
     this.getRuntimeGitHistory = status.getRuntimeGitHistory.bind(status)
     this.getRuntimeGitConflictOperation = status.getRuntimeGitConflictOperation.bind(status)
     this.checkoutRuntimeGitBranch = status.checkoutRuntimeGitBranch.bind(status)
+    this.createRuntimeGitBranch = status.createRuntimeGitBranch.bind(status)
     this.listRuntimeGitLocalBranches = status.listRuntimeGitLocalBranches.bind(status)
     this.getRuntimeGitDiff = diff.getRuntimeGitDiff.bind(diff)
     this.getRuntimeGitBranchCompare = diff.getRuntimeGitBranchCompare.bind(diff)

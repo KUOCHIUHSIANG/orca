@@ -110,6 +110,13 @@ export const GIT_METHODS = [
       runtime.checkoutRuntimeGitBranch(params.worktree, params.branch)
   }),
   defineMethod({
+    name: 'git.createBranch',
+    permission: 'workspace',
+    params: GitCheckout,
+    handler: async (params, { runtime }) =>
+      runtime.createRuntimeGitBranch(params.worktree, params.branch)
+  }),
+  defineMethod({
     name: 'git.localBranches',
     permission: 'workspace',
     params: WorktreeSelector,

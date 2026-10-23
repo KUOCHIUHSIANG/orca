@@ -2,7 +2,7 @@ import { gitSyncForkDefaultBranch } from '../git/fork-sync'
 import type { GitRuntimeOptions } from '../git/git-runtime-options'
 import { getBlame } from '../git/blame'
 import { checkIgnoredPaths } from '../git/check-ignored-paths'
-import { checkoutBranch, listLocalBranches } from '../git/checkout'
+import { checkoutBranch, createBranch, listLocalBranches } from '../git/checkout'
 import { getHistory } from '../git/history'
 import { gitFastForward, gitFetch, gitPull, gitPullRebaseFromBase, gitPush } from '../git/remote'
 import { getRemoteCommitUrl, getRemoteFileUrl, isGitRepo } from '../git/repo'
@@ -101,6 +101,7 @@ export function createLocalGitProvider(options: LocalGitProviderOptions = {}): L
     abortMerge: (worktreePath) => abortMerge(worktreePath, interactive),
     abortRebase: (worktreePath) => abortRebase(worktreePath, interactive),
     checkoutBranch: (worktreePath, branch) => checkoutBranch(worktreePath, branch, interactive),
+    createBranch: (worktreePath, branch) => createBranch(worktreePath, branch, interactive),
     listLocalBranches: (worktreePath) => listLocalBranches(worktreePath, base),
     getBranchCompare: (worktreePath, baseRef, compareOptions) =>
       getBranchCompare(worktreePath, baseRef, {
