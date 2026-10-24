@@ -1458,6 +1458,33 @@
           "dates": "日期",
           "open": "在 Monday 中打开"
         },
+        "claude": {
+          "includeAllUpdates": "附上全部讨论",
+          "askTask": "请 Claude 协助回复",
+          "askUpdate": "请 Claude 协助回复这则讨论",
+          "search": "选择要打开 Claude 的项目…",
+          "noProjects": "找不到项目。",
+          "folders": "文件夹",
+          "copyOnly": "仅复制提示词到剪贴板",
+          "copied": "已复制提示词。",
+          "copyFailed": "无法复制提示词。",
+          "unavailable": "此项目所在的主机上没有可用的 Claude。",
+          "launchFailed": "无法在此项目中打开 Claude。"
+        },
+        "claudePrompt": {
+          "descriptionHeading": "任务说明（第一则讨论）",
+          "ask": "请帮我理解以下 Monday 任务的内容，并告诉我该如何回复。",
+          "focusHeading": "需回复的讨论",
+          "taskHeading": "任务",
+          "updatesHeading": "讨论（由旧到新）",
+          "otherUpdatesHeading": "其他讨论（由旧到新）",
+          "name": "名称",
+          "parent": "上层任务",
+          "link": "链接",
+          "reply": "回复",
+          "attachments": "附件",
+          "image": "图片"
+        },
         "page": {
           "openSettings": "打开设置",
           "retry": "重试",

@@ -2,13 +2,16 @@ import { ExternalLink, LoaderCircle, RefreshCw, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
+import { AgentIcon } from '@/lib/agent-catalog'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
 import { describeMondayFailure } from './monday-failure-copy'
 import { formatMondayDateRange } from './monday-date-range-format'
 import { CalendarIconAction } from '../calendar/CalendarIconAction'
+import { buildMondayClaudePrompt } from './monday-claude-prompt'
+import { MondayClaudePromptPicker } from './MondayClaudePromptPicker'
 import { MondayStatusDot } from './MondayStatusDot'
 import { MondayUpdateCard } from './MondayUpdateCard'
-import { useMondayItemUpdates } from './use-monday-item-updates'
+import { useMondayItemUpdates, type MondayItemUpdatesController } from './use-monday-item-updates'
 
 function ItemFacts(props: {
   item: MondayCalendarItem
@@ -45,8 +48,11 @@ function ItemFacts(props: {
   )
 }
 
-function ItemDiscussion(props: { itemId: string }): React.JSX.Element {
-  const { updates, loading, error, refresh } = useMondayItemUpdates(props.itemId)
+function ItemDiscussion(props: {
+  discussion: MondayItemUpdatesController
+  buildPrompt: (includeAllUpdates: boolean, focusUpdateId?: string) => string
+}): React.JSX.Element {
+  const { updates, loading, error, refresh } = props.discussion
   return (
     <section className="space-y-3 px-4 py-4">
       <div className="flex items-center justify-between gap-2">
@@ -82,7 +88,11 @@ function ItemDiscussion(props: { itemId: string }): React.JSX.Element {
         </p>
       ) : null}
       {updates?.map((update) => (
-        <MondayUpdateCard key={update.id} update={update} />
+        <MondayUpdateCard
+          key={update.id}
+          update={update}
+          buildPrompt={(includeAllUpdates) => props.buildPrompt(includeAllUpdates, update.id)}
+        />
       ))}
     </section>
   )
@@ -93,7 +103,16 @@ export function MondayItemPanel(props: {
   ownerNames: readonly string[]
   onClose: () => void
 }): React.JSX.Element {
-  const { item } = props
+  const { item, ownerNames } = props
+  const discussion = useMondayItemUpdates(item.id)
+  const buildPrompt = (includeAllUpdates: boolean, focusUpdateId?: string): string =>
+    buildMondayClaudePrompt({
+      item,
+      ownerNames,
+      updates: discussion.updates ?? [],
+      focusUpdateId,
+      includeAllUpdates
+    })
   return (
     <aside
       aria-label={item.name}
@@ -119,18 +138,26 @@ export function MondayItemPanel(props: {
       </header>
       <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-3 border-b border-border px-4 py-4">
-          <ItemFacts item={item} ownerNames={props.ownerNames} />
-          <Button
-            type="button"
-            size="sm"
-            className="w-full"
-            onClick={() => void window.api.shell.openUrl(item.url)}
-          >
-            <ExternalLink className="size-3.5" />
-            {translate('auto.components.mondayCalendar.item.open', 'Open in Monday')}
-          </Button>
+          <ItemFacts item={item} ownerNames={ownerNames} />
+          <div className="grid grid-cols-2 gap-2">
+            <Button type="button" size="sm" onClick={() => void window.api.shell.openUrl(item.url)}>
+              <ExternalLink className="size-3.5" />
+              {translate('auto.components.mondayCalendar.item.open', 'Open in Monday')}
+            </Button>
+            <MondayClaudePromptPicker buildPrompt={buildPrompt}>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={discussion.updates === null && discussion.loading}
+              >
+                <AgentIcon agent="claude" size={14} />
+                {translate('auto.components.mondayCalendar.claude.askTask', 'Ask Claude to reply')}
+              </Button>
+            </MondayClaudePromptPicker>
+          </div>
         </div>
-        <ItemDiscussion key={item.id} itemId={item.id} />
+        <ItemDiscussion discussion={discussion} buildPrompt={buildPrompt} />
       </div>
     </aside>
   )

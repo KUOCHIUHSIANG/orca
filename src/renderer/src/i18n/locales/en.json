@@ -1656,6 +1656,33 @@
           "dates": "Dates",
           "open": "Open in Monday"
         },
+        "claude": {
+          "includeAllUpdates": "Include all updates",
+          "askTask": "Ask Claude to reply",
+          "askUpdate": "Ask Claude how to reply to this update",
+          "search": "Open Claude in project…",
+          "noProjects": "No projects found.",
+          "folders": "Folders",
+          "copyOnly": "Copy prompt to clipboard only",
+          "copied": "Prompt copied.",
+          "copyFailed": "Could not copy the prompt.",
+          "unavailable": "Claude is not available on this project’s host.",
+          "launchFailed": "Could not open Claude in this project."
+        },
+        "claudePrompt": {
+          "descriptionHeading": "Task description (first update)",
+          "ask": "Help me understand the content of the monday task below, and tell me how I should reply.",
+          "focusHeading": "Update to reply to",
+          "taskHeading": "Task",
+          "updatesHeading": "Updates (oldest first)",
+          "otherUpdatesHeading": "Other updates (oldest first)",
+          "name": "Name",
+          "parent": "Parent item",
+          "link": "Link",
+          "reply": "Reply",
+          "attachments": "Attachments",
+          "image": "Image"
+        },
         "page": {
           "openSettings": "Open settings",
           "retry": "Retry",
