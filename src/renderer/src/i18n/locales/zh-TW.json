@@ -1458,6 +1458,33 @@
           "dates": "日期",
           "open": "在 Monday 中開啟"
         },
+        "claude": {
+          "includeAllUpdates": "附上全部討論",
+          "askTask": "請 Claude 協助回覆",
+          "askUpdate": "請 Claude 協助回覆這則討論",
+          "search": "選擇要開啟 Claude 的專案…",
+          "noProjects": "找不到專案。",
+          "folders": "資料夾",
+          "copyOnly": "僅複製提示詞到剪貼簿",
+          "copied": "已複製提示詞。",
+          "copyFailed": "無法複製提示詞。",
+          "unavailable": "此專案所在的主機上沒有可用的 Claude。",
+          "launchFailed": "無法在此專案中開啟 Claude。"
+        },
+        "claudePrompt": {
+          "descriptionHeading": "任務說明（第一則討論）",
+          "ask": "請幫我理解以下 Monday 任務的內容，並告訴我該如何回覆。",
+          "focusHeading": "需回覆的討論",
+          "taskHeading": "任務",
+          "updatesHeading": "討論（由舊到新）",
+          "otherUpdatesHeading": "其他討論（由舊到新）",
+          "name": "名稱",
+          "parent": "上層任務",
+          "link": "連結",
+          "reply": "回覆",
+          "attachments": "附件",
+          "image": "圖片"
+        },
         "page": {
           "openSettings": "開啟設定",
           "retry": "重試",
