@@ -24,7 +24,7 @@
   "settings": {
     "chat": {
       "permissionsTitle": "新聊天的權限",
-      "permissionsDescription": "僅適用於新聊天。在終端機中開啟的代理使用設定 → 代理 → 代理權限。",
+      "permissionsDescription": "僅適用於新聊天。各代理的預設設定位於設定 → 代理。",
       "description": "選擇聊天的外觀和行為方式。",
       "names": {
         "title": "聊天名稱",
@@ -95,7 +95,8 @@
         "korean": "한국어",
         "japanese": "日本語",
         "spanish": "Español",
-        "french": "Français"
+        "french": "Français",
+        "portuguese": "Português (Brasil)"
       },
       "statusBar": {
         "claudeToggleDescription": "顯示目前工作區的 Claude Token 與費用消耗情況。",
@@ -210,6 +211,10 @@
       "readFailed": "無法讀取代理設定。請檢查主機連線並重試。",
       "saveFailed": "無法儲存代理設定。請檢查主機連線並重試。",
       "hostDefaults": "所選主機上新代理的預設設定。",
+      "defaultOpensAs": "{{value0}} 的開啟方式",
+      "defaultOpensAsChat": "聊天",
+      "defaultOpensAsCli": "CLI",
+      "defaultOpensAsScope": "適用於從這臺電腦啟動的新 {{value0}} 工作階段，包括在已配對主機上啟動的工作階段。與提供方中的開關一致。",
       "save": "儲存",
       "clearDefault": "清除預設代理"
     },
@@ -3727,7 +3732,6 @@
         "bar": {
           "BrowserTab": {
             "6e0bc8f3a8": "在瀏覽器中開啟",
-            "9dd880bd56": "關閉右側的所有分頁",
             "1611a1324b": "關閉",
             "5d6e89891f": "複製分頁",
             "966feb9ad5": "向右分割",
@@ -3744,7 +3748,6 @@
             "52ce4f4605": "複製相對路徑",
             "5b85754786": "複製路徑",
             "bfd5797ef4": "開啟 Markdown 預覽",
-            "e5ff31ccaf": "關閉右側的所有分頁",
             "ba1369dd24": "關閉所有編輯器分頁",
             "1ba8492c5b": "關閉",
             "68cc610e7f": "重新命名",
@@ -3777,7 +3780,6 @@
           "SortableTabContextMenu": {
             "35e8892fd0": "標籤顏色",
             "2f697b3c31": "變更標題",
-            "c1ee099c7e": "關閉右側的所有分頁",
             "8d16f9cd30": "關閉其他",
             "89359a36f7": "關閉",
             "21132389e9": "向右分割",
@@ -7047,7 +7049,6 @@
           "9fec52de4b": "如何複製 Cookie",
           "remoteServerFallback": "遠端伺服器",
           "loadAccountsFailed": "無法載入提供商帳號。",
-          "remoteScopeAccounts": "正在顯示由 {{value0}} 管理的帳號。請在該伺服器上新增或重新驗證帳號。",
           "accountScopePrefix": "帳號範圍",
           "accountScopeRemoteServerUnnamed": "遠端伺服器",
           "remoteScopeLocalAccountsKept": "此桌面版管理的帳號並未改變。將預設執行時切換回本機桌面即可檢視。",
@@ -7306,8 +7307,6 @@
           "ee110e1830": "沒有預設的基本參考"
         },
         "BrowserDefaultZoomSetting": {
-          "2622126877": "縮放級別套用於新開啟的瀏覽器分頁。",
-          "bbeec087d3": "套用於新開啟的瀏覽器分頁。",
           "265597101f": "預設縮放"
         },
         "BrowserHomePageSetting": {
@@ -12897,7 +12896,7 @@
           "reassurance": "在各個主機上執行，透過你自己的 SSH 連線存取。你的程式碼和檔案留在原處。只有 Orca 的專案、分頁和終端機列表會移到該主機。"
         },
         "sshHostServer": {
-          "sourceChanged": "較舊版本的 Orca 變更了此主機的專案。要重新連線，請將這些變更遷移到此主機上的 Orca 伺服器，或保留伺服器版本。",
+          "sourceChanged": "此電腦上有此主機的 Orca 伺服器尚未包含的專案或資料夾，通常是由較舊版本的 Orca 新增的。要重新連線，請將它們遷移到此主機上的 Orca 伺服器，或保留伺服器版本。",
           "deploying": "正在 {{host}} 上設定 Orca…",
           "converting": "正在遷移到 {{host}} 上的 Orca…",
           "connecting": "正在連線到 {{host}} 上的 Orca…",
@@ -12940,7 +12939,8 @@
           "behindRolledBack": "執行的 Orca 伺服器比此應用程式舊；上次更新已回滾。請使用「更新伺服器」重試。",
           "behindNoTemplate": "執行的 Orca 伺服器無法由此應用程式更新；此版本沒有適用於此主機的伺服器。",
           "behindMigrating": "執行 Orca 伺服器，它會在專案遷移完成後更新。",
-          "behindCheckFailed": "執行 Orca 伺服器；Orca 無法檢查它是否落後於此應用程式。"
+          "behindCheckFailed": "執行 Orca 伺服器；Orca 無法檢查它是否落後於此應用程式。",
+          "refusedBlockedReason": "此主機尚未設定 Orca。{{reason}}"
         },
         "deltaMove": {
           "action": "遷移新專案…",
@@ -13068,7 +13068,7 @@
         "SshRestoreRemovedHosts": {
           "title": "恢復已移除的主機？",
           "description": "你在 Orca 中移除的 ~/.ssh/config 主機將重新出現在設定和所有主機選擇器中。",
-          "none": "沒有從 ~/.ssh/config 移除的主機。",
+          "none": "沒有在 Orca 中移除且可恢復的 ~/.ssh/config 主機。",
           "confirm": "恢復"
         },
         "SshTargetList": {
@@ -14703,12 +14703,13 @@
             "sourceActionsUnavailable": "轉錄來源不可用。"
           },
           "AiVaultScanProgressStrip": {
+            "agentChecked": "{{agent}}：已檢查 {{settled}} / {{total}} 個歷史記錄候選項",
             "fileCount_one": "{{value0}} 個檔案",
             "fileCount_other": "{{value0}} 個檔案",
             "databaseCount_one": "{{value0}} 個數據庫",
             "databaseCount_other": "{{value0}} 個數據庫",
             "scanning": "正在掃描 {{value0}}",
-            "reading": "正在讀取 {{value0}} 個檔案",
+            "checking": "正在檢查 {{value0}}",
             "scanned": "已掃描 {{value0}}"
           }
         }
@@ -16516,6 +16517,9 @@
             }
           }
         },
+        "staleViewEdit": {
+          "rejected": "檔案已在另一個檢視中變更，因此你在此檢視中最近輸入的內容已被丟棄。"
+        },
         "richMarkdownLargeTextPaste": {
           "tooLarge": "貼上內容過大。",
           "stopped": "大漿糊還沒完成就停了。",
@@ -16530,11 +16534,11 @@
           "copy": "複製作業"
         },
         "ExternalFileChangeBanner": {
-          "7c41e90d12": "This file changed on disk while you have unsaved edits. Overwrite replaces the newer disk content.",
+          "7c41e90d12": "當你有未儲存的編輯時，磁碟上的檔案發生了變更。覆蓋將替換磁碟上較新的內容。",
           "3fa2b8d417": "從磁碟重新載入",
           "a95d02c644": "保留我的編輯",
-          "overwrite": "Overwrite",
-          "keepHint": "Keeps your version. Your next save replaces the version on disk.",
+          "overwrite": "覆蓋",
+          "keepHint": "保留你的版本。下次儲存時將替換磁碟上的版本。",
           "5c02de9b31": "已從磁碟重新載入",
           "d1e830fa22": "復原",
           "90b2ce7d43": "比較"
@@ -16575,10 +16579,10 @@
               }
             },
             "stale": {
-              "notice": "This file changed on disk since your edits. Use the banner to compare, reload, or overwrite."
+              "notice": "自你編輯以來，磁碟上的檔案發生了變更。請使用橫幅進行比較、重新載入或覆蓋。"
             },
             "sectionStale": {
-              "notice": "This file changed on disk since this section loaded."
+              "notice": "此部分載入後，磁碟上的檔案發生了變更。"
             }
           }
         },
@@ -16885,7 +16889,6 @@
             "95af781091": "向代理傳送意見回饋",
             "ac39b9366b": "傳送",
             "a3508d7e6e": "{{value0}} 註釋{{value1}} 準備就緒。選擇另一個元素或複製所有意見回饋。",
-            "f796c774a4": "在上面輸入 URL 即可開始瀏覽。",
             "366bf5d62c": "新標籤",
             "1c78adc73d": "在外部開啟",
             "da68d35f7b": "在預設瀏覽器中開啟失敗頁面",
@@ -17011,7 +17014,8 @@
               "bar": {
                 "suggestions": {
                   "87fcdd0da9": "{{value0}} 搜尋"
-                }
+                },
+                "placeholder": "搜尋或輸入網址"
               }
             }
           },
@@ -18586,9 +18590,9 @@
         "couldNotStart": "{{agent}} 無法啟動。",
         "editSavedArguments": "請在設定 > 代理 > 引數中編輯。",
         "couldNotRestart": "{{agent}} 無法重新啟動。",
+        "cliTooOld": "{{agent}} {{installedVersion}} 版本過舊，無法用於聊天。請更新到 {{minimumVersion}} 或更高版本。",
         "startTimedOut": "{{agent}} 啟動時間過長（{{seconds}} 秒後 {{method}} 仍無響應）。",
         "startTimedOutKeepsHappening": "如果此問題持續出現，執行此聊天的電腦可能負載過重。",
-        "codexCliTooOld": "Codex {{installedVersion}} 版本過舊，無法用於聊天。請更新到 {{minimumVersion}} 或更高版本。",
         "notSignedIn": "{{agent}} 尚未登入。",
         "claudeSystemNotSignedIn": "Claude 尚未登入。請執行 `{{loginCommand}}`，或在 Claude 帳號設定中選擇帳號。",
         "claudeManagedNotSignedIn": "此 Claude 帳號尚未登入。請在 Claude 帳號設定中重新登入。",
@@ -18733,6 +18737,8 @@
         "settleEarlierMessage": "請等待之前的訊息送達，或重試該訊息。",
         "queueTooLarge": "佇列中等待的文字過多。",
         "shrinkQueue": "請刪除一條排隊的訊息，或等待其送達，然後重試。",
+        "messageTooLarge": "超過了單條訊息 256 KB 的上限。",
+        "shortenMessage": "請縮短或分割後再傳送。",
         "optionRejected": "代理未接受此設定。",
         "goalsUnsupported": "此代理不支援目標。",
         "agentRefused": "代理拒絕了此請求。",
@@ -18775,6 +18781,10 @@
         "uploadingFile": "正在上傳 {{name}}…",
         "removeAttachment": "移除附件",
         "pastedImageLabel": "貼上的圖片",
+        "pastedTextLabel": "貼上的文字",
+        "pasteNotSavedLabel": "貼上未儲存",
+        "pasteNotSaved": "此貼上內容未儲存。請重新貼上或將其移除。",
+        "pastedTextTooLarge": "此次貼上會使訊息超過單條訊息 256 KB 的上限。請縮短後再貼上。",
         "draftNotSaved": "此草稿尚未儲存成功。Orca 會繼續嘗試。",
         "imageNotBroughtBack": "無法隨此草稿恢復 {{name}}。請重新附加或將其移除。",
         "pastedImageNotBroughtBack": "無法隨此草稿恢復這張貼上的圖片。請將其移除，如仍需要請重新貼上。",
@@ -19086,6 +19096,8 @@
         "plan": "計劃",
         "historyRepaired": "此聊天的部分歷史記錄無法載入。",
         "historyItemTooLarge": "聊天的這一部分過大，無法顯示。",
+        "continuedOutside": "已在此聊天之外繼續。",
+        "continuedOutsideRewound": "已在此聊天之外繼續。上方較早的回覆已不在此對話的歷史記錄中。",
         "stoppedBeforeStart": "已手動停止",
         "dismiss": "關閉",
         "copyError": "複製錯誤",
@@ -19274,7 +19286,7 @@
       "thought": "已思考",
       "thoughtForDuration": "思考了 {{duration}}",
       "structuredSessionHostDeclined": "已在終端機中開啟 {{value0}}",
-      "structuredSessionHostDeclinedDescription": "此伺服器無法在此工作區中執行 {{value0}} 聊天。",
+      "structuredSessionHostDeclinedDescription": "此工作區無法執行 {{value0}} 聊天。",
       "structuredSessionHostUnreachable": "無法連線到 {{value0}}",
       "structuredSessionHostUnreachableDescription": "Orca 未開啟 {{value0}} 聊天。請檢查與伺服器的連線，然後重試。",
       "hostOutage": {
@@ -19332,16 +19344,13 @@
       "bar": {
         "SortableTabContextMenu": {
           "switchToTerminalView": "使用終端機代理繼續",
-          "switchToChatView": "在聊天介面中繼續",
-          "closeTabsToLeft": "關閉左側的所有分頁"
+          "switchToChatView": "在聊天介面中繼續"
         },
         "BrowserTab": {
-          "closeOthers": "關閉其他",
-          "closeTabsToLeft": "關閉左側的所有分頁"
+          "closeOthers": "關閉其他"
         },
         "EditorFileTabContextMenu": {
-          "closeOthers": "關閉其他",
-          "closeTabsToLeft": "關閉左側的所有分頁"
+          "closeOthers": "關閉其他"
         },
         "CopyTabIdMenuItem": {
           "copied": "已複製分頁 ID",
@@ -19615,6 +19624,17 @@
           "checking": "正在檢查變更…",
           "checkingDetails": "檢查…",
           "unavailableDetails": "詳細資訊不可用"
+        },
+        "unsavedEdits": {
+          "discarded_one": "{{count}} 個檔案中未儲存的編輯將被放棄：",
+          "discarded_other": "{{count}} 個檔案中未儲存的編輯將被放棄：",
+          "moreFiles": "及另外 {{value}} 個",
+          "blocked_one": "請先儲存或關閉 {{name}} 中 {{count}} 個未儲存的檔案",
+          "blocked_other": "請先儲存或關閉 {{name}} 中 {{count}} 個未儲存的檔案",
+          "closedToast_one": "已關閉 {{workspace}} 中 {{count}} 個有未儲存編輯的檔案",
+          "closedToast_other": "已關閉 {{workspace}} 中 {{count}} 個有未儲存編輯的檔案",
+          "reopen": "重新開啟",
+          "reopenFailed": "部分檔案無法重新開啟。請開啟工作區，然後再次嘗試「重新開啟」。"
         }
       }
     },
@@ -20204,8 +20224,12 @@
       "status": "PR #{{number}} 未連結"
     },
     "discard": {
+      "deleteUntrackedFileDescription": "這將永久刪除此未追蹤檔案。此操作無法復原。",
+      "deleteUntrackedFilesDescription": "這將永久刪除這 {{count}} 個未追蹤檔案。此操作無法復原。",
       "restoreStagedVersionDescription": "這將恢復最後一個暫存版本並放棄刪除。此操作無法撤消。",
-      "unstagedChangesDescription": "這將恢復對此檔案的未暫存變更。此操作無法撤消。"
+      "unstagedChangesDescription": "這將恢復對此檔案的未暫存變更。此操作無法撤消。",
+      "unstagedSelectionIncludingUntrackedDescription": "這將還原未暫存的變更，並永久刪除此選擇中的任何未追蹤檔案。此操作無法復原。",
+      "unstagedFilesIncludingUntrackedDescription": "這將還原未暫存的變更，並永久刪除這 {{count}} 個檔案中的任何未追蹤檔案。此操作無法復原。"
     }
   },
   "rendererRecovery": {
@@ -20870,6 +20894,27 @@
       "waitingAriaLabel": "更新正在等待其他 Orca 例項。點選展開。",
       "preparingLabel": "正在準備更新",
       "preparingAriaLabel": "正在準備更新。點選展開。"
+    }
+  },
+  "onboarding": {
+    "language": {
+      "back": "語言",
+      "requestPrompt": "你希望 Orca 支援哪種語言？",
+      "requestSuccess": "語言請求已記錄。你可以繼續設定。",
+      "requestError": "無法記錄你的請求。請重試。",
+      "retry": "重試",
+      "requestAction": "請求語言支援",
+      "title": "顯示語言",
+      "device": "系統語言：{{language}}",
+      "unsupported": "系統語言：{{language}}。暫不支援此語言。",
+      "unknown": "無法檢測系統語言。請在下方選擇語言。",
+      "loadError": "無法載入此語言。請重試。",
+      "saveError": "無法儲存你的語言偏好設定。請重試。",
+      "other": "其他語言…",
+      "settingsError": "無法載入你的設定。",
+      "loadingSettings": "正在載入設定…",
+      "loading": "正在載入語言…",
+      "saving": "正在儲存語言…"
     }
   }
 }
