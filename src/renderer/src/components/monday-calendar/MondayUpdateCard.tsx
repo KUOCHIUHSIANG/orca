@@ -66,7 +66,7 @@ function EntryBody(props: {
 
 export function MondayUpdateCard(props: {
   update: MondayUpdate
-  buildPrompt: (includeAllUpdates: boolean) => string
+  buildPrompt: () => string
 }): React.JSX.Element {
   const askLabel = translate(
     'auto.components.mondayCalendar.claude.askUpdate',

@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Copy, Folder, GitBranch } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -10,8 +10,6 @@ import {
   CommandList,
   CommandSeparator
 } from '@/components/ui/command'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
@@ -21,7 +19,6 @@ import type { Worktree } from '../../../../shared/worktree/types'
 import { copyMondayPrompt, openMondayPromptInClaude } from './monday-claude-launch'
 
 const LAST_WORKSPACE_KEY = 'orca.mondayCalendar.claudePromptWorkspaceId'
-const INCLUDE_ALL_UPDATES_KEY = 'orca.mondayCalendar.claudePromptIncludeAllUpdates'
 const COPY_ONLY_VALUE = 'monday-claude-copy-only'
 
 type WorkspaceGroup = {
@@ -54,18 +51,13 @@ function useOpenWorkspaceGroups(): WorkspaceGroup[] {
 
 /** Picks an open project, then opens Claude there with the monday prompt typed in. */
 export function MondayClaudePromptPicker(props: {
-  buildPrompt: (includeAllUpdates: boolean) => string
+  buildPrompt: () => string
   /** Shown on hover for icon-only triggers. */
   tooltip?: string
   children: React.ReactElement
 }): React.JSX.Element {
   const [open, setOpen] = useState(false)
   const [lastWorkspaceId, setLastWorkspaceId] = useState<string | null>(null)
-  const [includeAllUpdates, setIncludeAllUpdates] = useState(
-    () => localStorage.getItem(INCLUDE_ALL_UPDATES_KEY) === 'true'
-  )
-  const includeAllId = useId()
-  const searchInputRef = useRef<HTMLInputElement | null>(null)
   const groups = useOpenWorkspaceGroups()
   const foldersLabel = translate('auto.components.mondayCalendar.claude.folders', 'Folders')
 
@@ -79,12 +71,12 @@ export function MondayClaudePromptPicker(props: {
   const launchIn = (workspaceId: string): void => {
     setOpen(false)
     localStorage.setItem(LAST_WORKSPACE_KEY, workspaceId)
-    void openMondayPromptInClaude(workspaceId, props.buildPrompt(includeAllUpdates))
+    void openMondayPromptInClaude(workspaceId, props.buildPrompt())
   }
 
   const copyOnly = async (): Promise<void> => {
     setOpen(false)
-    if (await copyMondayPrompt(props.buildPrompt(includeAllUpdates))) {
+    if (await copyMondayPrompt(props.buildPrompt())) {
       toast.success(translate('auto.components.mondayCalendar.claude.copied', 'Prompt copied.'))
     }
   }
@@ -102,34 +94,9 @@ export function MondayClaudePromptPicker(props: {
       ) : (
         trigger
       )}
-      <PopoverContent
-        align="end"
-        className="w-72"
-        onOpenAutoFocus={(event) => {
-          // Why: the checkbox comes first, but typing a project name is the common next step.
-          event.preventDefault()
-          searchInputRef.current?.focus()
-        }}
-      >
-        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-          <Checkbox
-            id={includeAllId}
-            checked={includeAllUpdates}
-            onCheckedChange={(checked) => {
-              setIncludeAllUpdates(checked === true)
-              localStorage.setItem(INCLUDE_ALL_UPDATES_KEY, String(checked === true))
-            }}
-          />
-          <Label htmlFor={includeAllId}>
-            {translate(
-              'auto.components.mondayCalendar.claude.includeAllUpdates',
-              'Include all updates'
-            )}
-          </Label>
-        </div>
+      <PopoverContent align="end" className="w-72">
         <Command defaultValue={lastWorkspaceId ?? undefined}>
           <CommandInput
-            ref={searchInputRef}
             placeholder={translate(
               'auto.components.mondayCalendar.claude.search',
               'Open Claude in project…'
