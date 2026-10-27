@@ -52,13 +52,26 @@ function isAlive(pid) {
   }
 }
 
-/** Stage a full copy first so a failed copy never leaves /Applications without Orca. */
+/** Moves rather than copies so dist/ keeps no ~700 MB duplicate of the installed bundle. */
+function stageBuiltApp(staging) {
+  try {
+    renameSync(BUILT_APP, staging)
+  } catch (error) {
+    if (error.code !== 'EXDEV') {
+      throw error
+    }
+    execFileSync('ditto', [BUILT_APP, staging])
+    rmSync(BUILT_APP, { recursive: true, force: true })
+  }
+}
+
+/** Stage the full bundle first so a failed move never leaves /Applications without Orca. */
 function swapInstalledApp() {
   const staging = `${INSTALLED_APP}.updating`
   const previous = `${INSTALLED_APP}.old`
   rmSync(staging, { recursive: true, force: true })
   rmSync(previous, { recursive: true, force: true })
-  execFileSync('ditto', [BUILT_APP, staging])
+  stageBuiltApp(staging)
   renameSync(INSTALLED_APP, previous)
   try {
     renameSync(staging, INSTALLED_APP)
