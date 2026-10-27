@@ -2596,7 +2596,6 @@
           "open": "Open in Monday"
         },
         "claude": {
-          "includeAllUpdates": "Include all updates",
           "askTask": "Ask Claude to reply",
           "askUpdate": "Ask Claude how to reply to this update",
           "search": "Open Claude in project…",
@@ -2610,11 +2609,9 @@
         },
         "claudePrompt": {
           "descriptionHeading": "Task description (first update)",
-          "ask": "Help me understand the content of the monday task below, and tell me how I should reply.",
+          "ask": "Help me understand the content of the monday task below, and tell me how I should reply. If the information below is not enough, use the monday tools to read the full discussion from the task link.",
           "focusHeading": "Update to reply to",
           "taskHeading": "Task",
-          "updatesHeading": "Updates (oldest first)",
-          "otherUpdatesHeading": "Other updates (oldest first)",
           "name": "Name",
           "parent": "Parent item",
           "link": "Link",
