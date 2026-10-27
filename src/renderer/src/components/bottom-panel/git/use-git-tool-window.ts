@@ -54,8 +54,7 @@ export function useGitToolWindow() {
     isFolder,
     repositoryHuge,
     activeConnectionId,
-    activeWorktreeInstanceId,
-    worktreeMap
+    activeWorktreeInstanceId
   })
   const { refreshActiveGitStatusAfterMutation } = statusRefresh
   const entryMutations = useSourceControlEntryMutations({
