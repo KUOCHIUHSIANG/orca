@@ -110,7 +110,12 @@ function formatUpdate(update: MondayUpdate): string {
   return parts.join('\n\n')
 }
 
-function formatTaskFacts(item: MondayCalendarItem, ownerNames: readonly string[]): string {
+/** Board, status, owners, and dates only ride along when the task itself is the subject. */
+function formatTaskFacts(
+  item: MondayCalendarItem,
+  ownerNames: readonly string[],
+  withDetails: boolean
+): string {
   const facts: [string, string][] = [
     [translate('auto.components.mondayCalendar.claudePrompt.name', 'Name'), item.name]
   ]
@@ -120,23 +125,25 @@ function formatTaskFacts(item: MondayCalendarItem, ownerNames: readonly string[]
       item.parentItemName
     ])
   }
-  facts.push(
-    [
-      translate('auto.components.mondayCalendar.item.board', 'Board'),
-      item.groupTitle ? `${item.boardName} · ${item.groupTitle}` : item.boardName
-    ],
-    [translate('auto.components.mondayCalendar.item.status', 'Status'), item.statusLabel ?? '—'],
-    [
-      translate('auto.components.mondayCalendar.item.owners', 'Owners'),
-      ownerNames.length > 0 ? ownerNames.join(', ') : '—'
-    ],
-    [
-      translate('auto.components.mondayCalendar.item.dates', 'Dates'),
-      formatMondayDateRange(item) ??
-        translate('auto.components.mondayCalendar.undated.title', 'No date')
-    ],
-    [translate('auto.components.mondayCalendar.claudePrompt.link', 'Link'), item.url]
-  )
+  if (withDetails) {
+    facts.push(
+      [
+        translate('auto.components.mondayCalendar.item.board', 'Board'),
+        item.groupTitle ? `${item.boardName} · ${item.groupTitle}` : item.boardName
+      ],
+      [translate('auto.components.mondayCalendar.item.status', 'Status'), item.statusLabel ?? '—'],
+      [
+        translate('auto.components.mondayCalendar.item.owners', 'Owners'),
+        ownerNames.length > 0 ? ownerNames.join(', ') : '—'
+      ],
+      [
+        translate('auto.components.mondayCalendar.item.dates', 'Dates'),
+        formatMondayDateRange(item) ??
+          translate('auto.components.mondayCalendar.undated.title', 'No date')
+      ]
+    )
+  }
+  facts.push([translate('auto.components.mondayCalendar.claudePrompt.link', 'Link'), item.url])
   return facts.map(([label, value]) => `- ${label}: ${value}`).join('\n')
 }
 
@@ -146,7 +153,7 @@ function oldestFirst(updates: readonly MondayUpdate[]): MondayUpdate[] {
 
 /**
  * The prompt asking Claude to explain a monday task (or one of its updates) and draft a reply.
- * The oldest update is the task's description, so it always rides along as context.
+ * The oldest update is the task's description, so it always rides along; Claude fetches the rest via the link.
  */
 export function buildMondayClaudePrompt(args: {
   item: MondayCalendarItem
@@ -154,7 +161,6 @@ export function buildMondayClaudePrompt(args: {
   updates: readonly MondayUpdate[]
   /** Focus the prompt on this update; the task stays as context. */
   focusUpdateId?: string
-  includeAllUpdates: boolean
 }): string {
   const ordered = oldestFirst(args.updates)
   const focus = ordered.find((update) => update.id === args.focusUpdateId) ?? null
@@ -162,7 +168,7 @@ export function buildMondayClaudePrompt(args: {
   const sections = [
     translate(
       'auto.components.mondayCalendar.claudePrompt.ask',
-      'Help me understand the content of the monday task below, and tell me how I should reply.'
+      'Help me understand the content of the monday task below, and tell me how I should reply. If the information below is not enough, use the monday tools to read the full discussion from the task link.'
     )
   ]
   if (focus) {
@@ -173,25 +179,9 @@ export function buildMondayClaudePrompt(args: {
   }
   sections.push(
     `## ${translate('auto.components.mondayCalendar.claudePrompt.taskHeading', 'Task')}`,
-    formatTaskFacts(args.item, args.ownerNames)
+    formatTaskFacts(args.item, args.ownerNames, focus === null)
   )
-  const others = ordered.filter((update) => update !== focus)
-  if (args.includeAllUpdates && others.length > 0) {
-    sections.push(
-      `## ${
-        focus
-          ? translate(
-              'auto.components.mondayCalendar.claudePrompt.otherUpdatesHeading',
-              'Other updates (oldest first)'
-            )
-          : translate(
-              'auto.components.mondayCalendar.claudePrompt.updatesHeading',
-              'Updates (oldest first)'
-            )
-      }`,
-      ...others.map(formatUpdate)
-    )
-  } else if (description && description !== focus) {
+  if (description && description !== focus) {
     sections.push(
       `## ${translate(
         'auto.components.mondayCalendar.claudePrompt.descriptionHeading',

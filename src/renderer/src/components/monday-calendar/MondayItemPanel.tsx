@@ -50,7 +50,7 @@ function ItemFacts(props: {
 
 function ItemDiscussion(props: {
   discussion: MondayItemUpdatesController
-  buildPrompt: (includeAllUpdates: boolean, focusUpdateId?: string) => string
+  buildPrompt: (focusUpdateId?: string) => string
 }): React.JSX.Element {
   const { updates, loading, error, refresh } = props.discussion
   return (
@@ -91,7 +91,7 @@ function ItemDiscussion(props: {
         <MondayUpdateCard
           key={update.id}
           update={update}
-          buildPrompt={(includeAllUpdates) => props.buildPrompt(includeAllUpdates, update.id)}
+          buildPrompt={() => props.buildPrompt(update.id)}
         />
       ))}
     </section>
@@ -105,14 +105,8 @@ export function MondayItemPanel(props: {
 }): React.JSX.Element {
   const { item, ownerNames } = props
   const discussion = useMondayItemUpdates(item.id)
-  const buildPrompt = (includeAllUpdates: boolean, focusUpdateId?: string): string =>
-    buildMondayClaudePrompt({
-      item,
-      ownerNames,
-      updates: discussion.updates ?? [],
-      focusUpdateId,
-      includeAllUpdates
-    })
+  const buildPrompt = (focusUpdateId?: string): string =>
+    buildMondayClaudePrompt({ item, ownerNames, updates: discussion.updates ?? [], focusUpdateId })
   return (
     <aside
       aria-label={item.name}

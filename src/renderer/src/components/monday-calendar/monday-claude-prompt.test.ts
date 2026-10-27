@@ -43,39 +43,25 @@ describe('buildMondayClaudePrompt', () => {
     update('middle', '2026-10-21T09:00:00Z', '<p>middle</p>')
   ]
 
-  it('sends the task with its first update as the description unless all updates are asked for', () => {
-    const prompt = buildMondayClaudePrompt({
-      item,
-      ownerNames: [],
-      updates,
-      includeAllUpdates: false
-    })
+  it('sends the task details with its first update as the description', () => {
+    const prompt = buildMondayClaudePrompt({ item, ownerNames: [], updates })
+    expect(prompt).toContain('Working on it')
     expect(prompt.indexOf('Checkout flow')).toBeLessThan(prompt.indexOf('description'))
     expect(prompt).not.toContain('middle')
     expect(prompt).not.toContain('latest')
   })
 
-  it('lists every update oldest first when all updates are included', () => {
+  it('puts the focused update first, followed by the task name, link, and description only', () => {
     const prompt = buildMondayClaudePrompt({
       item,
       ownerNames: [],
       updates,
-      includeAllUpdates: true
-    })
-    expect(prompt.indexOf('description')).toBeLessThan(prompt.indexOf('middle'))
-    expect(prompt.indexOf('middle')).toBeLessThan(prompt.indexOf('latest'))
-  })
-
-  it('puts the focused update first, followed by the task and its description only', () => {
-    const prompt = buildMondayClaudePrompt({
-      item,
-      ownerNames: [],
-      updates,
-      focusUpdateId: 'latest',
-      includeAllUpdates: false
+      focusUpdateId: 'latest'
     })
     expect(prompt.indexOf('latest')).toBeLessThan(prompt.indexOf('Checkout flow'))
     expect(prompt.indexOf('Checkout flow')).toBeLessThan(prompt.indexOf('description'))
+    expect(prompt).toContain(item.url)
+    expect(prompt).not.toContain('Working on it')
     expect(prompt).not.toContain('middle')
   })
 
@@ -84,8 +70,7 @@ describe('buildMondayClaudePrompt', () => {
       item,
       ownerNames: [],
       updates,
-      focusUpdateId: 'description',
-      includeAllUpdates: false
+      focusUpdateId: 'description'
     })
     expect(prompt.match(/description/g)).toHaveLength(1)
   })
