@@ -5891,7 +5891,8 @@
           "d599269755": "從側邊欄隱藏",
           "artifacts": "工件",
           "skills": "技能",
-          "todo": "待辦"
+          "todo": "待辦",
+          "servers": "伺服器"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "清除",
@@ -18779,6 +18780,281 @@
         "minutesLeft": "約剩 {{value0}} 分鐘",
         "syncing": "同步上游",
         "building": "建置中"
+      },
+      "serverFiles": {
+        "template": {
+          "terminalGone": "那個終端機已不在伺服器上，所以改為開啟新的終端機",
+          "description": "指令會打在終端機的命令列上，不會按 Enter。在終端機確認後，再自己按 Enter。",
+          "command": "指令（可以直接修改）",
+          "exists": "{{value0}} 已經存在，執行後會被覆蓋",
+          "sendTo": "輸入到",
+          "newTerminal": "新的終端機（在 {{value0}}）",
+          "copied": "已複製指令",
+          "copy": "複製",
+          "send": "輸入到終端機"
+        },
+        "dialog": {
+          "cancel": "取消",
+          "ok": "知道了"
+        },
+        "copy": {
+          "leftoversTitle": "{{value0}} 裡已經有 {{value1}} 個項目",
+          "leftoversHint": "通常是上次的備份，可能是別的專案的。混在一起的話，之後還原時會分不清。",
+          "cannotClear": "無法從這裡清空：{{value0}}",
+          "clearFirst": "先刪除這些再備份",
+          "keep": "保留，同名的覆蓋",
+          "backupTitle": "將 {{value0}} 個項目備份到 {{value1}}",
+          "copyTitle": "將 {{value0}} 個項目複製到 {{value1}}",
+          "onServer": "在伺服器上用 cp -a 複製，保留權限與時間，不會經過這臺電腦。",
+          "exists": "（已存在）",
+          "overwriteExisting": "覆蓋已存在的 {{value0}} 個",
+          "showCommands": "將執行的指令",
+          "backup": "備份",
+          "copy": "複製",
+          "clearTitle": "要先刪除 {{value1}} 裡的 {{value0}} 個項目嗎？",
+          "clearConfirm": "刪除並備份",
+          "backupJob": "備份到 {{value0}}",
+          "copyJob": "複製到 {{value0}}"
+        },
+        "table": {
+          "name": "名稱",
+          "size": "大小",
+          "modified": "修改時間",
+          "permissions": "權限",
+          "owner": "擁有者",
+          "group": "群組",
+          "empty": "此資料夾是空的",
+          "justCopied": "剛複製"
+        },
+        "name": {
+          "taken": "這裡已有同名的檔案或資料夾",
+          "invalid": "名稱不能包含 /，也不能是 . 或 .."
+        },
+        "pane": {
+          "retry": "重試",
+          "selected": "已選取 {{value0}} 個 · {{value1}}",
+          "count": "{{value0}} 個項目",
+          "free": "剩餘 {{value0}}"
+        },
+        "notice": {
+          "protected": "受保護路徑 {{value0}}：這裡的內容不能刪除或重新命名，覆蓋前會再確認一次。",
+          "you": "你是 {{value0}}（群組：{{value1}}）",
+          "readOnly": "此資料夾位於只讀的檔案系統。",
+          "notWritable": "這裡沒有寫入權限：{{value0}}；{{value1}}",
+          "unknown": "此帳號無法執行指令，所以不會事先檢查權限，以伺服器的回應為準。"
+        },
+        "toolbar": {
+          "upload": "上傳",
+          "download": "下載"
+        },
+        "path": {
+          "up": "上一層",
+          "editHint": "按兩下可輸入路徑",
+          "refresh": "重新整理"
+        },
+        "page": {
+          "intro": "透過 SFTP 瀏覽、上傳和備份伺服器上的檔案，不會在伺服器上安裝任何東西。",
+          "desktopOnly": "伺服器功能只能在桌面版使用。"
+        },
+        "list": {
+          "add": "新增連線",
+          "title": "連線",
+          "empty": "還沒有伺服器"
+        },
+        "profile": {
+          "name": "名稱",
+          "useConfig": "使用 ~/.ssh/config 的 Host",
+          "manual": "手動輸入主機和帳號",
+          "alias": "Host 別名",
+          "pickAlias": "選擇主機",
+          "jumpWarning": "這臺主機經過 ProxyJump 或 ProxyCommand。終端機可以使用，檔案面板暫不支援。",
+          "host": "主機",
+          "port": "Port",
+          "user": "帳號",
+          "auth": "登入方式",
+          "authAuto": "ssh-agent 與 ~/.ssh/config 設定的金鑰",
+          "authKey": "指定金鑰檔案",
+          "authPassword": "密碼",
+          "passwordSaved": "已儲存，留空表示不變",
+          "passwordNote": "以儲存在 macOS 鑰匙串的金鑰加密，絕不以明文寫入。終端機仍會自己詢問密碼。",
+          "passwordUnavailable": "這臺電腦無法加密儲存的密碼，所以不會儲存。連線時會再詢問。",
+          "startPath": "開啟時的資料夾（伺服器）",
+          "startHint": "留空表示家目錄",
+          "downloadDir": "下載到（這臺電腦）",
+          "downloadHint": "留空則使用「下載」資料夾",
+          "needName": "連線需要名稱",
+          "needHost": "選擇主機",
+          "badPort": "Port 必須介於 1 到 65535",
+          "absolutePaths": "伺服器路徑必須以 / 開頭",
+          "needProjectName": "每個專案都需要名稱",
+          "needTemplate": "每個指令都需要名稱與內容",
+          "deleteTitle": "要刪除連線「{{value0}}」嗎？",
+          "deleteMessage": "只會刪除這個儲存的連線與它的密碼，伺服器上不會有任何變動。",
+          "delete": "刪除連線",
+          "editTitle": "連線設定",
+          "newTitle": "新增連線",
+          "tabConnection": "連線",
+          "tabProtected": "受保護路徑",
+          "tabProjects": "專案",
+          "tabTemplates": "常用指令",
+          "save": "儲存",
+          "protectedLabel": "受保護路徑，每行一個",
+          "protectedHint": "這些路徑本身及其底下的內容一律不能從這裡刪除或重新命名，即使伺服器允許也一樣。覆蓋其中的檔案前會再確認一次並逐一列出。透過符號連結到達的路徑也受保護。",
+          "removeProject": "移除專案",
+          "projectName": "專案名稱",
+          "service": "服務",
+          "projectPath": "專案資料夾",
+          "backupPath": "備份資料夾",
+          "database": "資料庫",
+          "projectsHint": "備份時，選取的內容會複製到備份資料夾內相同的路徑。常用指令的 {專案} {資料庫} {服務} 會依你正在瀏覽的專案自動帶入。",
+          "addProject": "新增專案",
+          "templatesHint": "可用的欄位：{{value0}}。指令會輸入到終端機，但不會按 Enter。",
+          "templateName": "名稱",
+          "templateCommand": "指令",
+          "removeTemplate": "移除指令",
+          "addTemplate": "新增指令"
+        },
+        "templates": {
+          "stop": "停止服務",
+          "restart": "重新啟動服務",
+          "status": "檢視服務狀態",
+          "backupDatabase": "備份資料庫"
+        },
+        "workspace": {
+          "alias": "ssh-config：{{value0}}",
+          "connecting": "連線中…",
+          "signedInAs": "以 {{value0}} 登入",
+          "connected": "已連線",
+          "templates": "常用指令",
+          "manageTemplates": "管理常用指令…",
+          "split": "分割檢視",
+          "settings": "連線設定",
+          "disconnect": "中斷連線",
+          "connect": "連線"
+        },
+        "conflict": {
+          "newer": "只覆蓋較新的",
+          "overwriteAll": "全部覆蓋",
+          "skipAll": "全部略過",
+          "each": "逐一決定",
+          "notWritable": "沒有寫入權限",
+          "local": "這臺電腦",
+          "server": "伺服器",
+          "title": "{{value1}} 裡已經有 {{value0}} 個同名檔案",
+          "summary": "本機較新 {{value0}} 個、時間相同 {{value1}} 個、目的地較新 {{value2}} 個。另有 {{value3}} 個新檔案會一併傳輸。",
+          "file": "檔案",
+          "unwritableWarning": "要覆蓋的檔案中有 {{value0}} 個沒有寫入權限，傳輸會在第一個停下。",
+          "result": "覆蓋 {{value0}} 個、保留 {{value1}} 個",
+          "upload": "上傳",
+          "download": "下載"
+        },
+        "jobs": {
+          "verified": "已比對 {{value0}} 個檔案，大小與時間一致",
+          "mismatched": "{{value1}} 個檔案中有 {{value0}} 個與原檔案不一致",
+          "timesNotPreserved": "{{value0}} 個檔案保留了上傳時間（你不是擁有者）",
+          "existingKept": "保留了 {{value0}} 個已存在的項目",
+          "cancel": "取消",
+          "files": "{{value0}}/{{value1}} 個項目",
+          "retry": "重試",
+          "copyError": "複製錯誤內容",
+          "reveal": "前往副本所在位置",
+          "title": "傳輸",
+          "clear": "清除已完成",
+          "speed": "{{value0}}/秒"
+        },
+        "download": {
+          "show": "在資料夾中顯示",
+          "jobTitle": "下載到 {{value0}}",
+          "done": "已下載到 {{value0}}"
+        },
+        "messages": {
+          "permissionDenied": "伺服器拒絕：權限不足",
+          "notFound": "找不到檔案或資料夾",
+          "noSpace": "磁碟空間不足",
+          "quotaExceeded": "超出磁碟配額",
+          "readOnlyFilesystem": "檔案系統為只讀",
+          "alreadyExists": "已有同名的檔案或資料夾",
+          "protected": "被受保護路徑擋下",
+          "unsupportedTransport": "這臺伺服器需要 ProxyJump、ProxyCommand 或硬體金鑰，檔案面板暫不支援。終端機仍可使用。",
+          "commandsUnavailable": "此帳號只能使用 SFTP，無法執行指令",
+          "authFailed": "登入失敗",
+          "connection": "無法連線到伺服器",
+          "cancelled": "已取消",
+          "planExpired": "此確認已過期，重新操作一次",
+          "invalid": "此請求未被接受",
+          "failure": "伺服器回報失敗",
+          "noSelection": "先選取項目",
+          "denyProtected": "{{value0}} 位於受保護路徑內",
+          "denyProtectedDescendant": "{{value0}} 裡含有受保護路徑",
+          "denyFolderNotWritable": "你對 {{value0}} 沒有寫入權限",
+          "denyReadOnly": "{{value0}} 位於只讀的檔案系統",
+          "denySticky": "此資料夾只允許擁有者刪除或重新命名自己的項目（{{value0}}）",
+          "denyNotReadable": "你對 {{value0}} 沒有讀取權限",
+          "blockProtected": "受保護路徑",
+          "blockProtectedDescendant": "含有受保護路徑",
+          "blockParent": "對所在的資料夾沒有寫入權限",
+          "blockSticky": "此資料夾只允許擁有者刪除自己的項目",
+          "blockSubfolder": "對此子資料夾沒有寫入權限",
+          "refuseOverlapsProject": "備份資料夾與專案資料夾重疊",
+          "refuseOverlapsProtected": "備份資料夾與受保護路徑重疊",
+          "refuseHome": "備份資料夾是你的家目錄或其上層",
+          "refuseNotRemovable": "以你的權限無法刪除其中部分內容",
+          "errorAt": "{{value0}}：{{value1}}"
+        },
+        "remove": {
+          "blockedTitle": "這些項目無法刪除",
+          "blockedMessage": "沒有刪除任何東西。會先全部檢查過，所以資料夾不會只刪一半。",
+          "title": "要從 {{value1}} 刪除 {{value0}} 個項目嗎？",
+          "message": "刪除後無法復原。",
+          "folderCounts": "內含 {{value0}} 個檔案、{{value1}} 個資料夾",
+          "confirm": "刪除",
+          "jobTitle": "刪除 {{value0}} 個項目"
+        },
+        "rename": {
+          "title": "重新命名",
+          "label": "新名稱",
+          "confirm": "重新命名"
+        },
+        "mkdir": {
+          "title": "新增資料夾",
+          "label": "資料夾名稱",
+          "confirm": "建立"
+        },
+        "upload": {
+          "protectedTitle": "要覆蓋受保護路徑內的 {{value0}} 個檔案嗎？",
+          "protectedConfirm": "覆蓋",
+          "protectedMessage": "這些檔案受保護，無法從這裡刪除，但確認後部署可以覆蓋它們。",
+          "nothing": "沒有可上傳的檔案",
+          "spaceTitle": "伺服器空間可能不足",
+          "spaceMessage": "這次上傳需要 {{value0}}，但那裡只剩 {{value1}}。",
+          "spaceConfirm": "仍要上傳",
+          "jobTitle": "上傳到 {{value0}}"
+        },
+        "terminal": {
+          "floatingOff": "浮動終端機已關閉",
+          "turnOn": "開啟",
+          "prefillHint": "需要的話可以修改，按 Enter 執行，Ctrl+C 取消。"
+        },
+        "actions": {
+          "notReady": "仍在載入",
+          "noProject": "先在這個連線的設定中設定專案資料夾與備份資料夾",
+          "outsideProject": "只有 {{value0}} 裡的內容可以這樣備份",
+          "uploadFiles": "上傳檔案…",
+          "uploadFolders": "上傳資料夾…",
+          "uploadContents": "上傳資料夾裡的內容…（例如 publish）",
+          "mkdir": "新增資料夾",
+          "download": "下載",
+          "downloadTo": "下載到…",
+          "backup": "備份",
+          "copyAcross": "複製到另一側",
+          "terminal": "在此開啟終端機",
+          "rename": "重新命名",
+          "renameOne": "一次只能重新命名一個項目",
+          "remove": "刪除",
+          "copyPath": "複製路徑",
+          "unprotect": "從受保護路徑移除",
+          "protect": "加入受保護路徑"
+        }
       }
     },
     "i18n": {

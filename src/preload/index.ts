@@ -35,6 +35,7 @@ import { linearApi } from './api/work-items/linear-bridge'
 import { mondayApi } from './api/monday-bridge'
 import { forkSyncApi } from './api/fork-sync-bridge'
 import { microsoftTodoApi } from './api/microsoft-todo-bridge'
+import { serverFilesApi } from './api/server-files-bridge'
 import { jiraApi } from './api/work-items/jira-bridge'
 import { starNagApi } from './api/onboarding/star-nag-bridge'
 import { diagnosticsApi } from './api/diagnostics/diagnostics-bridge'
@@ -143,6 +144,7 @@ const api = {
   monday: mondayApi,
   forkSync: forkSyncApi,
   microsoftTodo: microsoftTodoApi,
+  serverFiles: serverFilesApi,
   starNag: starNagApi,
   telemetryTrack: telemetryTrackApi,
   telemetrySetOptIn: telemetrySetOptInApi,
