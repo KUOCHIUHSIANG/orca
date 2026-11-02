@@ -8,7 +8,8 @@ export function applyWorktreeNavViewEntry(entry: WorktreeNavHistoryViewEntry): v
     entry === 'artifacts' ||
     entry === 'skills' ||
     entry === 'monday' ||
-    entry === 'todo'
+    entry === 'todo' ||
+    entry === 'servers'
   ) {
     useAppStore.getState().setActiveView(entry)
     return

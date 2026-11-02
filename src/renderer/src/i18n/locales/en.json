@@ -6894,7 +6894,8 @@
           "d599269755": "Hide from sidebar",
           "artifacts": "Artifacts",
           "skills": "Skills",
-          "todo": "To Do"
+          "todo": "To Do",
+          "servers": "Servers"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "Clear",
@@ -19882,6 +19883,281 @@
         "minutesLeft": "about {{value0}} min left",
         "syncing": "Syncing upstream",
         "building": "Building"
+      },
+      "serverFiles": {
+        "template": {
+          "terminalGone": "That terminal is no longer connected to the server, so a new one was opened",
+          "description": "The command is typed at the terminal prompt without pressing Enter. Check it there, then press Enter yourself.",
+          "command": "Command (you can edit it)",
+          "exists": "{{value0}} already exists; running this replaces it",
+          "sendTo": "Type into",
+          "newTerminal": "A new terminal in {{value0}}",
+          "copied": "Command copied",
+          "copy": "Copy",
+          "send": "Type into terminal"
+        },
+        "dialog": {
+          "cancel": "Cancel",
+          "ok": "OK"
+        },
+        "copy": {
+          "leftoversTitle": "{{value0}} already holds {{value1}} items",
+          "leftoversHint": "Often the last backup, possibly of another project. Mixing them makes a later restore ambiguous.",
+          "cannotClear": "Cannot be cleared here: {{value0}}",
+          "clearFirst": "Delete these first, then back up",
+          "keep": "Keep them; overwrite same names",
+          "backupTitle": "Back up {{value0}} items to {{value1}}",
+          "copyTitle": "Copy {{value0}} items to {{value1}}",
+          "onServer": "Copied on the server with cp -a, keeping permissions and times. Nothing passes through this computer.",
+          "exists": "(exists)",
+          "overwriteExisting": "Overwrite the {{value0}} that already exist",
+          "showCommands": "Commands that will run",
+          "backup": "Back up",
+          "copy": "Copy",
+          "clearTitle": "Delete {{value0}} items from {{value1}} first?",
+          "clearConfirm": "Delete and back up",
+          "backupJob": "Back up to {{value0}}",
+          "copyJob": "Copy to {{value0}}"
+        },
+        "table": {
+          "name": "Name",
+          "size": "Size",
+          "modified": "Modified",
+          "permissions": "Permissions",
+          "owner": "Owner",
+          "group": "Group",
+          "empty": "This folder is empty",
+          "justCopied": "Just copied"
+        },
+        "name": {
+          "taken": "Something with this name is already here",
+          "invalid": "Names cannot contain / or be . or .."
+        },
+        "pane": {
+          "retry": "Try again",
+          "selected": "{{value0}} selected · {{value1}}",
+          "count": "{{value0}} items",
+          "free": "{{value0}} free"
+        },
+        "notice": {
+          "protected": "Protected path {{value0}}: nothing here can be deleted or renamed, and overwriting asks once more.",
+          "you": "you are {{value0}} (groups: {{value1}})",
+          "readOnly": "This folder is on a read-only file system.",
+          "notWritable": "No write permission here: {{value0}}; {{value1}}",
+          "unknown": "This account cannot run commands, so permissions are not checked in advance; the server decides."
+        },
+        "toolbar": {
+          "upload": "Upload",
+          "download": "Download"
+        },
+        "path": {
+          "up": "Up one folder",
+          "editHint": "Double-click to type a path",
+          "refresh": "Refresh"
+        },
+        "page": {
+          "intro": "Browse, upload and back up files on your servers over SFTP. Nothing is installed on them.",
+          "desktopOnly": "Servers are available in the desktop app only."
+        },
+        "list": {
+          "add": "New connection",
+          "title": "Connections",
+          "empty": "No servers yet"
+        },
+        "profile": {
+          "name": "Name",
+          "useConfig": "Host from ~/.ssh/config",
+          "manual": "Enter host and account",
+          "alias": "Host alias",
+          "pickAlias": "Pick a host",
+          "jumpWarning": "This host goes through ProxyJump or ProxyCommand. The terminal works; the file panel does not support it yet.",
+          "host": "Host",
+          "port": "Port",
+          "user": "Account",
+          "auth": "Sign in with",
+          "authAuto": "ssh-agent and the keys in ~/.ssh/config",
+          "authKey": "A specific key file",
+          "authPassword": "Password",
+          "passwordSaved": "Saved; leave empty to keep it",
+          "passwordNote": "Encrypted with a key kept in the macOS Keychain; never written in plain text. Terminals still ask for it themselves.",
+          "passwordUnavailable": "This computer cannot encrypt saved passwords, so none can be stored. You will be asked when connecting.",
+          "startPath": "Open at (server)",
+          "startHint": "Empty opens your home folder",
+          "downloadDir": "Download to (this computer)",
+          "downloadHint": "Empty uses Downloads",
+          "needName": "Give the connection a name",
+          "needHost": "Choose a host",
+          "badPort": "The port must be between 1 and 65535",
+          "absolutePaths": "Server paths must start with /",
+          "needProjectName": "Every project needs a name",
+          "needTemplate": "Every command needs a name and a command",
+          "deleteTitle": "Delete the connection “{{value0}}”?",
+          "deleteMessage": "Only this saved connection and its password are removed. Nothing on the server changes.",
+          "delete": "Delete connection",
+          "editTitle": "Connection settings",
+          "newTitle": "New connection",
+          "tabConnection": "Connection",
+          "tabProtected": "Protected paths",
+          "tabProjects": "Projects",
+          "tabTemplates": "Commands",
+          "save": "Save",
+          "protectedLabel": "Protected paths, one per line",
+          "protectedHint": "Nothing at or under these paths can be deleted or renamed from here, even when the server allows it. Overwriting files there asks once more and lists them. Symlinked spellings are covered too.",
+          "removeProject": "Remove project",
+          "projectName": "Project name",
+          "service": "Service",
+          "projectPath": "Project folder",
+          "backupPath": "Backup folder",
+          "database": "Database",
+          "projectsHint": "Back up copies items to the backup folder at the same path inside it. Commands fill {專案} {資料庫} {服務} from the project you are browsing.",
+          "addProject": "Add project",
+          "templatesHint": "Fields you can use: {{value0}}. Commands are typed into the terminal without Enter.",
+          "templateName": "Name",
+          "templateCommand": "Command",
+          "removeTemplate": "Remove command",
+          "addTemplate": "Add command"
+        },
+        "templates": {
+          "stop": "Stop service",
+          "restart": "Restart service",
+          "status": "Service status",
+          "backupDatabase": "Back up database"
+        },
+        "workspace": {
+          "alias": "ssh-config: {{value0}}",
+          "connecting": "Connecting…",
+          "signedInAs": "Signed in as {{value0}}",
+          "connected": "Connected",
+          "templates": "Commands",
+          "manageTemplates": "Manage commands…",
+          "split": "Split view",
+          "settings": "Connection settings",
+          "disconnect": "Disconnect",
+          "connect": "Connect"
+        },
+        "conflict": {
+          "newer": "Overwrite only newer",
+          "overwriteAll": "Overwrite all",
+          "skipAll": "Skip all",
+          "each": "Decide per file",
+          "notWritable": "No write permission",
+          "local": "This computer",
+          "server": "Server",
+          "title": "{{value0}} files already exist in {{value1}}",
+          "summary": "{{value0}} newer here, {{value1}} with the same time, {{value2}} newer at the destination. {{value3}} new files are copied as well.",
+          "file": "File",
+          "unwritableWarning": "{{value0}} of the files to overwrite have no write permission; the transfer stops at the first one.",
+          "result": "Overwrite {{value0}}, keep {{value1}}",
+          "upload": "Upload",
+          "download": "Download"
+        },
+        "jobs": {
+          "verified": "Checked {{value0}} files: sizes and times match",
+          "mismatched": "{{value0}} of {{value1}} files differ from the original",
+          "timesNotPreserved": "{{value0}} files kept the upload time (you do not own them)",
+          "existingKept": "{{value0}} existing items were kept",
+          "cancel": "Cancel",
+          "files": "{{value0}}/{{value1}} items",
+          "retry": "Try again",
+          "copyError": "Copy error",
+          "reveal": "Go to the copies",
+          "title": "Transfers",
+          "clear": "Clear finished",
+          "speed": "{{value0}}/s"
+        },
+        "download": {
+          "show": "Show in folder",
+          "jobTitle": "Download to {{value0}}",
+          "done": "Downloaded to {{value0}}"
+        },
+        "messages": {
+          "permissionDenied": "Permission denied on the server",
+          "notFound": "No such file or folder",
+          "noSpace": "Not enough disk space",
+          "quotaExceeded": "Disk quota exceeded",
+          "readOnlyFilesystem": "The file system is read-only",
+          "alreadyExists": "Something with this name already exists",
+          "protected": "Blocked by a protected path",
+          "unsupportedTransport": "This server needs ProxyJump, ProxyCommand or a hardware key, which the file panel does not support yet. The terminal still works.",
+          "commandsUnavailable": "This account can only use SFTP, not run commands",
+          "authFailed": "Sign-in failed",
+          "connection": "Could not reach the server",
+          "cancelled": "Cancelled",
+          "planExpired": "This confirmation expired; start again",
+          "invalid": "This request was not accepted",
+          "failure": "The server reported a failure",
+          "noSelection": "Select an item first",
+          "denyProtected": "{{value0}} is under a protected path",
+          "denyProtectedDescendant": "{{value0}} contains a protected path",
+          "denyFolderNotWritable": "You have no write permission on {{value0}}",
+          "denyReadOnly": "{{value0}} is on a read-only file system",
+          "denySticky": "This folder only lets owners delete or rename their own items ({{value0}})",
+          "denyNotReadable": "You have no read permission on {{value0}}",
+          "blockProtected": "Protected path",
+          "blockProtectedDescendant": "Contains a protected path",
+          "blockParent": "No write permission on the folder that holds it",
+          "blockSticky": "The folder only lets owners delete their own items",
+          "blockSubfolder": "No write permission on this subfolder",
+          "refuseOverlapsProject": "The backup folder overlaps the project folder",
+          "refuseOverlapsProtected": "The backup folder overlaps a protected path",
+          "refuseHome": "The backup folder is your home folder or above it",
+          "refuseNotRemovable": "Some of its contents cannot be deleted with your permissions",
+          "errorAt": "{{value0}}: {{value1}}"
+        },
+        "remove": {
+          "blockedTitle": "These items cannot be deleted",
+          "blockedMessage": "Nothing was deleted. Everything is checked first, so a folder is never left half deleted.",
+          "title": "Delete {{value0}} items from {{value1}}?",
+          "message": "This cannot be undone.",
+          "folderCounts": "{{value0}} files, {{value1}} folders inside",
+          "confirm": "Delete",
+          "jobTitle": "Delete {{value0}} items"
+        },
+        "rename": {
+          "title": "Rename",
+          "label": "New name",
+          "confirm": "Rename"
+        },
+        "mkdir": {
+          "title": "New folder",
+          "label": "Folder name",
+          "confirm": "Create"
+        },
+        "upload": {
+          "protectedTitle": "Overwrite {{value0}} files under a protected path?",
+          "protectedConfirm": "Overwrite",
+          "protectedMessage": "These files are protected. They cannot be deleted from here, but a deploy may overwrite them once you confirm.",
+          "nothing": "There are no files to upload",
+          "spaceTitle": "The server may not have enough space",
+          "spaceMessage": "The upload is {{value0}}, but only {{value1}} is free there.",
+          "spaceConfirm": "Upload anyway",
+          "jobTitle": "Upload to {{value0}}"
+        },
+        "terminal": {
+          "floatingOff": "The floating terminal is turned off",
+          "turnOn": "Turn on",
+          "prefillHint": "Edit if needed, then press Enter to run. Ctrl+C cancels."
+        },
+        "actions": {
+          "notReady": "Still loading",
+          "noProject": "Set a project folder and backup folder in this connection’s settings first",
+          "outsideProject": "Only items inside {{value0}} can be backed up",
+          "uploadFiles": "Upload files…",
+          "uploadFolders": "Upload folders…",
+          "uploadContents": "Upload a folder’s contents… (e.g. publish)",
+          "mkdir": "New folder",
+          "download": "Download",
+          "downloadTo": "Download to…",
+          "backup": "Back up",
+          "copyAcross": "Copy to the other pane",
+          "terminal": "Open terminal here",
+          "rename": "Rename",
+          "renameOne": "Rename one item at a time",
+          "remove": "Delete",
+          "copyPath": "Copy path",
+          "unprotect": "Remove from protected paths",
+          "protect": "Add to protected paths"
+        }
       }
     },
     "i18n": {

@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SetupGuideSidebarEntry } from './SetupGuideSidebarEntry'
 import { SidebarTaskNavButton } from './SidebarTaskNavButton'
+import { ServerFilesSidebarNavEntry } from '../server-files/ServerFilesSidebarNavEntry'
 import { HideSidebarMenu } from './sidebar-nav-controls'
 import { useTranslate } from '@/i18n/use-translate'
 import { lazyWithRetry } from '@/app-shell/startup/lazy-with-retry'
@@ -170,6 +171,7 @@ const SidebarNav = React.memo(function SidebarNav() {
           {translate('auto.components.sidebar.SidebarNav.todo', 'To Do')}
         </span>
       </button>
+      <ServerFilesSidebarNavEntry />
       {showArtifactsButton ? (
         <ContextMenu>
           <ContextMenuTrigger asChild>

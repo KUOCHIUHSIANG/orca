@@ -125,6 +125,7 @@ export type UiViewHistory =
   | 'mobile'
   | 'monday'
   | 'todo'
+  | 'servers'
 
 export type UISliceCore = {
   sidebarOpen: boolean
@@ -167,6 +168,7 @@ export type UISliceCore = {
   previousViewBeforeArtifacts: Exclude<UiViewHistory, 'artifacts'>
   previousViewBeforeMonday: Exclude<UiViewHistory, 'monday'>
   previousViewBeforeTodo: Exclude<UiViewHistory, 'todo'>
+  previousViewBeforeServers: Exclude<UiViewHistory, 'servers'>
   setActiveView: (view: UISliceCore['activeView']) => void
   taskPageData: TaskPageData
   taskResumeState: TaskResumeState | undefined
@@ -203,6 +205,8 @@ export type UISliceCore = {
   closeMondayPage: () => void
   openTodoPage: () => void
   closeTodoPage: () => void
+  openServersPage: () => void
+  closeServersPage: () => void
   pendingSkillShareId: string | null
   openSkillShare: (shareId: string) => void
   clearPendingSkillShare: () => void
