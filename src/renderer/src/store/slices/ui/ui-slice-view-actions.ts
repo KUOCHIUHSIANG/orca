@@ -122,6 +122,19 @@ export function createUiViewActions(set: UISliceSet, get: UISliceGet): Partial<U
         activeView: state.previousViewBeforeTodo,
         worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'todo')
       })),
+    openServersPage: () => {
+      get().recordViewVisit('servers')
+      set((state) => ({
+        activeView: 'servers',
+        previousViewBeforeServers:
+          state.activeView === 'servers' ? state.previousViewBeforeServers : state.activeView
+      }))
+    },
+    closeServersPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeServers,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'servers')
+      })),
     openMobilePage: () =>
       set((state) => ({
         activeView: 'mobile',

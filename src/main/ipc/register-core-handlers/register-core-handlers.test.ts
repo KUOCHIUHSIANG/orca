@@ -54,6 +54,7 @@ const {
   registerJiraIssueSummaryGenerationHandlersMock,
   registerMondayHandlersMock,
   registerMicrosoftTodoHandlersMock,
+  registerServerFilesHandlersMock,
   registerBitbucketHandlersMock,
   registerGitLabHandlersMock,
   registerHostedReviewHandlersMock,
@@ -128,6 +129,7 @@ const {
   registerJiraIssueSummaryGenerationHandlersMock: vi.fn(),
   registerMondayHandlersMock: vi.fn(),
   registerMicrosoftTodoHandlersMock: vi.fn(),
+  registerServerFilesHandlersMock: vi.fn(),
   registerBitbucketHandlersMock: vi.fn(),
   registerGitLabHandlersMock: vi.fn(),
   registerHostedReviewHandlersMock: vi.fn(),
@@ -444,6 +446,10 @@ vi.mock('../microsoft-todo', () => ({
   registerMicrosoftTodoHandlers: registerMicrosoftTodoHandlersMock
 }))
 
+vi.mock('../../server-files/server-files-ipc', () => ({
+  registerServerFilesHandlers: registerServerFilesHandlersMock
+}))
+
 vi.mock('../source-control/bitbucket', () => ({
   registerBitbucketHandlers: registerBitbucketHandlersMock
 }))
@@ -529,6 +535,7 @@ describe('registerCoreHandlers', () => {
     registerJiraIssueSummaryGenerationHandlersMock.mockReset()
     registerMondayHandlersMock.mockReset()
     registerMicrosoftTodoHandlersMock.mockReset()
+    registerServerFilesHandlersMock.mockReset()
     registerBitbucketHandlersMock.mockReset()
     registerGitLabHandlersMock.mockReset()
     registerHostedReviewHandlersMock.mockReset()

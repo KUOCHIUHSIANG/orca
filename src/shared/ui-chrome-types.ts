@@ -130,3 +130,4 @@ export type TopLevelView =
   | 'mobile'
   | 'monday'
   | 'todo'
+  | 'servers'

@@ -5781,7 +5781,8 @@
           "d599269755": "从侧边栏隐藏",
           "artifacts": "工件",
           "skills": "技能",
-          "todo": "待办"
+          "todo": "待办",
+          "servers": "服务器"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "清除",
@@ -18478,6 +18479,281 @@
         "minutesLeft": "约剩 {{value0}} 分钟",
         "syncing": "同步上游",
         "building": "构建中"
+      },
+      "serverFiles": {
+        "template": {
+          "terminalGone": "那个终端已不在服务器上，所以改为打开新的终端",
+          "description": "指令会打在终端的命令行上，不会按 Enter。在终端确认后，再自己按 Enter。",
+          "command": "指令（可以直接修改）",
+          "exists": "{{value0}} 已经存在，执行后会被覆盖",
+          "sendTo": "输入到",
+          "newTerminal": "新的终端（在 {{value0}}）",
+          "copied": "已复制指令",
+          "copy": "复制",
+          "send": "输入到终端"
+        },
+        "dialog": {
+          "cancel": "取消",
+          "ok": "知道了"
+        },
+        "copy": {
+          "leftoversTitle": "{{value0}} 里已经有 {{value1}} 个项目",
+          "leftoversHint": "通常是上次的备份，可能是别的项目的。混在一起的话，之后还原时会分不清。",
+          "cannotClear": "无法从这里清空：{{value0}}",
+          "clearFirst": "先删除这些再备份",
+          "keep": "保留，同名的覆盖",
+          "backupTitle": "将 {{value0}} 个项目备份到 {{value1}}",
+          "copyTitle": "将 {{value0}} 个项目复制到 {{value1}}",
+          "onServer": "在服务器上用 cp -a 复制，保留权限与时间，不会经过这台电脑。",
+          "exists": "（已存在）",
+          "overwriteExisting": "覆盖已存在的 {{value0}} 个",
+          "showCommands": "将执行的指令",
+          "backup": "备份",
+          "copy": "复制",
+          "clearTitle": "要先删除 {{value1}} 里的 {{value0}} 个项目吗？",
+          "clearConfirm": "删除并备份",
+          "backupJob": "备份到 {{value0}}",
+          "copyJob": "复制到 {{value0}}"
+        },
+        "table": {
+          "name": "名称",
+          "size": "大小",
+          "modified": "修改时间",
+          "permissions": "权限",
+          "owner": "拥有者",
+          "group": "群组",
+          "empty": "此文件夹是空的",
+          "justCopied": "刚复制"
+        },
+        "name": {
+          "taken": "这里已有同名的文件或文件夹",
+          "invalid": "名称不能包含 /，也不能是 . 或 .."
+        },
+        "pane": {
+          "retry": "重试",
+          "selected": "已选取 {{value0}} 个 · {{value1}}",
+          "count": "{{value0}} 个项目",
+          "free": "剩余 {{value0}}"
+        },
+        "notice": {
+          "protected": "受保护路径 {{value0}}：这里的内容不能删除或重命名，覆盖前会再确认一次。",
+          "you": "你是 {{value0}}（群组：{{value1}}）",
+          "readOnly": "此文件夹位于只读的文件系统。",
+          "notWritable": "这里没有写入权限：{{value0}}；{{value1}}",
+          "unknown": "此账号无法执行指令，所以不会事先检查权限，以服务器的回应为准。"
+        },
+        "toolbar": {
+          "upload": "上传",
+          "download": "下载"
+        },
+        "path": {
+          "up": "上一层",
+          "editHint": "双击可输入路径",
+          "refresh": "刷新"
+        },
+        "page": {
+          "intro": "通过 SFTP 浏览、上传和备份服务器上的文件，不会在服务器上安装任何东西。",
+          "desktopOnly": "服务器功能只能在桌面版使用。"
+        },
+        "list": {
+          "add": "新建连接",
+          "title": "连接",
+          "empty": "还没有服务器"
+        },
+        "profile": {
+          "name": "名称",
+          "useConfig": "使用 ~/.ssh/config 的 Host",
+          "manual": "手动输入主机和账号",
+          "alias": "Host 别名",
+          "pickAlias": "选择主机",
+          "jumpWarning": "这台主机经过 ProxyJump 或 ProxyCommand。终端可以使用，文件面板暂不支持。",
+          "host": "主机",
+          "port": "Port",
+          "user": "账号",
+          "auth": "登录方式",
+          "authAuto": "ssh-agent 与 ~/.ssh/config 设定的密钥",
+          "authKey": "指定密钥文件",
+          "authPassword": "密码",
+          "passwordSaved": "已保存，留空表示不变",
+          "passwordNote": "以保存在 macOS 钥匙串的密钥加密，绝不以明文写入。终端仍会自己询问密码。",
+          "passwordUnavailable": "这台电脑无法加密保存的密码，所以不会保存。连接时会再询问。",
+          "startPath": "打开时的文件夹（服务器）",
+          "startHint": "留空表示家目录",
+          "downloadDir": "下载到（这台电脑）",
+          "downloadHint": "留空则使用“下载”文件夹",
+          "needName": "连接需要名称",
+          "needHost": "选择主机",
+          "badPort": "Port 必须介于 1 到 65535",
+          "absolutePaths": "服务器路径必须以 / 开头",
+          "needProjectName": "每个项目都需要名称",
+          "needTemplate": "每个指令都需要名称与内容",
+          "deleteTitle": "要删除连接“{{value0}}”吗？",
+          "deleteMessage": "只会删除这个保存的连接与它的密码，服务器上不会有任何变动。",
+          "delete": "删除连接",
+          "editTitle": "连接设置",
+          "newTitle": "新建连接",
+          "tabConnection": "连接",
+          "tabProtected": "受保护路径",
+          "tabProjects": "项目",
+          "tabTemplates": "常用指令",
+          "save": "保存",
+          "protectedLabel": "受保护路径，每行一个",
+          "protectedHint": "这些路径本身及其底下的内容一律不能从这里删除或重命名，即使服务器允许也一样。覆盖其中的文件前会再确认一次并逐一列出。通过符号链接到达的路径也受保护。",
+          "removeProject": "移除项目",
+          "projectName": "项目名称",
+          "service": "服务",
+          "projectPath": "项目文件夹",
+          "backupPath": "备份文件夹",
+          "database": "数据库",
+          "projectsHint": "备份时，选取的内容会复制到备份文件夹内相同的路径。常用指令的 {專案} {資料庫} {服務} 会依你正在浏览的项目自动带入。",
+          "addProject": "新建项目",
+          "templatesHint": "可用的字段：{{value0}}。指令会输入到终端，但不会按 Enter。",
+          "templateName": "名称",
+          "templateCommand": "指令",
+          "removeTemplate": "移除指令",
+          "addTemplate": "新建指令"
+        },
+        "templates": {
+          "stop": "停止服务",
+          "restart": "重启服务",
+          "status": "查看服务状态",
+          "backupDatabase": "备份数据库"
+        },
+        "workspace": {
+          "alias": "ssh-config：{{value0}}",
+          "connecting": "连接中…",
+          "signedInAs": "以 {{value0}} 登录",
+          "connected": "已连接",
+          "templates": "常用指令",
+          "manageTemplates": "管理常用指令…",
+          "split": "分割视图",
+          "settings": "连接设置",
+          "disconnect": "断开连接",
+          "connect": "连接"
+        },
+        "conflict": {
+          "newer": "只覆盖较新的",
+          "overwriteAll": "全部覆盖",
+          "skipAll": "全部略过",
+          "each": "逐一决定",
+          "notWritable": "没有写入权限",
+          "local": "这台电脑",
+          "server": "服务器",
+          "title": "{{value1}} 里已经有 {{value0}} 个同名文件",
+          "summary": "本机较新 {{value0}} 个、时间相同 {{value1}} 个、目的地较新 {{value2}} 个。另有 {{value3}} 个新文件会一并传输。",
+          "file": "文件",
+          "unwritableWarning": "要覆盖的文件中有 {{value0}} 个没有写入权限，传输会在第一个停下。",
+          "result": "覆盖 {{value0}} 个、保留 {{value1}} 个",
+          "upload": "上传",
+          "download": "下载"
+        },
+        "jobs": {
+          "verified": "已比对 {{value0}} 个文件，大小与时间一致",
+          "mismatched": "{{value1}} 个文件中有 {{value0}} 个与原文件不一致",
+          "timesNotPreserved": "{{value0}} 个文件保留了上传时间（你不是拥有者）",
+          "existingKept": "保留了 {{value0}} 个已存在的项目",
+          "cancel": "取消",
+          "files": "{{value0}}/{{value1}} 个项目",
+          "retry": "重试",
+          "copyError": "复制错误内容",
+          "reveal": "前往副本所在位置",
+          "title": "传输",
+          "clear": "清除已完成",
+          "speed": "{{value0}}/秒"
+        },
+        "download": {
+          "show": "在文件夹中显示",
+          "jobTitle": "下载到 {{value0}}",
+          "done": "已下载到 {{value0}}"
+        },
+        "messages": {
+          "permissionDenied": "服务器拒绝：权限不足",
+          "notFound": "找不到文件或文件夹",
+          "noSpace": "磁盘空间不足",
+          "quotaExceeded": "超出磁盘配额",
+          "readOnlyFilesystem": "文件系统为只读",
+          "alreadyExists": "已有同名的文件或文件夹",
+          "protected": "被受保护路径挡下",
+          "unsupportedTransport": "这台服务器需要 ProxyJump、ProxyCommand 或硬件密钥，文件面板暂不支持。终端仍可使用。",
+          "commandsUnavailable": "此账号只能使用 SFTP，无法执行指令",
+          "authFailed": "登录失败",
+          "connection": "无法连接到服务器",
+          "cancelled": "已取消",
+          "planExpired": "此确认已过期，重新操作一次",
+          "invalid": "此请求未被接受",
+          "failure": "服务器回报失败",
+          "noSelection": "先选取项目",
+          "denyProtected": "{{value0}} 位于受保护路径内",
+          "denyProtectedDescendant": "{{value0}} 里含有受保护路径",
+          "denyFolderNotWritable": "你对 {{value0}} 没有写入权限",
+          "denyReadOnly": "{{value0}} 位于只读的文件系统",
+          "denySticky": "此文件夹只允许拥有者删除或重命名自己的项目（{{value0}}）",
+          "denyNotReadable": "你对 {{value0}} 没有读取权限",
+          "blockProtected": "受保护路径",
+          "blockProtectedDescendant": "含有受保护路径",
+          "blockParent": "对所在的文件夹没有写入权限",
+          "blockSticky": "此文件夹只允许拥有者删除自己的项目",
+          "blockSubfolder": "对此子文件夹没有写入权限",
+          "refuseOverlapsProject": "备份文件夹与项目文件夹重叠",
+          "refuseOverlapsProtected": "备份文件夹与受保护路径重叠",
+          "refuseHome": "备份文件夹是你的家目录或其上层",
+          "refuseNotRemovable": "以你的权限无法删除其中部分内容",
+          "errorAt": "{{value0}}：{{value1}}"
+        },
+        "remove": {
+          "blockedTitle": "这些项目无法删除",
+          "blockedMessage": "没有删除任何东西。会先全部检查过，所以文件夹不会只删一半。",
+          "title": "要从 {{value1}} 删除 {{value0}} 个项目吗？",
+          "message": "删除后无法复原。",
+          "folderCounts": "内含 {{value0}} 个文件、{{value1}} 个文件夹",
+          "confirm": "删除",
+          "jobTitle": "删除 {{value0}} 个项目"
+        },
+        "rename": {
+          "title": "重命名",
+          "label": "新名称",
+          "confirm": "重命名"
+        },
+        "mkdir": {
+          "title": "新建文件夹",
+          "label": "文件夹名称",
+          "confirm": "创建"
+        },
+        "upload": {
+          "protectedTitle": "要覆盖受保护路径内的 {{value0}} 个文件吗？",
+          "protectedConfirm": "覆盖",
+          "protectedMessage": "这些文件受保护，无法从这里删除，但确认后部署可以覆盖它们。",
+          "nothing": "没有可上传的文件",
+          "spaceTitle": "服务器空间可能不足",
+          "spaceMessage": "这次上传需要 {{value0}}，但那里只剩 {{value1}}。",
+          "spaceConfirm": "仍要上传",
+          "jobTitle": "上传到 {{value0}}"
+        },
+        "terminal": {
+          "floatingOff": "浮动终端已关闭",
+          "turnOn": "开启",
+          "prefillHint": "需要的话可以修改，按 Enter 执行，Ctrl+C 取消。"
+        },
+        "actions": {
+          "notReady": "仍在加载",
+          "noProject": "先在这个连接的设置中设定项目文件夹与备份文件夹",
+          "outsideProject": "只有 {{value0}} 里的内容可以这样备份",
+          "uploadFiles": "上传文件…",
+          "uploadFolders": "上传文件夹…",
+          "uploadContents": "上传文件夹里的内容…（例如 publish）",
+          "mkdir": "新建文件夹",
+          "download": "下载",
+          "downloadTo": "下载到…",
+          "backup": "备份",
+          "copyAcross": "复制到另一侧",
+          "terminal": "在此打开终端",
+          "rename": "重命名",
+          "renameOne": "一次只能重命名一个项目",
+          "remove": "删除",
+          "copyPath": "复制路径",
+          "unprotect": "从受保护路径移除",
+          "protect": "加入受保护路径"
+        }
       }
     },
     "i18n": {

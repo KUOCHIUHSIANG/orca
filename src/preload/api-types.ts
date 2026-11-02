@@ -40,6 +40,7 @@ import type { LinearApi } from './api/linear-api'
 import type { MondayApi } from './api/monday-api'
 import type { ForkSyncApi } from './api/fork-sync-api'
 import type { MicrosoftTodoApi } from './api/microsoft-todo-api'
+import type { ServerFilesApi } from './api/server-files-api'
 import type { MobileApi } from './api/mobile-api'
 import type { NativeChatApi } from './api/native-chat-api'
 import type { OnboardingApi, StarNagApi } from './api/onboarding-api'
@@ -106,6 +107,7 @@ export type PreloadApi = {
   monday: MondayApi
   forkSync: ForkSyncApi
   microsoftTodo: MicrosoftTodoApi
+  serverFiles: ServerFilesApi
   starNag: StarNagApi
   telemetryTrack: TelemetryApi['telemetryTrack']
   telemetrySetOptIn: TelemetryApi['telemetrySetOptIn']
