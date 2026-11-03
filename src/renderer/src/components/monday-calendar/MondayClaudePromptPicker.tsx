@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
-import { getFolderWorkspaceWorktree } from '@/store/slices/worktrees/listing/detected-worktree-meta'
+import { getFolderWorkspaceWorktree } from '@/store/workspace-record-selectors'
 import type { Worktree } from '../../../../shared/worktree/types'
 import { copyMondayPrompt, openMondayPromptInClaude } from './monday-claude-launch'
 
@@ -43,7 +43,7 @@ function useOpenWorkspaceGroups(): WorkspaceGroup[] {
       repoName: null,
       workspaces: folderWorkspaces
         .filter((folder) => !folder.isArchived)
-        .map(getFolderWorkspaceWorktree)
+        .map((folder) => getFolderWorkspaceWorktree(folder))
     })
     return groups.filter((group) => group.workspaces.length > 0)
   }, [folderWorkspaces, repos, worktreesByRepo])
