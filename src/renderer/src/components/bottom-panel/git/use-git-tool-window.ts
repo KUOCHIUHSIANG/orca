@@ -15,6 +15,7 @@ import { useGitToolWindowState } from './git-tool-window-state'
 export type GitToolWindowRemoteAction = 'fetch' | 'pull' | 'push'
 
 const NO_SELECTION_ENTRIES: FlatEntry[] = []
+const NO_BRANCH_ROW_KEYS: readonly string[] = []
 // Why @{upstream}: resolves host-side without knowing the name, and drops out when there is none.
 const CURRENT_BRANCH_LOG_REFS = ['HEAD', 'HEAD@{upstream}']
 const IS_MAC = typeof navigator !== 'undefined' && navigator.userAgent.includes('Mac')
@@ -82,6 +83,7 @@ export function useGitToolWindow() {
     activeWorktreeId,
     worktreePath,
     visibleSelectionEntries: NO_SELECTION_ENTRIES,
+    visibleBranchRowKeys: NO_BRANCH_ROW_KEYS,
     branchSummary: null
   })
   const commitActions = useGitHistoryCommitActions({
