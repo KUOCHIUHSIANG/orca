@@ -138,7 +138,8 @@ export function useGitBranchSwitcher(model: GitToolWindowModel) {
         return
       }
       setPending(branch)
-      state.beginRemoteOperation()
+      // Why: there is no checkout kind; 'rebase' drives no label or spinner, so it only marks the worktree busy.
+      const endRemoteOperation = state.beginRemoteOperation('rebase', activeWorktreeId)
       try {
         await operation(ctx, branch)
         // Why: the log's ref override and selected commit belong to the branch we just left.
@@ -148,7 +149,7 @@ export function useGitBranchSwitcher(model: GitToolWindowModel) {
       } catch (error) {
         toast.error(errorMessage(error))
       } finally {
-        useAppStore.getState().endRemoteOperation()
+        endRemoteOperation()
         setPending(null)
         setReloadToken((token) => token + 1)
         refreshAll()
