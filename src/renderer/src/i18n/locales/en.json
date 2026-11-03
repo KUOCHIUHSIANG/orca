@@ -19612,7 +19612,8 @@
           "templateName": "Name",
           "templateCommand": "Command",
           "removeTemplate": "Remove command",
-          "addTemplate": "Add command"
+          "addTemplate": "Add command",
+          "gitHost": " (Git service, not a server)"
         },
         "templates": {
           "stop": "Stop service",

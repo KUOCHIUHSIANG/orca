@@ -18611,7 +18611,8 @@
           "templateName": "名称",
           "templateCommand": "指令",
           "removeTemplate": "移除指令",
-          "addTemplate": "新建指令"
+          "addTemplate": "新建指令",
+          "gitHost": "（Git 服务，不是服务器）"
         },
         "templates": {
           "stop": "停止服务",
