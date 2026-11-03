@@ -27,6 +27,8 @@ const RULES = [
   // OpenCC turns 文件 into 檔案 (file); a written document such as a monday doc stays 文件.
   { en: /\bdocs?\b/i, from: /檔案/g, to: '文件' },
   { en: /\bund(o|one)\b/i, from: /撤銷/g, to: '復原' },
+  // Taiwan says 金鑰密碼 for an SSH key passphrase; OpenCC keeps the mainland 口令.
+  { en: /\bpassphrases?\b/i, from: /口令/g, to: '密碼' },
   // OpenCC keeps a standalone 周; Taiwan writes week as 週.
   { en: /\bweeks?\b/i, from: /周/g, to: '週' },
   { en: /\bitems?\b/i, unless: /\bprojects?\b/i, from: /專案/g, to: '項目' },

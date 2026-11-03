@@ -24,6 +24,7 @@ describe('applyZhTwTerms', () => {
     expect(applyZhTwTerms('開啟檔案', 'Open file')).toBe('開啟檔案')
     expect(applyZhTwTerms('周', 'Week')).toBe('週')
     expect(applyZhTwTerms('周圍', 'Around')).toBe('周圍')
+    expect(applyZhTwTerms('SSH 金鑰口令', 'SSH Key Passphrase')).toBe('SSH 金鑰密碼')
   })
 
   it('swaps mainland row/column wording without breaking compounds', () => {
