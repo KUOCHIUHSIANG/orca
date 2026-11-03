@@ -18,6 +18,9 @@ import type { ServerAuthMethod, ServerProfile } from '../../../../shared/server-
 export type PasswordDraft = { value: string; touched: boolean }
 
 const START_PATH_EXAMPLE = '/var/www'
+const DEFAULT_SSH_PORT = 22
+// Git hosting aliases (often written by Sourcetree) can't serve SFTP; keep them out of the way.
+const GIT_HOSTING = /(^|\.)(github\.com|gitlab\.com|bitbucket\.org)$/i
 const KEY_FILE_EXAMPLE = '~/.ssh/id_ed25519'
 
 function Field(props: { id: string; label: string; children: React.ReactNode; hint?: string }) {
@@ -53,6 +56,15 @@ export function ServerProfileConnectionFields(props: {
       .then((result) => setHosts(result.hosts))
       .catch(() => setHosts([]))
   }, [])
+  // Empty means the default port, so clearing the field never reads as port 0.
+  const [portText, setPortText] = useState(() =>
+    draft.endpoint.kind === 'manual' && draft.endpoint.port !== DEFAULT_SSH_PORT
+      ? String(draft.endpoint.port)
+      : ''
+  )
+  const sortedHosts = [...hosts].sort(
+    (a, b) => Number(GIT_HOSTING.test(a.hostname)) - Number(GIT_HOSTING.test(b.hostname))
+  )
   const endpoint = draft.endpoint
   const chosenHost =
     endpoint.kind === 'ssh-config' ? hosts.find((host) => host.alias === endpoint.alias) : undefined
@@ -73,15 +85,17 @@ export function ServerProfileConnectionFields(props: {
       </Field>
       <RadioGroup
         value={endpoint.kind}
-        onValueChange={(kind) =>
+        onValueChange={(kind) => {
+          setPortText('')
+          // No preselected alias: the first host is often a Git service, not a server.
           onChange({
             ...draft,
             endpoint:
               kind === 'manual'
-                ? { kind: 'manual', host: '', port: 22, username: '' }
-                : { kind: 'ssh-config', alias: hosts[0]?.alias ?? '' }
+                ? { kind: 'manual', host: '', port: DEFAULT_SSH_PORT, username: '' }
+                : { kind: 'ssh-config', alias: '' }
           })
-        }
+        }}
         className="flex flex-wrap"
       >
         <div className="flex items-center gap-2">
@@ -117,13 +131,19 @@ export function ServerProfileConnectionFields(props: {
               />
             </SelectTrigger>
             <SelectContent>
-              {hosts.map((host) => (
+              {sortedHosts.map((host) => (
                 <SelectItem key={host.alias} value={host.alias}>
                   {host.alias}
                   <span className="text-muted-foreground">
                     {' '}
                     {host.username ? `${host.username}@` : ''}
                     {host.hostname}
+                    {GIT_HOSTING.test(host.hostname)
+                      ? translate(
+                          'auto.components.serverFiles.profile.gitHost',
+                          ' (Git service, not a server)'
+                        )
+                      : ''}
                   </span>
                 </SelectItem>
               ))}
@@ -148,7 +168,6 @@ export function ServerProfileConnectionFields(props: {
             <Input
               id="server-files-host"
               value={endpoint.host}
-
               onChange={(e) =>
                 onChange({ ...draft, endpoint: { ...endpoint, host: e.target.value.trim() } })
               }
@@ -161,13 +180,16 @@ export function ServerProfileConnectionFields(props: {
             <Input
               id="server-files-port"
               inputMode="numeric"
-              value={String(endpoint.port)}
-              onChange={(e) =>
+              placeholder={String(DEFAULT_SSH_PORT)}
+              value={portText}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, '').slice(0, 5)
+                setPortText(digits)
                 onChange({
                   ...draft,
-                  endpoint: { ...endpoint, port: Number(e.target.value.replace(/\D/g, '')) || 0 }
+                  endpoint: { ...endpoint, port: digits === '' ? DEFAULT_SSH_PORT : Number(digits) }
                 })
-              }
+              }}
             />
           </Field>
           <Field
