@@ -5,6 +5,7 @@ import { AgentIcon } from '@/lib/agent-catalog'
 import { formatUiRelativeTimeFromDate } from '@/i18n/relative-time-format'
 import type { MondayUpdate, MondayUpdateEntry } from '../../../../shared/monday-calendar-types'
 import { formatMondayEntryTime } from './monday-date-range-format'
+import type { MondayClaudeAction, MondayPromptFocus } from './monday-claude-prompt'
 import { MondayClaudePromptPicker } from './MondayClaudePromptPicker'
 import { MondayRichText } from './MondayRichText'
 
@@ -64,32 +65,55 @@ function EntryBody(props: {
   )
 }
 
-export function MondayUpdateCard(props: {
-  update: MondayUpdate
-  buildPrompt: () => string
+function AskClaudeAction(props: {
+  buildPrompt: (action: MondayClaudeAction) => string
 }): React.JSX.Element {
   const askLabel = translate(
     'auto.components.mondayCalendar.claude.askUpdate',
-    'Ask Claude how to reply to this update'
+    'Ask Claude about this comment'
   )
+  return (
+    <MondayClaudePromptPicker buildPrompt={props.buildPrompt} tooltip={askLabel}>
+      <Button type="button" variant="ghost" size="icon-xs" aria-label={askLabel}>
+        <AgentIcon agent="claude" size={12} />
+      </Button>
+    </MondayClaudePromptPicker>
+  )
+}
+
+export function MondayUpdateCard(props: {
+  update: MondayUpdate
+  buildPrompt: (action: MondayClaudeAction, focus: MondayPromptFocus) => string
+}): React.JSX.Element {
+  const { update } = props
   return (
     <article className="overflow-hidden rounded-md border border-border bg-card text-card-foreground">
       <div className="p-3">
         <EntryBody
-          entry={props.update}
+          entry={update}
           action={
-            <MondayClaudePromptPicker buildPrompt={props.buildPrompt} tooltip={askLabel}>
-              <Button type="button" variant="ghost" size="icon-xs" aria-label={askLabel}>
-                <AgentIcon agent="claude" size={12} />
-              </Button>
-            </MondayClaudePromptPicker>
+            <AskClaudeAction
+              buildPrompt={(action) =>
+                props.buildPrompt(action, { entry: update, parentUpdateId: null })
+              }
+            />
           }
         />
       </div>
-      {props.update.replies.length > 0 ? (
+      {update.replies.length > 0 ? (
         <div className="space-y-3 border-t border-border bg-muted/30 p-3">
-          {props.update.replies.map((reply) => (
-            <EntryBody key={reply.id} entry={reply} />
+          {update.replies.map((reply) => (
+            <EntryBody
+              key={reply.id}
+              entry={reply}
+              action={
+                <AskClaudeAction
+                  buildPrompt={(action) =>
+                    props.buildPrompt(action, { entry: reply, parentUpdateId: update.id })
+                  }
+                />
+              }
+            />
           ))}
         </div>
       ) : null}

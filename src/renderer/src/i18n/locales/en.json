@@ -2596,8 +2596,11 @@
           "open": "Open in Monday"
         },
         "claude": {
-          "askTask": "Ask Claude to reply",
-          "askUpdate": "Ask Claude how to reply to this update",
+          "actionLabel": "What Claude should do",
+          "implement": "Implement / fix",
+          "reply": "Understand & reply",
+          "askTask": "Ask Claude",
+          "askUpdate": "Ask Claude about this comment",
           "search": "Open Claude in project…",
           "noProjects": "No projects found.",
           "folders": "Folders",
@@ -2608,16 +2611,14 @@
           "launchFailed": "Could not open Claude in this project."
         },
         "claudePrompt": {
-          "descriptionHeading": "Task description (first update)",
-          "ask": "Help me understand the content of the monday task below, and tell me how I should reply. If the information below is not enough, use the monday tools to read the full discussion from the task link.",
-          "focusHeading": "Update to reply to",
-          "taskHeading": "Task",
-          "name": "Name",
-          "parent": "Parent item",
-          "link": "Link",
-          "reply": "Reply",
-          "attachments": "Attachments",
-          "image": "Image"
+          "implementTask": "Implement or fix this monday task according to its content.",
+          "implementComment": "Implement or fix what the monday comment below asks for.",
+          "replyTask": "Help me understand this monday task, and tell me how I should reply.",
+          "replyComment": "Help me understand what the monday comment below is saying, and tell me how I should reply.",
+          "instructions": "First use the monday tools to read all of the task’s updates and replies (opening the link directly only lands on the login page). To look at an image, get a fresh link from the monday tools (image links expire after an hour), download it into the system temp folder, and delete the file right after viewing it.",
+          "task": "Task: {{value0}}",
+          "updateFocus": "Comment: {{value0}} (update id {{value1}})",
+          "replyFocus": "Comment: {{value0}} (a reply under update id {{value2}}, reply id {{value1}})"
         },
         "page": {
           "openSettings": "Open settings",

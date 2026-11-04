@@ -1758,8 +1758,11 @@
           "open": "在 Monday 中開啟"
         },
         "claude": {
-          "askTask": "請 Claude 協助回覆",
-          "askUpdate": "請 Claude 協助回覆這則討論",
+          "actionLabel": "要 Claude 做什麼",
+          "implement": "實作／修正",
+          "reply": "理解並回覆",
+          "askTask": "請 Claude 協助",
+          "askUpdate": "請 Claude 協助處理這則留言",
           "search": "選擇要開啟 Claude 的專案…",
           "noProjects": "找不到專案。",
           "folders": "資料夾",
@@ -1770,16 +1773,14 @@
           "launchFailed": "無法在此專案中開啟 Claude。"
         },
         "claudePrompt": {
-          "descriptionHeading": "任務說明（第一則討論）",
-          "ask": "請幫我理解以下 Monday 任務的內容，並告訴我該如何回覆。如果以下資訊不夠，再用 monday 工具從任務連結讀取完整討論。",
-          "focusHeading": "需回覆的討論",
-          "taskHeading": "任務",
-          "name": "名稱",
-          "parent": "上層任務",
-          "link": "連結",
-          "reply": "回覆",
-          "attachments": "附件",
-          "image": "圖片"
+          "implementTask": "請依照這個 Monday 任務的內容實作或修正。",
+          "implementComment": "請依照下面這則 Monday 留言的要求實作或修正。",
+          "replyTask": "請幫我理解這個 Monday 任務的內容，並告訴我該如何回覆。",
+          "replyComment": "請幫我理解下面這則 Monday 留言想表達什麼，並告訴我該如何回覆。",
+          "instructions": "請先用 monday 工具讀取任務的所有討論與回覆（直接開啟網址會卡在登入頁）。需要看圖片時，請用 monday 工具取得新的圖片連結（圖片連結 1 小時後失效），下載到系統暫存資料夾，看完立刻刪除該檔案。",
+          "task": "任務：{{value0}}",
+          "updateFocus": "留言：{{value0}}（update id {{value1}}）",
+          "replyFocus": "留言：{{value0}}（update id {{value2}} 底下的回覆，reply id {{value1}}）"
         },
         "page": {
           "openSettings": "開啟設定",
@@ -12986,7 +12987,7 @@
             "653c105ecc": "更多 PR 操作",
             "f316a8ca2b": "未選擇未解決的評論。",
             "d00ebdc402": "使用 AI 解決 {{value0}} 評論",
-            "5eb2163b6b": "啟動 agent 前請檢查提示詞。提示詞送達後，Orca 會解決選取的主機討論串，並回復無法解決的評論。",
+            "5eb2163b6b": "啟動 agent 前請檢查提示詞。提示詞送達後，Orca 會解決選取的主機討論串，並回覆無法解決的評論。",
             "f273f2271c": "已啟動代理。已標記 {{value0}} 個為已解決，回覆 {{value1}} 個，跳過 {{value2}} 個，失敗 {{value3}} 個。{{value4}}",
             "aa95b81a3a": "已啟動代理。已標記 {{value0}} 個為已解決，回覆 {{value1}} 個，跳過 {{value2}} 個，失敗 {{value3}} 個。",
             "495b2f8c4b": "已啟動代理，但無法解決或回覆選取的評論。",
@@ -12999,7 +13000,7 @@
               "pending": "Syncing…",
               "branch": "Sync Branch"
             },
-            "7e4b2a19c0": "無法確定要回復的 GitHub PR。",
+            "7e4b2a19c0": "無法確定要回覆的 GitHub PR。",
             "430f1a62d4": "無法在主機上解決選取的討論串。",
             "updateReactionFailed": "無法更新反應。",
             "gitlabMoreActions": "更多 MR 動作",
@@ -18278,7 +18279,7 @@
       },
       "NativeChatResumeFailureGuidance": {
         "unconfirmed": "Orca 無法確認「continue」訊息已送達。請開啟聊天進行檢查，確認後再傳送其他訊息。",
-        "superseded": "請開啟聊天並回復。重新啟動後緊接著有新的工作到達，因此 Orca 未傳送其「continue」訊息。",
+        "superseded": "請開啟聊天並回覆。重新啟動後緊接著有新的工作到達，因此 Orca 未傳送其「continue」訊息。",
         "conflict": "此聊天已在另一個 Orca 視窗或終端機中開啟。請在那裡關閉後重試。",
         "ownershipUnknown": "此聊天尚未準備好恢復。請稍等片刻後重試。",
         "notAttached": "聊天未能重新連線。請重試，或將其開啟以開始新的輪次。",
@@ -22086,7 +22087,7 @@
       "variables": "使用 $jira-issue 表示議題上下文，使用 $other-prompt 表示你的附加說明。儲存在此裝置上。",
       "other": "附加說明（可選）",
       "preview": "預覽",
-      "implementation": "開始實現",
+      "implementation": "開始實作",
       "bug": "調查缺陷",
       "testPlan": "編寫測試計劃",
       "prSummary": "起草 PR 摘要"
