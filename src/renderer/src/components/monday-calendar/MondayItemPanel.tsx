@@ -7,11 +7,15 @@ import type { MondayCalendarItem } from '../../../../shared/monday-calendar-type
 import { describeMondayFailure } from './monday-failure-copy'
 import { formatMondayDateRange } from './monday-date-range-format'
 import { CalendarIconAction } from '../calendar/CalendarIconAction'
-import { buildMondayClaudePrompt } from './monday-claude-prompt'
+import {
+  buildMondayClaudePrompt,
+  type MondayClaudeAction,
+  type MondayPromptFocus
+} from './monday-claude-prompt'
 import { MondayClaudePromptPicker } from './MondayClaudePromptPicker'
 import { MondayStatusDot } from './MondayStatusDot'
 import { MondayUpdateCard } from './MondayUpdateCard'
-import { useMondayItemUpdates, type MondayItemUpdatesController } from './use-monday-item-updates'
+import { useMondayItemUpdates } from './use-monday-item-updates'
 
 function ItemFacts(props: {
   item: MondayCalendarItem
@@ -49,10 +53,10 @@ function ItemFacts(props: {
 }
 
 function ItemDiscussion(props: {
-  discussion: MondayItemUpdatesController
-  buildPrompt: (focusUpdateId?: string) => string
+  itemId: string
+  buildPrompt: (action: MondayClaudeAction, focus: MondayPromptFocus) => string
 }): React.JSX.Element {
-  const { updates, loading, error, refresh } = props.discussion
+  const { updates, loading, error, refresh } = useMondayItemUpdates(props.itemId)
   return (
     <section className="space-y-3 px-4 py-4">
       <div className="flex items-center justify-between gap-2">
@@ -88,11 +92,7 @@ function ItemDiscussion(props: {
         </p>
       ) : null}
       {updates?.map((update) => (
-        <MondayUpdateCard
-          key={update.id}
-          update={update}
-          buildPrompt={() => props.buildPrompt(update.id)}
-        />
+        <MondayUpdateCard key={update.id} update={update} buildPrompt={props.buildPrompt} />
       ))}
     </section>
   )
@@ -103,10 +103,9 @@ export function MondayItemPanel(props: {
   ownerNames: readonly string[]
   onClose: () => void
 }): React.JSX.Element {
-  const { item, ownerNames } = props
-  const discussion = useMondayItemUpdates(item.id)
-  const buildPrompt = (focusUpdateId?: string): string =>
-    buildMondayClaudePrompt({ item, ownerNames, updates: discussion.updates ?? [], focusUpdateId })
+  const { item } = props
+  const buildPrompt = (action: MondayClaudeAction, focus?: MondayPromptFocus): string =>
+    buildMondayClaudePrompt({ item, action, focus })
   return (
     <aside
       aria-label={item.name}
@@ -132,26 +131,21 @@ export function MondayItemPanel(props: {
       </header>
       <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-3 border-b border-border px-4 py-4">
-          <ItemFacts item={item} ownerNames={ownerNames} />
+          <ItemFacts item={item} ownerNames={props.ownerNames} />
           <div className="grid grid-cols-2 gap-2">
             <Button type="button" size="sm" onClick={() => void window.api.shell.openUrl(item.url)}>
               <ExternalLink className="size-3.5" />
               {translate('auto.components.mondayCalendar.item.open', 'Open in Monday')}
             </Button>
             <MondayClaudePromptPicker buildPrompt={buildPrompt}>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                disabled={discussion.updates === null && discussion.loading}
-              >
+              <Button type="button" size="sm" variant="outline">
                 <AgentIcon agent="claude" size={14} />
-                {translate('auto.components.mondayCalendar.claude.askTask', 'Ask Claude to reply')}
+                {translate('auto.components.mondayCalendar.claude.askTask', 'Ask Claude')}
               </Button>
             </MondayClaudePromptPicker>
           </div>
         </div>
-        <ItemDiscussion discussion={discussion} buildPrompt={buildPrompt} />
+        <ItemDiscussion key={item.id} itemId={item.id} buildPrompt={buildPrompt} />
       </div>
     </aside>
   )
