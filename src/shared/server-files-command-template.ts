@@ -67,3 +67,41 @@ export function defaultCommandTemplates(
     }
   ]
 }
+
+const MYSQL_CLIENT = /^(?:.*\/)?(?:mysql|mysqldump|mysqladmin)$/
+const PASSWORD_FLAG = /^(?:-p|--password)/
+const ENV_ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=/
+
+/** The program a simple command runs, past `sudo [options]` and `VAR=value` prefixes. */
+function programIndex(words: readonly string[]): number {
+  let index = 0
+  while (index < words.length) {
+    const word = words[index]
+    if (word === 'sudo' || ENV_ASSIGNMENT.test(word)) {
+      index += 1
+      while (words[index]?.startsWith('-')) {
+        index += 1
+      }
+      continue
+    }
+    return index
+  }
+  return index
+}
+
+/**
+ * A mysql/mysqldump call with no -p/--password: it only works where root has no password.
+ * Each `&&`/`;`/`|` segment is judged alone, so `mkdir -p` beside it doesn't count.
+ */
+export function mysqlCallsWithoutPasswordPrompt(command: string): boolean {
+  return command
+    .split(/&&|\|\||;|\|/)
+    .map((segment) => segment.trim().split(/\s+/).filter(Boolean))
+    .some((words) => {
+      const program = programIndex(words)
+      return (
+        MYSQL_CLIENT.test(words[program] ?? '') &&
+        !words.slice(program + 1).some((word) => PASSWORD_FLAG.test(word))
+      )
+    })
+}

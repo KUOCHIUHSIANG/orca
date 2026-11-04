@@ -18697,7 +18697,10 @@
           "templateCommand": "指令",
           "removeTemplate": "移除指令",
           "addTemplate": "新建指令",
-          "gitHost": "（Git 服务，不是服务器）"
+          "gitHost": "（Git 服务，不是服务器）",
+          "templatesOneLine": "指令只能是一行。像 mysql 这种会进入自己提示字符的程序，改用执行完就离开的写法：",
+          "templatesPasswordFlag": "mysql 的 -p 会询问 MySQL 密码，没有密码就直接按 Enter。拿掉 -p 只适用于 root 没有密码的服务器，有密码的会出现 Access denied。",
+          "templateNoPassword": "没有 -p：只适用于 MySQL root 没有密码的服务器，其他服务器会出现 Access denied。"
         },
         "templates": {
           "stop": "停止服务",

@@ -1,16 +1,20 @@
-import { Plus, X } from 'lucide-react'
+import { Plus, TriangleAlert, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { translate } from '@/i18n/i18n'
-import { COMMAND_TEMPLATE_FIELDS } from '../../../../shared/server-files-command-template'
+import {
+  COMMAND_TEMPLATE_FIELDS,
+  mysqlCallsWithoutPasswordPrompt
+} from '../../../../shared/server-files-command-template'
 import type { ServerProfile, ServerProject } from '../../../../shared/server-files-types'
 import { createBrowserUuid } from '@/lib/browser-uuid'
 
 type FieldsProps = { draft: ServerProfile; onChange: (next: ServerProfile) => void }
 
 const PROTECTED_PATH_EXAMPLE = '/var/www/myshop'
+const MYSQL_ONE_SHOT_EXAMPLE = 'sudo mysql -u root -p -e "SHOW DATABASES;"'
 
 export function ProtectedPathsFields({ draft, onChange }: FieldsProps): React.JSX.Element {
   return (
@@ -156,43 +160,72 @@ export function TemplatesFields({ draft, onChange }: FieldsProps): React.JSX.Ele
           }
         )}
       </p>
+      <ul className="list-disc space-y-1 pl-4 text-xs text-muted-foreground">
+        <li>
+          {translate(
+            'auto.components.serverFiles.profile.templatesOneLine',
+            'One line only. For programs that open their own prompt, such as mysql, use the form that runs and exits:'
+          )}{' '}
+          <code className="font-mono">{MYSQL_ONE_SHOT_EXAMPLE}</code>
+        </li>
+        <li>
+          {translate(
+            'auto.components.serverFiles.profile.templatesPasswordFlag',
+            'mysql -p asks for the MySQL password; if it is empty, just press Enter. Without -p the command only works where root has no password; servers with one answer Access denied.'
+          )}
+        </li>
+      </ul>
       {draft.commandTemplates.map((template, index) => (
-        <div key={template.id} className="flex items-start gap-2">
-          <Input
-            value={template.label}
-            className="h-8 w-40 shrink-0"
-            aria-label={translate('auto.components.serverFiles.profile.templateName', 'Name')}
-            onChange={(e) =>
-              update(
-                draft.commandTemplates.map((t, i) =>
-                  i === index ? { ...t, label: e.target.value } : t
+        <div key={template.id} className="space-y-1">
+          <div className="flex items-start gap-2">
+            <Input
+              value={template.label}
+              className="h-8 w-40 shrink-0"
+              aria-label={translate('auto.components.serverFiles.profile.templateName', 'Name')}
+              onChange={(e) =>
+                update(
+                  draft.commandTemplates.map((t, i) =>
+                    i === index ? { ...t, label: e.target.value } : t
+                  )
                 )
-              )
-            }
-          />
-          <Input
-            value={template.command}
-            className="h-8 flex-1"
-            aria-label={translate('auto.components.serverFiles.profile.templateCommand', 'Command')}
-            onChange={(e) =>
-              update(
-                draft.commandTemplates.map((t, i) =>
-                  i === index ? { ...t, command: e.target.value } : t
+              }
+            />
+            <Input
+              value={template.command}
+              className="h-8 flex-1"
+              aria-label={translate(
+                'auto.components.serverFiles.profile.templateCommand',
+                'Command'
+              )}
+              onChange={(e) =>
+                update(
+                  draft.commandTemplates.map((t, i) =>
+                    i === index ? { ...t, command: e.target.value } : t
+                  )
                 )
-              )
-            }
-          />
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => update(draft.commandTemplates.filter((_, i) => i !== index))}
-            aria-label={translate(
-              'auto.components.serverFiles.profile.removeTemplate',
-              'Remove command'
-            )}
-          >
-            <X />
-          </Button>
+              }
+            />
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => update(draft.commandTemplates.filter((_, i) => i !== index))}
+              aria-label={translate(
+                'auto.components.serverFiles.profile.removeTemplate',
+                'Remove command'
+              )}
+            >
+              <X />
+            </Button>
+          </div>
+          {mysqlCallsWithoutPasswordPrompt(template.command) ? (
+            <p className="flex items-start gap-1.5 pl-[10.5rem] text-xs text-muted-foreground">
+              <TriangleAlert className="mt-px size-3.5 shrink-0" />
+              {translate(
+                'auto.components.serverFiles.profile.templateNoPassword',
+                'No -p: this only works on servers where MySQL root has no password; elsewhere it fails with Access denied.'
+              )}
+            </p>
+          ) : null}
         </div>
       ))}
       <Button

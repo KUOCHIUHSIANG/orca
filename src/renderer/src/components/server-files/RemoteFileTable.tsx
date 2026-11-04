@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUp, CornerLeftUp, Folder, FolderSymlink } from 'lucide-
 import { FileTypeIcon } from '@/components/FileTypeIcon'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { translate } from '@/i18n/i18n'
+import { getIntlLocale, translate } from '@/i18n/i18n'
 import { formatRemoteMode } from '../../../../shared/server-files-access'
 import { isSameOrInsideRemotePath } from '../../../../shared/server-files-paths'
 import type { RemoteEntry } from '../../../../shared/server-files-types'
@@ -11,13 +11,13 @@ import { formatBytes, formatModified } from './server-files-messages'
 export type SortKey = 'name' | 'size' | 'modified' | 'mode' | 'owner' | 'group'
 export type SortState = { key: SortKey; descending: boolean }
 
-const COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
-
 function isFolderLike(entry: RemoteEntry): boolean {
   return entry.kind === 'directory' || entry.targetIsDirectory
 }
 
 export function sortEntries(entries: readonly RemoteEntry[], sort: SortState): RemoteEntry[] {
+  // Per call, so a language switch re-sorts with that language's rules.
+  const collator = new Intl.Collator(getIntlLocale(), { numeric: true, sensitivity: 'base' })
   const compare = (a: RemoteEntry, b: RemoteEntry): number => {
     switch (sort.key) {
       case 'size':
@@ -27,11 +27,11 @@ export function sortEntries(entries: readonly RemoteEntry[], sort: SortState): R
       case 'mode':
         return formatRemoteMode(a.mode).localeCompare(formatRemoteMode(b.mode))
       case 'owner':
-        return COLLATOR.compare(a.owner, b.owner)
+        return collator.compare(a.owner, b.owner)
       case 'group':
-        return COLLATOR.compare(a.group, b.group)
+        return collator.compare(a.group, b.group)
       case 'name':
-        return COLLATOR.compare(a.name, b.name)
+        return collator.compare(a.name, b.name)
     }
   }
   return [...entries].sort((a, b) => {
@@ -40,7 +40,7 @@ export function sortEntries(entries: readonly RemoteEntry[], sort: SortState): R
     if (folders !== 0) {
       return folders
     }
-    const order = compare(a, b) || COLLATOR.compare(a.name, b.name)
+    const order = compare(a, b) || collator.compare(a.name, b.name)
     return sort.descending ? -order : order
   })
 }

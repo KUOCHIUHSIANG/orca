@@ -20017,7 +20017,10 @@
           "templateCommand": "Command",
           "removeTemplate": "Remove command",
           "addTemplate": "Add command",
-          "gitHost": " (Git service, not a server)"
+          "gitHost": " (Git service, not a server)",
+          "templatesOneLine": "One line only. For programs that open their own prompt, such as mysql, use the form that runs and exits:",
+          "templatesPasswordFlag": "mysql -p asks for the MySQL password; if it is empty, just press Enter. Without -p the command only works where root has no password; servers with one answer Access denied.",
+          "templateNoPassword": "No -p: this only works on servers where MySQL root has no password; elsewhere it fails with Access denied."
         },
         "templates": {
           "stop": "Stop service",
