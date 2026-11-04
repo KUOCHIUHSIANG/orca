@@ -8,6 +8,8 @@ import { ServerFilesPromptsProvider } from './ServerFilesPrompts'
 import { useServerJobsStore } from './server-files-jobs-store'
 import { useServerFilesStore } from './server-files-store'
 import { ServerListPanel } from './ServerListPanel'
+import { TemplatesFields } from './ServerProfileListFields'
+import { toProfile } from './server-files-store'
 import { ServerWorkspace } from './ServerWorkspace'
 
 const NOW = Date.UTC(2026, 9, 30, 6, 20)
@@ -179,5 +181,26 @@ export const workspace = defineFixture({
         <ServerWorkspace profile={profile} onEditProfile={() => {}} />
       </div>
     </ServerFilesPromptsProvider>
+  )
+})
+
+export const templates = defineFixture({
+  width: 720,
+  render: () => (
+    <TemplatesFields
+      draft={{
+        ...toProfile(profile),
+        commandTemplates: [
+          { id: 'a', label: 'Restart service', command: 'sudo systemctl restart {服務}' },
+          { id: 'b', label: 'List databases', command: 'sudo mysql -u root -e "SHOW DATABASES;"' },
+          {
+            id: 'c',
+            label: 'Check project db',
+            command: 'sudo mysql -u root -p -e "SHOW DATABASES LIKE \'%{專案}%\';"'
+          }
+        ]
+      }}
+      onChange={() => {}}
+    />
   )
 })
