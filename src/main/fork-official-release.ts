@@ -1,4 +1,4 @@
-import { fetchNewerReleaseTagsWithReadiness } from './updater-prerelease-feed'
+import { fetchNewerReleaseTagsWithReadiness } from './updater/releases/updater-prerelease-feed'
 
 /**
  * Newest official upstream release (published, not a prerelease), or null when the feed is unreadable.
