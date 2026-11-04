@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const { fetchNewerReleaseTagsWithReadiness } = vi.hoisted(() => ({
   fetchNewerReleaseTagsWithReadiness: vi.fn()
 }))
-vi.mock('./updater-prerelease-feed', () => ({ fetchNewerReleaseTagsWithReadiness }))
+vi.mock('./updater/releases/updater-prerelease-feed', () => ({
+  fetchNewerReleaseTagsWithReadiness
+}))
 
 const { fetchLatestOfficialRelease } = await import('./fork-official-release')
 

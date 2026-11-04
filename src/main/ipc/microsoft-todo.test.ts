@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('electron', () => ({ ipcMain: { handle: vi.fn() } }))
 
-import { CredentialDecryptionError } from '../integration-credential-file'
+import { CredentialDecryptionError } from '../credentials/integration-credential-file'
 import { toMicrosoftTodoFailure } from './microsoft-todo'
 
 describe('toMicrosoftTodoFailure', () => {

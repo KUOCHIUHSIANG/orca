@@ -6,7 +6,7 @@ import {
   readStoredCredentialToken,
   writeCredentialFileAtomic,
   writeEncryptedCredential
-} from '../integration-credential-file'
+} from '../credentials/integration-credential-file'
 import {
   parseMondayBoardDisplaySettings,
   type MondayBoardDisplaySettings,

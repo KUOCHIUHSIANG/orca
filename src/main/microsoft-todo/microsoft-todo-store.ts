@@ -6,7 +6,7 @@ import {
   readStoredCredentialToken,
   writeCredentialFileAtomic,
   writeEncryptedCredential
-} from '../integration-credential-file'
+} from '../credentials/integration-credential-file'
 import { asString, isRecord } from '../untrusted-json-guards'
 import type { MicrosoftTodoStatus } from '../../shared/microsoft-todo-types'
 

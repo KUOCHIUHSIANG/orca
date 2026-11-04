@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { writeCredentialFileAtomic } from '../integration-credential-file'
+import { writeCredentialFileAtomic } from '../credentials/integration-credential-file'
 import { getMainHttpClient } from '../network/http-client'
 import type {
   TaiwanCalendarDay,
