@@ -1,6 +1,6 @@
 import type { SshTarget } from '../../shared/ssh-types'
 import type { ServerProfile } from '../../shared/server-files-types'
-import { getCurrentMainWindow } from '../ipc/ssh/ssh-ipc-context'
+import { serverFilesHostWindow } from './server-files-host-window'
 import { requestCredential } from '../ipc/ssh/ssh-passphrase'
 import { SshConnection } from '../ssh/connection/ssh-connection'
 import { execCommand } from '../ssh/remote-exec/remote-exec-command'
@@ -53,7 +53,7 @@ export function createServerFilesConnection(profile: ServerProfile): ServerFiles
       // Not broadcast: Settings → SSH must never see these connections as its own.
       onStateChange: () => undefined,
       onCredentialRequest: (targetId, kind, detail, echo, signal) =>
-        requestCredential(getCurrentMainWindow, targetId, kind, detail, echo, signal)
+        requestCredential(serverFilesHostWindow, targetId, kind, detail, echo, signal)
     },
     password ? { password, passphrase: null } : undefined
   )

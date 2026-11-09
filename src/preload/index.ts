@@ -33,6 +33,7 @@ import { glApiBridge } from './api/gl-bridge'
 import { bitbucketApi } from './api/bitbucket-bridge'
 import { linearApi } from './api/linear-bridge'
 import { mondayApi } from './api/monday-bridge'
+import { detachedPagesApi } from './api/detached-pages-bridge'
 import { forkSyncApi } from './api/fork-sync-bridge'
 import { microsoftTodoApi } from './api/microsoft-todo-bridge'
 import { serverFilesApi } from './api/server-files-bridge'
@@ -140,6 +141,7 @@ const api = {
   linear: linearApi,
   jira: jiraApi,
   monday: mondayApi,
+  detachedPages: detachedPagesApi,
   forkSync: forkSyncApi,
   microsoftTodo: microsoftTodoApi,
   serverFiles: serverFilesApi,

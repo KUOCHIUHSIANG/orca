@@ -1677,6 +1677,16 @@
         },
         "signOut": "登出 Microsoft"
       },
+      "detachedPages": {
+        "openWindow": "在独立窗口中打开",
+        "dock": "移回主窗口",
+        "placeholder": "{{value0}} 已在独立窗口中打开。",
+        "showWindow": "显示窗口",
+        "dockHere": "移回这里",
+        "mondayTaskEmpty": "在 Monday 行事历中点选任务，即可在这里显示。",
+        "errorTitle": "此窗口发生错误。",
+        "errorDescription": "请重试，或关闭此窗口后重新打开该页面。"
+      },
       "mondayCalendar": {
         "holidays": {
           "makeupWorkday": "补班",

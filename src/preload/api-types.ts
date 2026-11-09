@@ -38,6 +38,7 @@ import type { BitbucketApi, HostedReviewApi } from './api/hosted-review-api'
 import type { JiraApi } from './api/jira-api'
 import type { LinearApi } from './api/linear-api'
 import type { MondayApi } from './api/monday-api'
+import type { DetachedPagesApi } from './api/detached-pages-api'
 import type { ForkSyncApi } from './api/fork-sync-api'
 import type { MicrosoftTodoApi } from './api/microsoft-todo-api'
 import type { ServerFilesApi } from './api/server-files-api'
@@ -107,6 +108,7 @@ export type PreloadApi = {
   linear: LinearApi
   jira: JiraApi
   monday: MondayApi
+  detachedPages: DetachedPagesApi
   forkSync: ForkSyncApi
   microsoftTodo: MicrosoftTodoApi
   serverFiles: ServerFilesApi

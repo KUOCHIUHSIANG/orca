@@ -1,5 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import { registerCoreHandlers } from '../ipc/register-core-handlers/register-core-handlers'
+import { registerForkFeatureHandlers } from '../ipc/fork-feature-handlers'
 import { attachMainWindowServices } from '../window/attach-main-window-services'
 import { initTccPromptNotice } from '../macos-permissions/macos-tcc-prompt-notice'
 import { resolveUpdateInstallMode } from '../updater/updater-service'
@@ -130,6 +131,7 @@ export function attachMainWindowCoreServices(
         }
       : undefined
   )
+  registerForkFeatureHandlers(store, keybindings)
   automations.start()
   attachMainWindowServices(
     window,

@@ -21,6 +21,7 @@ import { MondaySettingsDialog } from './MondaySettingsDialog'
 import { useMondayCalendar } from './use-monday-calendar'
 import { useMondayDocs } from './use-monday-docs'
 import { useTaiwanHolidays } from '../calendar/use-taiwan-holidays'
+import { DetachedPageHeaderAction } from '../detached-pages/DetachedPageHeaderAction'
 
 const EMPTY_BOARD_SETTINGS: MondayBoardDisplaySettings = {}
 
@@ -132,6 +133,7 @@ export default function MondayCalendarPage(): React.JSX.Element {
             onOpenSettings={() => setSettingsOpen(true)}
           />
         ) : null}
+        <DetachedPageHeaderAction page="monday" />
       </header>
       {calendar.error && tab === 'calendar' && (connected || status === null) ? (
         <MondayErrorBanner

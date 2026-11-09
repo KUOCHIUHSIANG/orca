@@ -1,4 +1,4 @@
-import { ExternalLink, LoaderCircle, RefreshCw, X } from 'lucide-react'
+import { ExternalLink, LoaderCircle, RefreshCw, SquareArrowOutUpRight, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
@@ -7,6 +7,7 @@ import type { MondayCalendarItem } from '../../../../shared/monday-calendar-type
 import { describeMondayFailure } from './monday-failure-copy'
 import { formatMondayDateRange } from './monday-date-range-format'
 import { CalendarIconAction } from '../calendar/CalendarIconAction'
+import { canDetachPages } from '../detached-pages/detached-page-location'
 import {
   buildMondayClaudePrompt,
   type MondayClaudeAction,
@@ -98,30 +99,77 @@ function ItemDiscussion(props: {
   )
 }
 
+/** Facts, links and the update thread; shared by the side panel and the task window. */
+export function MondayItemDetails(props: {
+  item: MondayCalendarItem
+  ownerNames: readonly string[]
+}): React.JSX.Element {
+  const { item } = props
+  const buildPrompt = (action: MondayClaudeAction, focus?: MondayPromptFocus): string =>
+    buildMondayClaudePrompt({ item, action, focus })
+  return (
+    <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
+      <div className="space-y-3 border-b border-border px-4 py-4">
+        <ItemFacts item={item} ownerNames={props.ownerNames} />
+        <div className="grid grid-cols-2 gap-2">
+          <Button type="button" size="sm" onClick={() => void window.api.shell.openUrl(item.url)}>
+            <ExternalLink className="size-3.5" />
+            {translate('auto.components.mondayCalendar.item.open', 'Open in Monday')}
+          </Button>
+          <MondayClaudePromptPicker buildPrompt={buildPrompt}>
+            <Button type="button" size="sm" variant="outline">
+              <AgentIcon agent="claude" size={14} />
+              {translate('auto.components.mondayCalendar.claude.askTask', 'Ask Claude')}
+            </Button>
+          </MondayClaudePromptPicker>
+        </div>
+      </div>
+      <ItemDiscussion key={item.id} itemId={item.id} buildPrompt={buildPrompt} />
+    </div>
+  )
+}
+
+export function MondayItemHeading(props: { item: MondayCalendarItem }): React.JSX.Element {
+  return (
+    <div className="min-w-0 flex-1 space-y-0.5 py-1">
+      <h2 className="text-sm font-semibold leading-snug">{props.item.name}</h2>
+      {props.item.parentItemName ? (
+        <p className="text-xs text-muted-foreground">
+          {translate('auto.components.mondayCalendar.item.subitemOf', 'Subitem of {{value0}}', {
+            value0: props.item.parentItemName
+          })}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
 export function MondayItemPanel(props: {
   item: MondayCalendarItem
   ownerNames: readonly string[]
   onClose: () => void
 }): React.JSX.Element {
   const { item } = props
-  const buildPrompt = (action: MondayClaudeAction, focus?: MondayPromptFocus): string =>
-    buildMondayClaudePrompt({ item, action, focus })
   return (
     <aside
       aria-label={item.name}
       className="mr-3 mb-3 flex w-[440px] max-w-[45%] shrink-0 flex-col overflow-hidden rounded-lg border border-border bg-background md:mr-5"
     >
       <header className="flex shrink-0 items-start gap-1 border-b border-border py-2.5 pr-2 pl-4">
-        <div className="min-w-0 flex-1 space-y-0.5 py-1">
-          <h2 className="text-sm font-semibold leading-snug">{item.name}</h2>
-          {item.parentItemName ? (
-            <p className="text-xs text-muted-foreground">
-              {translate('auto.components.mondayCalendar.item.subitemOf', 'Subitem of {{value0}}', {
-                value0: item.parentItemName
-              })}
-            </p>
-          ) : null}
-        </div>
+        <MondayItemHeading item={item} />
+        {canDetachPages() ? (
+          <CalendarIconAction
+            label={translate('auto.components.detachedPages.openWindow', 'Open in separate window')}
+            onClick={() =>
+              void window.api.detachedPages.showMondayTask(
+                { item, ownerNames: [...props.ownerNames] },
+                { open: true }
+              )
+            }
+          >
+            <SquareArrowOutUpRight />
+          </CalendarIconAction>
+        ) : null}
         <CalendarIconAction
           label={translate('auto.components.mondayCalendar.panel.close', 'Close')}
           onClick={props.onClose}
@@ -129,24 +177,7 @@ export function MondayItemPanel(props: {
           <X />
         </CalendarIconAction>
       </header>
-      <div className="scrollbar-sleek min-h-0 flex-1 overflow-y-auto">
-        <div className="space-y-3 border-b border-border px-4 py-4">
-          <ItemFacts item={item} ownerNames={props.ownerNames} />
-          <div className="grid grid-cols-2 gap-2">
-            <Button type="button" size="sm" onClick={() => void window.api.shell.openUrl(item.url)}>
-              <ExternalLink className="size-3.5" />
-              {translate('auto.components.mondayCalendar.item.open', 'Open in Monday')}
-            </Button>
-            <MondayClaudePromptPicker buildPrompt={buildPrompt}>
-              <Button type="button" size="sm" variant="outline">
-                <AgentIcon agent="claude" size={14} />
-                {translate('auto.components.mondayCalendar.claude.askTask', 'Ask Claude')}
-              </Button>
-            </MondayClaudePromptPicker>
-          </div>
-        </div>
-        <ItemDiscussion key={item.id} itemId={item.id} buildPrompt={buildPrompt} />
-      </div>
+      <MondayItemDetails item={item} ownerNames={props.ownerNames} />
     </aside>
   )
 }

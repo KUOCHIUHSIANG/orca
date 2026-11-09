@@ -19,9 +19,6 @@ import { registerHostedReviewHandlers } from '../source-control/hosted-review'
 import { registerLinearHandlers } from '../linear/register-handlers'
 import { registerJiraHandlers } from '../jira/register-handlers'
 import { registerJiraIssueSummaryGenerationHandlers } from '../jira/issue-summary-generation'
-import { registerMondayHandlers } from '../monday'
-import { registerMicrosoftTodoHandlers } from '../microsoft-todo'
-import { registerServerFilesHandlers } from '../../server-files/server-files-ipc'
 import { registerBitbucketHandlers } from '../source-control/bitbucket'
 import { registerFeedbackHandlers } from '../feedback'
 import { registerCrashReportingHandlers } from '../crash-reporting/crash-reporting'
@@ -87,7 +84,7 @@ import {
   registerClipboardHandlers,
   setTrustedClipboardRendererWebContentsId
 } from '../../window/clipboard-ipc-handlers'
-import { isDashboardPopoutRenderer } from '../../window/dashboard-popout-window'
+import { isCompanionPageRenderer } from '../../window/companion-window-renderers'
 import type { ClaudeUsageStore } from '../../claude-usage/store'
 import type { CodexUsageStore } from '../../codex-usage/store'
 import type { OpenCodeUsageStore } from '../../opencode-usage/store'
@@ -208,9 +205,6 @@ export function registerCoreHandlers(
   registerLinearHandlers()
   registerJiraHandlers()
   registerJiraIssueSummaryGenerationHandlers(store, commitMessageAgentEnv)
-  registerMondayHandlers()
-  registerMicrosoftTodoHandlers()
-  registerServerFilesHandlers()
   registerBitbucketHandlers()
   registerFeedbackHandlers()
   if (crashReports) {
@@ -255,7 +249,7 @@ export function registerCoreHandlers(
   registerShellHandlers(store)
   registerPetHandlers()
   registerSessionHandlers(store, runtime)
-  registerUIHandlers(store, { isDashboardPopoutRenderer })
+  registerUIHandlers(store, { isDashboardPopoutRenderer: isCompanionPageRenderer })
   registerEmulatorFrameStreamHandlers()
   registerEmulatorVideoStreamHandlers()
   registerEmulatorScrcpyTouchHandler()

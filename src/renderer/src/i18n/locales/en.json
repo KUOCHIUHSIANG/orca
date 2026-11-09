@@ -2499,6 +2499,16 @@
           "important": "Important"
         }
       },
+      "detachedPages": {
+        "openWindow": "Open in separate window",
+        "dock": "Move back to main window",
+        "placeholder": "{{value0}} is open in a separate window.",
+        "showWindow": "Show window",
+        "dockHere": "Move back here",
+        "mondayTaskEmpty": "Pick a task in the Monday calendar to show it here.",
+        "errorTitle": "This window hit an error.",
+        "errorDescription": "Retry, or close the window and open the page again."
+      },
       "mondayCalendar": {
         "holidays": {
           "makeupWorkday": "Make-up workday",

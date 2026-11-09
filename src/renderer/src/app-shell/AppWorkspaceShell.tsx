@@ -10,6 +10,8 @@ import RightSidebar from '../components/right-sidebar/index'
 import { RecoverableRenderErrorBoundary } from '../components/error-boundaries/RecoverableRenderErrorBoundary'
 import { FloatingTerminalToggleButton } from '../components/floating-terminal/FloatingTerminalToggleButton'
 import { TerminalWorkbenchContainer } from '../components/TerminalWorkbenchContainer'
+import { DetachedPageGate } from '../components/detached-pages/DetachedPageGate'
+import { DetachedPagesMainWindowHost } from '../components/detached-pages/DetachedPagesMainWindowHost'
 import type { VirtualizedScrollAnchor } from '../hooks/useVirtualizedScrollAnchor'
 import { TitlebarLeftControls } from './TitlebarLeftControls'
 import { RightSidebarToggle, TitlebarMainStrip } from './TitlebarMainStrip'
@@ -102,9 +104,21 @@ function ActivePage({ layout }: { layout: AppChromeLayout }): React.JSX.Element 
       {activeView === 'activity' ? <ActivityPrototypePage /> : null}
       {activeView === 'space' ? <WorkspaceSpacePage /> : null}
       {activeView === 'mobile' ? <MobilePage /> : null}
-      {activeView === 'monday' ? <MondayCalendarPage /> : null}
-      {activeView === 'todo' ? <TodoCalendarPage /> : null}
-      {activeView === 'servers' ? <ServerFilesPage /> : null}
+      {activeView === 'monday' ? (
+        <DetachedPageGate page="monday">
+          <MondayCalendarPage />
+        </DetachedPageGate>
+      ) : null}
+      {activeView === 'todo' ? (
+        <DetachedPageGate page="todo">
+          <TodoCalendarPage />
+        </DetachedPageGate>
+      ) : null}
+      {activeView === 'servers' ? (
+        <DetachedPageGate page="servers">
+          <ServerFilesPage />
+        </DetachedPageGate>
+      ) : null}
       {activeView === 'terminal' && creationLayoutActive && activePendingCreationId ? (
         <PendingCreationSurface
           creationId={activePendingCreationId}
@@ -150,6 +164,7 @@ export function AppWorkspaceShell(props: {
         'The app is still running. Retry the shell or use the menu to report the crash details.'
       )}
     >
+      <DetachedPagesMainWindowHost />
       <div className="flex flex-row flex-1 min-h-0 overflow-hidden">
         {/* Keep the non-workspace titlebar from spanning the right sidebar. */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">

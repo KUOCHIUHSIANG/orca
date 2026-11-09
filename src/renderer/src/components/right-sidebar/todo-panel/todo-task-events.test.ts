@@ -34,4 +34,36 @@ describe('todo task events', () => {
     expect(panelListener).toHaveBeenCalledTimes(1)
     stopCalendar()
   })
+
+  it('carries writes to and from views in another Orca window', () => {
+    let fromOtherWindow: ((message: { topic: string; payload: unknown }) => void) | null = null
+    const broadcast = vi.fn(() => Promise.resolve())
+    vi.stubGlobal('window', {
+      location: { pathname: '/index.html' },
+      api: {
+        detachedPages: {
+          broadcast,
+          onBroadcast: (callback: typeof fromOtherWindow) => {
+            fromOtherWindow = callback
+            return () => {}
+          }
+        }
+      }
+    })
+    const panel = Symbol('panel')
+    const listener = vi.fn()
+    const stop = subscribeTodoTaskEvents(panel, listener)
+
+    publishTodoTaskEvent(panel, { type: 'changed', task })
+    expect(broadcast).toHaveBeenCalledWith('todo-task', { type: 'changed', task })
+    expect(listener).not.toHaveBeenCalled()
+
+    fromOtherWindow!({ topic: 'todo-task', payload: { type: 'removed', task } })
+    fromOtherWindow!({ topic: 'todo-task', payload: { type: 'removed', task: { id: 7 } } })
+    expect(listener).toHaveBeenCalledTimes(1)
+    expect(listener).toHaveBeenCalledWith({ type: 'removed', task })
+
+    stop()
+    vi.unstubAllGlobals()
+  })
 })

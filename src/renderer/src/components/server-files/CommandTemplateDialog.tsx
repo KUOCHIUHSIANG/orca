@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { TriangleAlert } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -32,7 +32,8 @@ import { useRedirectTargetCheck } from './use-redirect-target-check'
 import {
   openServerTerminal,
   serverTerminalTabs,
-  typeIntoServerTerminal
+  typeIntoServerTerminal,
+  type ServerTerminalTab
 } from './server-files-terminal'
 
 export type TemplateRequest = {
@@ -82,10 +83,23 @@ function initialValues(request: TemplateRequest): CommandTemplateValues {
 function TemplateBody(props: { request: TemplateRequest; onClose: () => void }): React.JSX.Element {
   const { request, onClose } = props
   const fields = useMemo(() => commandTemplateFields(request.template.command), [request])
-  const terminals = useMemo(() => serverTerminalTabs(request.serverId), [request])
+  const [terminals, setTerminals] = useState<ServerTerminalTab[]>([])
   const [values, setValues] = useState(() => initialValues(request))
   const [edited, setEdited] = useState<string | null>(null)
-  const [target, setTarget] = useState(() => terminals.at(-1)?.tabId ?? NEW_TERMINAL)
+  const [target, setTarget] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    void serverTerminalTabs(request.serverId).then((tabs) => {
+      if (!cancelled) {
+        setTerminals(tabs)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [request])
+  // Why: the list can arrive after the first paint (from the main window); default to the newest.
+  const selectedTarget = target ?? terminals.at(-1)?.tabId ?? NEW_TERMINAL
 
   const command = edited ?? renderCommandTemplate(request.template.command, values)
   const overwriteWarning = useRedirectTargetCheck(request.serverId, command, request.homePath)
@@ -96,10 +110,13 @@ function TemplateBody(props: { request: TemplateRequest; onClose: () => void }):
     }
     localStorage.setItem(rememberedKey(request.serverId), JSON.stringify(values))
     onClose()
-    if (target !== NEW_TERMINAL && (await typeIntoServerTerminal(target, command))) {
+    if (
+      selectedTarget !== NEW_TERMINAL &&
+      (await typeIntoServerTerminal(selectedTarget, command))
+    ) {
       return
     }
-    if (target !== NEW_TERMINAL) {
+    if (selectedTarget !== NEW_TERMINAL) {
       toast(
         translate(
           'auto.components.serverFiles.template.terminalGone',
@@ -166,7 +183,7 @@ function TemplateBody(props: { request: TemplateRequest; onClose: () => void }):
       </div>
       <div className="space-y-2">
         <Label>{translate('auto.components.serverFiles.template.sendTo', 'Type into')}</Label>
-        <Select value={target} onValueChange={setTarget}>
+        <Select value={selectedTarget} onValueChange={setTarget}>
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>

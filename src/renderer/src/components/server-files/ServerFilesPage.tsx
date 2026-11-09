@@ -10,6 +10,7 @@ import { ServerListPanel } from './ServerListPanel'
 import { ServerProfileDialog, type ProfileDialogRequest } from './ServerProfileDialog'
 import { ServerWorkspace } from './ServerWorkspace'
 import { isWebClientLocation } from '@/lib/web-client-location'
+import { DetachedPageHeaderAction } from '../detached-pages/DetachedPageHeaderAction'
 
 function useJobProgress(): void {
   useEffect(
@@ -50,6 +51,7 @@ function ServerFilesPageBody(): React.JSX.Element {
         <h1 className="truncate text-base font-semibold leading-8">
           {translate('auto.components.sidebar.SidebarNav.servers', 'Servers')}
         </h1>
+        <DetachedPageHeaderAction page="servers" />
       </header>
       <div className="flex min-h-0 flex-1 border-t border-border">
         <ServerListPanel

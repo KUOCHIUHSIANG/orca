@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import type { z } from 'zod'
-import { getCurrentMainWindow } from '../ipc/ssh/ssh-ipc-context'
+import { serverFilesHostWindow } from './server-files-host-window'
 import type { JobProgress, ServerFilesResult } from '../../shared/server-files-types'
 import { toServerFilesError } from './server-files-errors'
 
@@ -25,7 +25,7 @@ export function handleServerFiles<S extends z.ZodType, R>(
 }
 
 export function emitServerFilesProgress(progress: JobProgress): void {
-  const win = getCurrentMainWindow()
+  const win = serverFilesHostWindow()
   if (win && !win.isDestroyed()) {
     win.webContents.send('serverFiles:progress', progress)
   }

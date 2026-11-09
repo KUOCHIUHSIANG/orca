@@ -7,6 +7,7 @@ import { resolveStartupShell } from '../../../../shared/tui-agent-startup-shell'
 import { errorSummary } from './server-files-messages'
 import { profileById, useServerFilesStore } from './server-files-store'
 import { createBrowserUuid } from '@/lib/browser-uuid'
+import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
 
 function localShell(): 'posix' | 'powershell' {
   return resolveStartupShell(navigator.userAgent.includes('Windows') ? 'win32' : 'darwin') ===
@@ -27,6 +28,21 @@ export async function openServerTerminal(
   cwd: string,
   prefill?: { command: string }
 ): Promise<boolean> {
+  if (isDetachedPageWindow()) {
+    // The floating terminal lives in the main window; it opens there and comes forward.
+    return window.api.detachedPages
+      .callMainWindow({
+        action: 'openServerTerminal',
+        serverId,
+        cwd,
+        ...(prefill ? { prefill } : {})
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to open the server terminal in the main window:', error)
+        toast.error(errorSummary({ code: 'failure', message: '' }))
+        return false
+      })
+  }
   const app = useAppStore.getState()
   if (!app.settings?.floatingTerminalEnabled) {
     toast.error(
@@ -78,7 +94,12 @@ export async function openServerTerminal(
 export type ServerTerminalTab = { tabId: string; title: string }
 
 /** Floating tabs this page opened for `serverId` that are still open. */
-export function serverTerminalTabs(serverId: string): ServerTerminalTab[] {
+export async function serverTerminalTabs(serverId: string): Promise<ServerTerminalTab[]> {
+  if (isDetachedPageWindow()) {
+    return window.api.detachedPages
+      .callMainWindow({ action: 'serverTerminalTabs', serverId })
+      .catch(() => [])
+  }
   const mapping = useServerFilesStore.getState().terminalTabs
   const tabs = useAppStore.getState().tabsByWorktree[FLOATING_TERMINAL_WORKTREE_ID] ?? []
   return tabs
@@ -91,6 +112,11 @@ export function serverTerminalTabs(serverId: string): ServerTerminalTab[] {
  * foreground, so a command meant for the server can't land in a local shell after `exit`.
  */
 export async function typeIntoServerTerminal(tabId: string, text: string): Promise<boolean> {
+  if (isDetachedPageWindow()) {
+    return window.api.detachedPages
+      .callMainWindow({ action: 'typeIntoServerTerminal', tabId, text })
+      .catch(() => false)
+  }
   const ptyId = useAppStore.getState().ptyIdsByTabId[tabId]?.[0]
   if (!ptyId) {
     return false

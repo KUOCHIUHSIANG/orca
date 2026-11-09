@@ -311,6 +311,7 @@ export const electronViteConfig: UserConfig = {
           index: resolve('src/renderer/index.html'),
           popout: resolve('src/renderer/popout.html'),
           space: resolve('src/renderer/space.html'),
+          'detached-page': resolve('src/renderer/detached-page.html'),
           web: resolve('src/renderer/web-index.html')
         }
       }
