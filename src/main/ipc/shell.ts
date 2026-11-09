@@ -38,7 +38,7 @@ import {
 } from './shell-owned-path-target'
 import { inspectLinkedFile } from './linked-file-inspection'
 import { registerShellPathExistenceHandlers } from './shell-path-existence-handlers'
-import { openExternalUrlInLastUsedProfile } from '../external-link-chromium-profile'
+import { openExternalUrlInFrontBrowserWindow } from '../external-link-chromium-front-window'
 
 export { EXTERNAL_EDITOR_CLI_COMMAND }
 
@@ -187,7 +187,7 @@ export function registerShellHandlers(
       return
     }
 
-    return openExternalUrlInLastUsedProfile(parsed.toString())
+    return openExternalUrlInFrontBrowserWindow(parsed.toString())
   })
 
   ipcMain.handle(
