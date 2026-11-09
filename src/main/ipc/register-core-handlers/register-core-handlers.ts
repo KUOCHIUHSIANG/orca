@@ -18,9 +18,6 @@ import { registerHostedReviewHandlers } from '../source-control/hosted-review'
 import { registerLinearHandlers } from '../linear/register-handlers'
 import { registerJiraHandlers } from '../jira/register-handlers'
 import { registerJiraIssueSummaryGenerationHandlers } from '../jira/issue-summary-generation'
-import { registerMondayHandlers } from '../monday'
-import { registerMicrosoftTodoHandlers } from '../microsoft-todo'
-import { registerServerFilesHandlers } from '../../server-files/server-files-ipc'
 import { registerBitbucketHandlers } from '../source-control/bitbucket'
 import { registerFeedbackHandlers } from '../feedback'
 import { registerCrashReportingHandlers } from '../crash-reporting/crash-reporting'
@@ -80,7 +77,7 @@ import { registerCursorAccountHandlers } from '../cursor-accounts'
 import { registerUpdaterHandlers } from '../../updater/lifecycle/main-window-updater'
 import { registerClipboardHandlers } from '../../window/clipboard/clipboard-ipc-handlers'
 import { setTrustedClipboardRendererWebContentsId } from '../../window/clipboard/clipboard-ipc-sender-trust'
-import { isDashboardPopoutRenderer } from '../../window/dashboard-popout-window'
+import { isCompanionPageRenderer } from '../../window/companion-window-renderers'
 import type { RateLimitService } from '../../rate-limits/service/rate-limit-service'
 import type { CodexAccountService } from '../../codex-accounts/service'
 import type { ClaudeAccountService } from '../../claude-accounts/service'
@@ -162,9 +159,6 @@ export async function registerCoreHandlers(
     registerLinearHandlers()
     registerJiraHandlers()
     registerJiraIssueSummaryGenerationHandlers(store, commitMessageAgentEnv)
-    registerMondayHandlers()
-    registerMicrosoftTodoHandlers()
-    registerServerFilesHandlers()
     registerBitbucketHandlers()
     registerFeedbackHandlers()
     if (crashReports) {
@@ -209,7 +203,7 @@ export async function registerCoreHandlers(
     registerShellHandlers(store)
     registerPetHandlers()
     registerSessionHandlers(store, runtime)
-    registerUIHandlers(store, { isDashboardPopoutRenderer })
+    registerUIHandlers(store, { isDashboardPopoutRenderer: isCompanionPageRenderer })
     registerEmulatorFrameStreamHandlers()
     registerEmulatorVideoStreamHandlers((id) =>
       runtime.getEmulatorBridge()?.getIosVideoStreamUrl(id)

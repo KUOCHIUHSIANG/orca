@@ -8,6 +8,7 @@ import { focusTerminalTabSurface } from '@/lib/focus-terminal-tab-surface'
 import { launchAgentInNewTab } from '@/lib/launch-agent-in-new-tab'
 import { activateAndRevealWorkspace } from '@/lib/worktree-activation'
 import { isTuiAgentEnabled } from '../../../../shared/tui-agent-selection'
+import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
 
 export async function copyMondayPrompt(prompt: string): Promise<boolean> {
   try {
@@ -24,6 +25,20 @@ export async function copyMondayPrompt(prompt: string): Promise<boolean> {
 
 /** Switches to the workspace and opens a new Claude tab with the prompt typed in but not sent. */
 export async function openMondayPromptInClaude(workspaceId: string, prompt: string): Promise<void> {
+  if (isDetachedPageWindow()) {
+    // Projects and tabs live in the main window; it opens Claude there and comes forward.
+    await window.api.detachedPages
+      .callMainWindow({ action: 'openPromptInClaude', workspaceId, prompt })
+      .catch(() => {
+        toast.error(
+          translate(
+            'auto.components.mondayCalendar.claude.launchFailed',
+            'Could not open Claude in this project.'
+          )
+        )
+      })
+    return
+  }
   await copyMondayPrompt(prompt)
   const detectedAgents = await ensureDetectedAgentsForWorktree(useAppStore.getState(), workspaceId)
   const disabledAgents = useAppStore.getState().settings?.disabledTuiAgents

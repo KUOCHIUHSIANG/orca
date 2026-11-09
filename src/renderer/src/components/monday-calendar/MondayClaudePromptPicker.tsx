@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Copy, Folder, GitBranch } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -15,9 +15,10 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
-import { getFolderWorkspaceWorktree } from '@/store/workspace-record-selectors'
-import type { Worktree } from '../../../../shared/worktree/types'
+import type { DetachedWorkspaceGroup } from '../../../../shared/detached-pages'
+import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
 import { copyMondayPrompt, openMondayPromptInClaude } from './monday-claude-launch'
+import { openWorkspaceGroups } from './monday-claude-workspace-groups'
 import type { MondayClaudeAction } from './monday-claude-prompt'
 
 const LAST_WORKSPACE_KEY = 'orca.mondayCalendar.claudePromptWorkspaceId'
@@ -35,32 +36,35 @@ function actionLabel(action: MondayClaudeAction): string {
     : translate('auto.components.mondayCalendar.claude.reply', 'Understand & reply')
 }
 
-type WorkspaceGroup = {
-  id: string
-  /** null labels the folder workspaces group. */
-  repoName: string | null
-  workspaces: Worktree[]
-}
-
-function useOpenWorkspaceGroups(): WorkspaceGroup[] {
+function useOpenWorkspaceGroups(pickerOpen: boolean): DetachedWorkspaceGroup[] {
   const repos = useAppStore((state) => state.repos)
   const worktreesByRepo = useAppStore((state) => state.worktreesByRepo)
   const folderWorkspaces = useAppStore((state) => state.folderWorkspaces)
-  return useMemo(() => {
-    const groups: WorkspaceGroup[] = repos.map((repo) => ({
-      id: repo.id,
-      repoName: repo.displayName,
-      workspaces: (worktreesByRepo[repo.id] ?? []).filter((worktree) => !worktree.isArchived)
-    }))
-    groups.push({
-      id: 'folders',
-      repoName: null,
-      workspaces: folderWorkspaces
-        .filter((folder) => !folder.isArchived)
-        .map((folder) => getFolderWorkspaceWorktree(folder))
-    })
-    return groups.filter((group) => group.workspaces.length > 0)
-  }, [folderWorkspaces, repos, worktreesByRepo])
+  const local = useMemo(
+    () => openWorkspaceGroups({ repos, worktreesByRepo, folderWorkspaces }),
+    [folderWorkspaces, repos, worktreesByRepo]
+  )
+  const detached = isDetachedPageWindow()
+  const [fromMainWindow, setFromMainWindow] = useState<DetachedWorkspaceGroup[]>([])
+  useEffect(() => {
+    if (!detached || !pickerOpen) {
+      return
+    }
+    let cancelled = false
+    // This window's store holds no projects; ask the main window each time the picker opens.
+    void window.api.detachedPages
+      .callMainWindow({ action: 'workspaceGroups' })
+      .then((groups) => {
+        if (!cancelled) {
+          setFromMainWindow(groups)
+        }
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [detached, pickerOpen])
+  return detached ? fromMainWindow : local
 }
 
 /** Picks what Claude should do and an open project, then opens Claude there with the prompt typed in. */
@@ -74,7 +78,7 @@ export function MondayClaudePromptPicker(props: {
   const [lastWorkspaceId, setLastWorkspaceId] = useState<string | null>(null)
   const [action, setAction] = useState<MondayClaudeAction>(readSavedAction)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
-  const groups = useOpenWorkspaceGroups()
+  const groups = useOpenWorkspaceGroups(open)
   const foldersLabel = translate('auto.components.mondayCalendar.claude.folders', 'Folders')
 
   const handleOpenChange = (nextOpen: boolean): void => {

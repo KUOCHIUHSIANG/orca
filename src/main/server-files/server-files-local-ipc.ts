@@ -1,5 +1,5 @@
 import { app, dialog, shell, type OpenDialogOptions } from 'electron'
-import { getCurrentMainWindow } from '../ipc/ssh/ssh-ipc-context'
+import { serverFilesHostWindow } from './server-files-host-window'
 import { handleServerFiles } from './server-files-ipc-handle'
 import { LocalPathOnlySchema, NoArgsSchema, PickLocalSchema } from './server-files-schemas'
 
@@ -15,7 +15,7 @@ export function registerServerFilesLocalHandlers(): void {
       properties: PICKER_PROPERTIES[kind],
       ...(defaultPath ? { defaultPath } : {})
     }
-    const win = getCurrentMainWindow()
+    const win = serverFilesHostWindow()
     const result = win
       ? await dialog.showOpenDialog(win, options)
       : await dialog.showOpenDialog(options)

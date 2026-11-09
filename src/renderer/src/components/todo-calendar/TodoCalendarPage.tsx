@@ -27,6 +27,7 @@ import {
   type TodoCalendarView
 } from './todo-calendar-model'
 import { useTodoCalendar } from './use-todo-calendar'
+import { DetachedPageHeaderAction } from '../detached-pages/DetachedPageHeaderAction'
 
 // Why: the list filter outlives a visit to another page; the view always reopens on this week.
 let rememberedListIds: string[] | null = null
@@ -165,6 +166,7 @@ export default function TodoCalendarPage(): React.JSX.Element {
             onRefresh={() => void todo.refresh()}
           />
         ) : null}
+        <DetachedPageHeaderAction page="todo" />
       </header>
       {todo.error ? (
         <TodoFailureBanner
