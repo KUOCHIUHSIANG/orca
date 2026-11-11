@@ -7,7 +7,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger
 } from '@/components/ui/dropdown-menu'
-import { activateTabAndFocusPane } from '@/lib/activate-tab-and-focus-pane'
+import { activateTabAndFocusPane } from '@/lib/workspace/tabs/activate-tab-and-focus-pane'
 import { groupRunConfigurationsForMenu } from '@/lib/run-configuration-menu'
 import type { RunTab } from '@/lib/run-configuration-tabs'
 import type { RunConfiguration } from '../../../../shared/run-configuration-types'

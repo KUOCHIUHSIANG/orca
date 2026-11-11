@@ -28,7 +28,7 @@ import type { ActivePluginCustomEditor } from '@/store/plugins/file-editors/plug
 import { PluginEditorSourceFallbackNotice } from './PluginEditorNeedsDesktopNotice'
 import PluginCustomEditorFrame from './PluginCustomEditorFrame'
 import PluginBytesCustomEditorSurface from './PluginBytesCustomEditorSurface'
-import { canUseChangesModeForFile } from './editor-panel-file-mode'
+import { canUseChangesModeForFile } from './view-mode/editor-panel-file-mode'
 
 // Retry is a user act: it may start a stopped WSL distro.
 const USER_RETRY = { wakeWslDistro: true }

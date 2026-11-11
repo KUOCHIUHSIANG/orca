@@ -1,6 +1,6 @@
 import { useAppStore } from '@/store'
 import { requireRuntimeTargetForFileOwner } from '@/lib/file-owner-runtime-target'
-import type { RuntimeGitContext } from '@/runtime/runtime-git-client-context'
+import type { RuntimeGitContext } from '@/runtime/source-control/git/runtime-git-client-context'
 
 /** Where a blamed editor file lives; every git read for its blame routes through this. */
 export type InlineBlameFile = {

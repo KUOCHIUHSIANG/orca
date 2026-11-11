@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { getConnectionId } from '@/lib/connection-context'
-import { commitRuntimeGit } from '@/runtime/runtime-git-sync-client'
+import { getConnectionId } from '@/lib/workspace/ownership/connection-context'
+import { commitRuntimeGit } from '@/runtime/source-control/git/runtime-git-sync-client'
 import {
   bulkStageRuntimeGitPaths,
   bulkUnstageRuntimeGitPaths
-} from '@/runtime/runtime-git-working-tree-client'
-import { resolveCommitDisabledReason } from '../../../../../shared/source-control-commit-eligibility'
+} from '@/runtime/source-control/git/runtime-git-working-tree-client'
+import { resolveCommitDisabledReason } from '../../../../../shared/source-control/decisions/source-control-commit-eligibility'
 import {
   buildGitChangeRows,
   stagedPathsForUnstage,

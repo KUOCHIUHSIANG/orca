@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { buildServerCopyCommand, withStableLocale } from '../../shared/server-files-copy-command'
-import { wrapRemoteCommandForPosixShell } from '../ssh/ssh-posix-command-wrapper'
+import { wrapRemoteCommandForPosixShell } from '../ssh/remote-exec/ssh-posix-command-wrapper'
 
 // Names a project or backup folder could plausibly (or maliciously) carry.
 const HOSTILE_NAMES = [

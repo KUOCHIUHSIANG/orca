@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { editor, IPosition } from 'monaco-editor'
-import { monaco } from '@/lib/monaco-setup'
+import { monaco } from '@/lib/editor/monaco/monaco-setup'
 
 // Below this the truncated annotation is mostly an ellipsis, so hide it instead.
 const MIN_ANNOTATION_WIDTH = 96

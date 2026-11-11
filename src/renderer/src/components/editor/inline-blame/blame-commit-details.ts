@@ -1,11 +1,11 @@
 import {
   getRuntimeGitBlameSubmoduleCommit,
   getRuntimeGitCommitDiff
-} from '@/runtime/runtime-git-diff-client'
-import { getRuntimeGitHistory } from '@/runtime/runtime-git-status-client'
-import { getRuntimeGitRemoteCommitUrl } from '@/runtime/runtime-git-working-tree-client'
+} from '@/runtime/source-control/git/runtime-git-diff-client'
+import { getRuntimeGitHistory } from '@/runtime/source-control/git/runtime-git-status-client'
+import { getRuntimeGitRemoteCommitUrl } from '@/runtime/source-control/git/runtime-git-working-tree-client'
 import type { GitBlameCommit, GitBlameSubmoduleCommit } from '../../../../../shared/git-blame'
-import type { GitDiffResult } from '../../../../../shared/git-diff-compare-types'
+import type { GitDiffResult } from '../../../../../shared/git/diff/git-diff-compare-types'
 import { findBlameLineHunk, type BlameHunk } from './blame-line-hunk'
 import {
   blameFileScopeKey,

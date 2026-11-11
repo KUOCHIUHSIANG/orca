@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { writeFileAtomically } from '../codex-accounts/fs-utils'
+import { writeFileAtomically } from '../filesystem/atomic-file-publication'
 import { isDetachedPage, isRecord, type DetachedPage } from '../../shared/detached-pages'
 import type { WindowRect } from './window-bounds-validation'
 

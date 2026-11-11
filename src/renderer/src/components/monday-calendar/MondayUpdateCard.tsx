@@ -1,7 +1,7 @@
 import { Paperclip } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { translate } from '@/i18n/i18n'
-import { AgentIcon } from '@/lib/agent-catalog'
+import { AgentIcon } from '@/components/agent/icons/AgentIcon'
 import { formatUiRelativeTimeFromDate } from '@/i18n/relative-time-format'
 import type { MondayUpdate, MondayUpdateEntry } from '../../../../shared/monday-calendar-types'
 import { formatMondayEntryTime } from './monday-date-range-format'

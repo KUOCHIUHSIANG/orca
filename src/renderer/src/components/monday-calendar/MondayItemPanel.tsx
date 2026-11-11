@@ -2,7 +2,7 @@ import { ExternalLink, LoaderCircle, RefreshCw, SquareArrowOutUpRight, X } from 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { translate } from '@/i18n/i18n'
-import { AgentIcon } from '@/lib/agent-catalog'
+import { AgentIcon } from '@/components/agent/icons/AgentIcon'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
 import { describeMondayFailure } from './monday-failure-copy'
 import { formatMondayDateRange } from './monday-date-range-format'

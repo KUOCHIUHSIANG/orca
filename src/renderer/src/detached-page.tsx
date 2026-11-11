@@ -10,7 +10,7 @@ import { RecoverableRenderErrorBoundary } from './components/error-boundaries/Re
 import { applyDocumentTheme } from './lib/document-theme'
 import { resolvePaintedTheme } from './lib/terminal-app-theme'
 import { buildAppFontFamily } from './lib/app-font-family'
-import { applyCodeFontSmoothing } from './lib/code-font-smoothing'
+import { applyCodeFontSmoothing } from './lib/editor/appearance/code-font-smoothing'
 import { getOrCreateRendererRoot } from './lib/react-renderer-root'
 import { installOsFileDropCancellationGuard } from './lib/os-file-drop-cancellation-guard'
 import { installBodyOverlayAttributes } from './lib/body-overlay-attributes'

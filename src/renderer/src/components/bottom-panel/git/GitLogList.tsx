@@ -3,13 +3,16 @@ import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu'
 import { cn } from '@/lib/utils'
-import { GIT_HISTORY_MAX_LIMIT, type GitHistoryItem } from '../../../../../shared/git-history'
+import {
+  GIT_HISTORY_MAX_LIMIT,
+  type GitHistoryItem
+} from '../../../../../shared/git/history/git-history-types'
 import {
   buildDefaultGitHistoryColorMap,
   buildGitHistoryViewModels,
   type GitHistoryItemViewModel
-} from '../../../../../shared/git-history-graph'
-import { dedupeRemoteTrackingRefs } from '../../../../../shared/git-history-ref-display'
+} from '../../../../../shared/git/history/git-history-graph'
+import { dedupeRemoteTrackingRefs } from '../../../../../shared/git/history/git-history-ref-display'
 import { GitHistoryCommitContextMenu } from '../../right-sidebar/source-control/sync/git-history-commit-context-menu'
 import { GitHistoryGraphSvg } from '../../right-sidebar/source-control/sync/git-history-graph-svg'
 import { GitHistoryRefBadge } from '../../right-sidebar/source-control/sync/git-history-row'

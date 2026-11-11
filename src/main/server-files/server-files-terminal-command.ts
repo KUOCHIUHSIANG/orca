@@ -1,10 +1,10 @@
-import { quotePosixShell } from '../../shared/shell-argument-quoting'
+import { quotePosixShell } from '../../shared/shell/launch/shell-argument-quoting'
 import {
   buildShellCommandFromArgv,
   type AgentStartupShell
-} from '../../shared/tui-agent-startup-shell'
+} from '../../shared/agent-launch/startup/tui-agent-startup-shell'
 import type { ServerProfile } from '../../shared/server-files-types'
-import { wrapRemoteCommandForPosixShell } from '../ssh/ssh-posix-command-wrapper'
+import { wrapRemoteCommandForPosixShell } from '../ssh/remote-exec/ssh-posix-command-wrapper'
 
 const POSIX_LOGIN_SHELLS = new Set(['bash', 'zsh', 'sh', 'dash', 'ksh', 'mksh', 'ash', 'yash'])
 

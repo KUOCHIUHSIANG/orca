@@ -1,6 +1,6 @@
 import type { AppState } from '@/store/types'
-import { getFolderWorkspaceWorktree } from '@/store/workspace-record-selectors'
 import type { DetachedWorkspaceGroup } from '../../../../shared/detached-pages'
+import { getFolderWorkspaceWorktree } from '../../../../shared/folder-workspaces/folder-workspace-worktree'
 import type { Worktree } from '../../../../shared/worktree/types'
 
 type WorkspaceSources = Pick<AppState, 'repos' | 'worktreesByRepo' | 'folderWorkspaces'>

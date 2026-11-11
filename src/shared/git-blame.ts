@@ -1,4 +1,4 @@
-import { decodeGitCQuotedPath } from './git-cquoted-path'
+import { decodeGitCQuotedPath } from './git/paths/git-cquoted-path'
 
 /** Git reports lines that differ from HEAD (unsaved buffer or uncommitted edits) as this commit. */
 export const GIT_BLAME_UNCOMMITTED_SHA = '0000000000000000000000000000000000000000'

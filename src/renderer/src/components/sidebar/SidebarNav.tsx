@@ -148,9 +148,7 @@ const SidebarNav = React.memo(function SidebarNav() {
           className={cn('size-4 shrink-0', !mondayActive && 'text-worktree-sidebar-foreground/30')}
           strokeWidth={mondayActive ? 2.25 : 1.75}
         />
-        <span className="flex-1">
-          {translate('auto.components.sidebar.SidebarNav.monday', 'Monday')}
-        </span>
+        <span className="flex-1">{t('auto.components.sidebar.SidebarNav.monday', 'Monday')}</span>
       </button>
       <button
         type="button"
@@ -167,9 +165,7 @@ const SidebarNav = React.memo(function SidebarNav() {
           className={cn('size-4 shrink-0', !todoActive && 'text-worktree-sidebar-foreground/30')}
           strokeWidth={todoActive ? 2.25 : 1.75}
         />
-        <span className="flex-1">
-          {translate('auto.components.sidebar.SidebarNav.todo', 'To Do')}
-        </span>
+        <span className="flex-1">{t('auto.components.sidebar.SidebarNav.todo', 'To Do')}</span>
       </button>
       <ServerFilesSidebarNavEntry />
       {showArtifactsButton ? (

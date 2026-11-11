@@ -34,7 +34,7 @@ import {
 import { emptyWorkspace, useServerFilesStore } from './server-files-store'
 import { TransfersPanel } from './TransfersPanel'
 import { usePaneActions } from './use-pane-actions'
-import { createBrowserUuid } from '@/lib/browser-uuid'
+import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 
 export function serverEndpointText(profile: ServerProfileSummary): string {
   const { endpoint } = profile

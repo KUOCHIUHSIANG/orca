@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import { formatCountLabel } from '../../../../../shared/source-control-dropdown-labels'
+import { formatCountLabel } from '../../../../../shared/source-control/dropdown/source-control-dropdown-labels'
 import { GitBranchSwitcher } from './GitBranchSwitcher'
 import { GitLogRefPicker } from './GitLogRefPicker'
 import { useGitToolWindowState } from './git-tool-window-state'

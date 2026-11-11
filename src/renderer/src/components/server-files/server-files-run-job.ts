@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 import type { JobOutcome, ServerFilesResult } from '../../../../shared/server-files-types'
 import { useServerJobsStore, type ServerJob } from './server-files-jobs-store'
 import { errorSummary } from './server-files-messages'
-import { createBrowserUuid } from '@/lib/browser-uuid'
+import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 
 type JobStart = Pick<
   ServerJob,

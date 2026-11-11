@@ -1,5 +1,5 @@
 import type { Stats } from 'ssh2'
-import { quotePosixShell } from '../../shared/shell-argument-quoting'
+import { quotePosixShell } from '../../shared/shell/launch/shell-argument-quoting'
 import { joinRemotePath } from '../../shared/server-files-paths'
 import type {
   RemoteDirectoryState,

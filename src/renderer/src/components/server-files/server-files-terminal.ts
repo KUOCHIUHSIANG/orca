@@ -3,10 +3,10 @@ import { useAppStore } from '@/store'
 import { translate } from '@/i18n/i18n'
 import { focusTerminalTabSurface } from '@/lib/focus-terminal-tab-surface'
 import { FLOATING_TERMINAL_WORKTREE_ID } from '../../../../shared/constants'
-import { resolveStartupShell } from '../../../../shared/tui-agent-startup-shell'
+import { resolveStartupShell } from '../../../../shared/agent-launch/startup/tui-agent-startup-shell'
 import { errorSummary } from './server-files-messages'
 import { profileById, useServerFilesStore } from './server-files-store'
-import { createBrowserUuid } from '@/lib/browser-uuid'
+import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
 
 function localShell(): 'posix' | 'powershell' {

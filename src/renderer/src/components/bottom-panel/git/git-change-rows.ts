@@ -1,4 +1,4 @@
-import type { GitFileStatus, GitStatusEntry } from '../../../../../shared/git-status-types'
+import type { GitFileStatus, GitStatusEntry } from '../../../../../shared/git/status/git-status-types'
 
 export type GitChangeCheckState = boolean | 'indeterminate'
 

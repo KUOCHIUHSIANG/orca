@@ -1,13 +1,13 @@
 import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { useAppStore } from '@/store'
-import { ensureDetectedAgentsForWorktree } from '@/lib/agent-detection-target-inventory'
-import { newAgentLaunchRequestId } from '@/lib/agent-launch-request-id'
+import { ensureDetectedAgentsForWorktree } from '@/lib/agent-session/launch/inventory/agent-detection-target-inventory'
+import { newAgentLaunchRequestId } from '@/lib/agent-session/launch/routing/agent-launch-request-id'
 import { describeClipboardWriteFailure } from '@/lib/clipboard-write-failure'
 import { focusTerminalTabSurface } from '@/lib/focus-terminal-tab-surface'
-import { launchAgentInNewTab } from '@/lib/launch-agent-in-new-tab'
-import { activateAndRevealWorkspace } from '@/lib/worktree-activation'
-import { isTuiAgentEnabled } from '../../../../shared/tui-agent-selection'
+import { launchAgentInNewTab } from '@/lib/agent-session/launch/new-tab/launch-agent-in-new-tab'
+import { activateAndRevealWorkspace } from '@/lib/workspace/activation/worktree-activation'
+import { isTuiAgentEnabled } from '../../../../shared/agent-launch/catalog/tui-agent-selection'
 import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
 
 export async function copyMondayPrompt(prompt: string): Promise<boolean> {
@@ -76,6 +76,10 @@ export async function openMondayPromptInClaude(workspaceId: string, prompt: stri
         )
       )
     }
+    return
+  }
+  // The launcher already toasted its refusal.
+  if ('refused' in result) {
     return
   }
   if (result.surface.kind === 'local-terminal') {

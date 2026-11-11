@@ -1,15 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type * as AgentStatusModule from '@/lib/agent-status'
+import type * as AgentStatusModule from '@/lib/agent-status/aggregation/worktree-agent-status'
 import type { Tab, TabGroup, TabGroupLayoutNode } from '../../../../../shared/tab-types'
-import { createTabsSliceMockApi } from '../tabs-slice-test-harness'
-import { createTestStore } from '../store-test-helpers'
+import { createTabsSliceMockApi } from './tabs-slice-test-harness'
+import { createTestStore } from '../../testing/app-store-test-fixture'
 import { findDockedGroupId, pickCenterGroupId, withoutDockedGroups } from './tab-group-dock'
-import { workspaceSessionStateSchema } from '../../../../../shared/workspace-session-schema'
-import { buildHydratedTabState } from '../tabs-hydration'
+import { workspaceSessionStateSchema } from '../../../../../shared/workspace-session/workspace-session-schema'
+import { buildHydratedTabState } from './tabs-hydration'
 
 vi.mock('sonner', () => ({ toast: { info: vi.fn(), success: vi.fn(), error: vi.fn() } }))
 
-vi.mock('@/lib/agent-status', async (importOriginal) => {
+vi.mock('@/lib/agent-status/aggregation/worktree-agent-status', async (importOriginal) => {
   const actual = await importOriginal<typeof AgentStatusModule>()
   return { ...actual, detectAgentStatusFromTitle: vi.fn().mockReturnValue(null) }
 })

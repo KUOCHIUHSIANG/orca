@@ -18,7 +18,7 @@ import { ProjectsFields, ProtectedPathsFields, TemplatesFields } from './ServerP
 import { errorSummary } from './server-files-messages'
 import { useServerFilesPrompts } from './server-files-prompts-context'
 import { toProfile } from './server-files-store'
-import { createBrowserUuid } from '@/lib/browser-uuid'
+import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 
 export type ProfileTab = 'connection' | 'protected' | 'projects' | 'templates'
 

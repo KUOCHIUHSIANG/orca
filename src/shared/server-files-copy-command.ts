@@ -1,4 +1,4 @@
-import { quotePosixShell } from './shell-argument-quoting'
+import { quotePosixShell } from './shell/launch/shell-argument-quoting'
 import { remoteParentPath } from './server-files-paths'
 
 export type ServerCopyCommandItem = {

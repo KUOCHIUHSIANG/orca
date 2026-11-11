@@ -9,7 +9,7 @@ import {
   mysqlCallsWithoutPasswordPrompt
 } from '../../../../shared/server-files-command-template'
 import type { ServerProfile, ServerProject } from '../../../../shared/server-files-types'
-import { createBrowserUuid } from '@/lib/browser-uuid'
+import { createNonSecureContextUuid as createBrowserUuid } from '../../../../shared/non-secure-context-uuid'
 
 type FieldsProps = { draft: ServerProfile; onChange: (next: ServerProfile) => void }
 

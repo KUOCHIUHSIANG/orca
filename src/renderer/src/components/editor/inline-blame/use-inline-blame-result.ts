@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { editor } from 'monaco-editor'
 import { useAppStore } from '@/store'
-import { getRuntimeGitBlame } from '@/runtime/runtime-git-diff-client'
+import { getRuntimeGitBlame } from '@/runtime/source-control/git/runtime-git-diff-client'
 import { GIT_BLAME_MAX_CONTENT_LENGTH, type GitBlameResult } from '../../../../../shared/git-blame'
 import { toBlameRuntimeGitContext, type InlineBlameFile } from './inline-blame-file'
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { editor } from 'monaco-editor'
-import { monaco } from '@/lib/monaco-setup'
+import { monaco } from '@/lib/editor/monaco/monaco-setup'
 import { GIT_CHANGE_MARKER_CLASS } from './git-change-decorations'
 import {
   computeGitChangeHunks,

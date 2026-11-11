@@ -1,7 +1,7 @@
 import { requireRuntimeTargetForFileOwner } from '@/lib/file-owner-runtime-target'
-import { getRuntimeGitDiff } from '@/runtime/runtime-git-diff-client'
+import { getRuntimeGitDiff } from '@/runtime/source-control/git/runtime-git-diff-client'
 import { useAppStore } from '@/store'
-import type { GitDiffResult } from '../../../../../shared/git-diff-compare-types'
+import type { GitDiffResult } from '../../../../../shared/git/diff/git-diff-compare-types'
 
 /** Where an edited file lives; the HEAD read routes to its owning host (local, SSH, or runtime). */
 export type GitChangeFile = {
