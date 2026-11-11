@@ -4,11 +4,16 @@ import { registerMondayHandlers } from './monday'
 import { registerMicrosoftTodoHandlers } from './microsoft-todo'
 import { registerServerFilesHandlers } from '../server-files/server-files-ipc'
 import { registerDetachedPagesHandlers } from './detached-pages'
+import { browserSessionRegistry } from '../browser/browser-session-registry'
 
 /** The fork's own pages and their windows, kept out of upstream's (full) core handler list. */
 export function registerForkFeatureHandlers(store: Store, keybindings?: KeybindingService): void {
   registerMondayHandlers()
   registerMicrosoftTodoHandlers()
   registerServerFilesHandlers()
-  registerDetachedPagesHandlers(store, keybindings)
+  registerDetachedPagesHandlers(
+    store,
+    keybindings,
+    () => browserSessionRegistry.getDefaultProfile().partition
+  )
 }

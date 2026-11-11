@@ -4,6 +4,8 @@ import type {
   MainWindowCall,
   MainWindowCallRequest,
   MainWindowCallResult,
+  MondayBrowserAction,
+  MondayBrowserState,
   MondayTaskSelection
 } from '../../shared/detached-pages'
 
@@ -18,8 +20,10 @@ export type DetachedPagesApi = {
   /** Main window only: a page was moved back and should be shown. */
   onDocked: (callback: (page: DetachedPage) => void) => () => void
   showMondayTask: (selection: MondayTaskSelection, options: { open: boolean }) => Promise<void>
-  currentMondayTask: () => Promise<MondayTaskSelection | null>
-  onMondayTask: (callback: (selection: MondayTaskSelection) => void) => () => void
+  /** Task window only: the monday.com page under its toolbar. */
+  mondayBrowserState: () => Promise<MondayBrowserState | null>
+  onMondayBrowserState: (callback: (state: MondayBrowserState) => void) => () => void
+  mondayBrowser: (action: MondayBrowserAction) => Promise<void>
   onMondayTaskClosed: (callback: (event: { keepItemId: string | null }) => void) => () => void
   callMainWindow: <C extends MainWindowCall>(call: C) => Promise<MainWindowCallResult[C['action']]>
   /** Main window only: answers calls from detached windows. */

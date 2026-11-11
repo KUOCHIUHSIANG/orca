@@ -2500,6 +2500,7 @@
         }
       },
       "detachedPages": {
+        "openMondayBrowser": "Open in a browser window",
         "openWindow": "Open in separate window",
         "dock": "Move back to main window",
         "placeholder": "{{value0}} is open in a separate window.",

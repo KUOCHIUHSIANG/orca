@@ -1,4 +1,4 @@
-import { Menu, type BrowserWindow } from 'electron'
+import { Menu, type BrowserWindow, type WebContents } from 'electron'
 import type { Store } from '../persistence/loading-store/store'
 import { buildEditableContextMenuTemplate } from './editable-context-menu'
 import { stepUIZoomLevel, type UIZoomDirection } from '../../shared/ui-zoom-level'
@@ -62,9 +62,17 @@ export function followAppZoom(window: BrowserWindow, store: Store | null): () =>
 /** Close and zoom shortcuts plus the inputs' Cut/Copy/Paste menu, as in the main window. */
 export function installDetachedPageInput(
   window: BrowserWindow,
-  getKeybindings: () => KeybindingOverrides | undefined
+  getKeybindings: () => KeybindingOverrides | undefined,
+  options: {
+    /** Defaults to the window's own renderer. */
+    contents?: WebContents
+    zoom?: (direction: UIZoomDirection) => void
+    /** Extra shortcuts; return true when handled. */
+    onKeyDown?: (input: Electron.Input) => boolean
+  } = {}
 ): void {
-  const contents = window.webContents
+  const contents = options.contents ?? window.webContents
+  const zoom = options.zoom ?? ((direction) => zoomDetachedPageWindow(window, direction))
   contents.on('before-input-event', (event, input) => {
     if (input.type !== 'keyDown') {
       return
@@ -74,10 +82,14 @@ export function installDetachedPageInput(
       window.close()
       return
     }
+    if (options.onKeyDown?.(input)) {
+      event.preventDefault()
+      return
+    }
     const direction = resolveZoomShortcut(input, getKeybindings())
     if (direction) {
       event.preventDefault()
-      zoomDetachedPageWindow(window, direction)
+      zoom(direction)
     }
   })
   contents.on('zoom-changed', (event, direction) => {
@@ -88,7 +100,7 @@ export function installDetachedPageInput(
       })
     ) {
       event.preventDefault()
-      zoomDetachedPageWindow(window, direction)
+      zoom(direction)
     }
   })
   contents.on('context-menu', (_event, params) => {

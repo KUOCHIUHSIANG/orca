@@ -99,8 +99,7 @@ function ItemDiscussion(props: {
   )
 }
 
-/** Facts, links and the update thread; shared by the side panel and the task window. */
-export function MondayItemDetails(props: {
+function MondayItemDetails(props: {
   item: MondayCalendarItem
   ownerNames: readonly string[]
 }): React.JSX.Element {
@@ -129,7 +128,7 @@ export function MondayItemDetails(props: {
   )
 }
 
-export function MondayItemHeading(props: { item: MondayCalendarItem }): React.JSX.Element {
+function MondayItemHeading(props: { item: MondayCalendarItem }): React.JSX.Element {
   return (
     <div className="min-w-0 flex-1 space-y-0.5 py-1">
       <h2 className="text-sm font-semibold leading-snug">{props.item.name}</h2>
@@ -159,7 +158,10 @@ export function MondayItemPanel(props: {
         <MondayItemHeading item={item} />
         {canDetachPages() ? (
           <CalendarIconAction
-            label={translate('auto.components.detachedPages.openWindow', 'Open in separate window')}
+            label={translate(
+              'auto.components.detachedPages.openMondayBrowser',
+              'Open in a browser window'
+            )}
             onClick={() =>
               void window.api.detachedPages.showMondayTask(
                 { item, ownerNames: [...props.ownerNames] },

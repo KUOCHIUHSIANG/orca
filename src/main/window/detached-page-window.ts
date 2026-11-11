@@ -13,8 +13,10 @@ import {
 } from './foreground-activation-policy'
 import { installPrivilegedWindowNavigationPolicy } from './privileged-window-navigation'
 import { rectHasVisibleAreaOnAnyDisplay } from './window-bounds-validation'
+import { attachMondayBrowserView } from './monday-browser-view'
 import {
   readDetachedPageBounds,
+  readMondayTaskUrl,
   readDetachedPagesToRestore,
   saveDetachedPageBounds,
   setDetachedPageRestorable
@@ -29,10 +31,12 @@ const PAGE_SIZES: Record<DetachedPage, WindowSize> = {
   monday: { width: 1200, height: 820, minWidth: 720, minHeight: 480 },
   todo: { width: 1200, height: 820, minWidth: 720, minHeight: 480 },
   servers: { width: 1280, height: 840, minWidth: 820, minHeight: 520 },
-  'monday-task': { width: 520, height: 820, minWidth: 360, minHeight: 400 }
+  'monday-task': { width: 1200, height: 860, minWidth: 640, minHeight: 420 }
 }
 // Why: its own session keeps zoom per window (Chromium shares zoom by origin); persist keeps localStorage.
 const DETACHED_PAGES_PARTITION = 'persist:orca-detached-pages'
+// Why: the task window's toolbar must never pick up another window's zoom, or the page below misaligns.
+const MONDAY_TOOLBAR_PARTITION = 'orca-monday-browser-toolbar'
 // Quit closes every window right after before-quit; a vetoed quit must not keep later closes.
 const QUIT_CLOSE_GRACE_MS = 3000
 
@@ -42,11 +46,14 @@ const windows = new Map<DetachedPage, BrowserWindow>()
 const changeListeners = new Set<(change: DetachedPagesChange) => void>()
 // Windows closing because Orca is quitting or its main window closed; they reopen next time.
 const keepRestorable = new Set<BrowserWindow>()
+const zoomTargets = new WeakMap<BrowserWindow, (direction: UIZoomDirection) => void>()
 let quitGraceTimer: ReturnType<typeof setTimeout> | null = null
 
 export type DetachedPageWindowOptions = {
   store: Store | null
   getKeybindings?: () => KeybindingOverrides | undefined
+  /** Orca's browser session, which the Monday task window shows monday.com in. */
+  mondayBrowserPartition?: () => string
 }
 
 function liveWindow(page: DetachedPage): BrowserWindow | null {
@@ -99,7 +106,12 @@ export function zoomDetachedPageIfFocused(direction: UIZoomDirection): boolean {
   if (!focused) {
     return false
   }
-  zoomDetachedPageWindow(focused, direction)
+  const zoom = zoomTargets.get(focused)
+  if (zoom) {
+    zoom(direction)
+  } else {
+    zoomDetachedPageWindow(focused, direction)
+  }
   return true
 }
 
@@ -158,6 +170,7 @@ function createDetachedPageWindow(
 ): BrowserWindow {
   const size = PAGE_SIZES[page]
   const saved = restoredBounds(page)
+  const browserPartition = page === 'monday-task' ? options.mondayBrowserPartition?.() : undefined
   const window = new BrowserWindow({
     width: saved?.width ?? size.width,
     height: saved?.height ?? size.height,
@@ -171,7 +184,7 @@ function createDetachedPageWindow(
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
-      partition: DETACHED_PAGES_PARTITION,
+      partition: browserPartition ? MONDAY_TOOLBAR_PARTITION : DETACHED_PAGES_PARTITION,
       webviewTag: false
     }
   })
@@ -183,8 +196,17 @@ function createDetachedPageWindow(
   )
   window.webContents.session.setPermissionCheckHandler(() => false)
 
-  const offAppZoom = followAppZoom(window, options.store)
-  installDetachedPageInput(window, () => options.getKeybindings?.())
+  const getKeybindings = (): KeybindingOverrides | undefined => options.getKeybindings?.()
+  // The task window's toolbar keeps a fixed zoom; its zoom keys act on the monday.com page instead.
+  const offAppZoom = browserPartition ? () => {} : followAppZoom(window, options.store)
+  const zoom = browserPartition
+    ? attachMondayBrowserView(window, getKeybindings, {
+        partition: browserPartition,
+        initialUrl: readMondayTaskUrl()
+      })
+    : (direction: UIZoomDirection): void => zoomDetachedPageWindow(window, direction)
+  zoomTargets.set(window, zoom)
+  installDetachedPageInput(window, getKeybindings, { zoom })
 
   const freezeBounds = persistBoundsOnMove(window, page)
   window.on('close', freezeBounds)

@@ -9,6 +9,8 @@ import type { WindowRect } from './window-bounds-validation'
 type DetachedPagesState = {
   open: DetachedPage[]
   bounds: Partial<Record<DetachedPage, WindowRect>>
+  /** The monday.com task the task window last showed, so a restart reopens it. */
+  mondayTaskUrl: string | null
 }
 
 let cached: DetachedPagesState | null = null
@@ -36,11 +38,12 @@ function readState(): DetachedPagesState {
   if (cached) {
     return cached
   }
-  const state: DetachedPagesState = { open: [], bounds: {} }
+  const state: DetachedPagesState = { open: [], bounds: {}, mondayTaskUrl: null }
   try {
     const parsed: unknown = JSON.parse(readFileSync(statePath(), 'utf-8'))
     if (isRecord(parsed)) {
-      const { open, bounds } = parsed
+      const { open, bounds, mondayTaskUrl } = parsed
+      state.mondayTaskUrl = typeof mondayTaskUrl === 'string' ? mondayTaskUrl : null
       state.open = Array.isArray(open) ? [...new Set(open.filter(isDetachedPage))] : []
       if (isRecord(bounds)) {
         for (const [page, rect] of Object.entries(bounds)) {
@@ -89,4 +92,15 @@ export function readDetachedPageBounds(page: DetachedPage): WindowRect | null {
 export function saveDetachedPageBounds(page: DetachedPage, bounds: WindowRect): void {
   const state = readState()
   writeState({ ...state, bounds: { ...state.bounds, [page]: bounds } })
+}
+
+export function readMondayTaskUrl(): string | null {
+  return readState().mondayTaskUrl
+}
+
+export function saveMondayTaskUrl(url: string): void {
+  const state = readState()
+  if (state.mondayTaskUrl !== url) {
+    writeState({ ...state, mondayTaskUrl: url })
+  }
 }

@@ -4,7 +4,7 @@ import type { Store } from '../persistence/loading-store/store'
 import type { KeybindingService } from '../keybindings/keybinding-service'
 import {
   closeDetachedPage,
-  getDetachedPageWindow,
+  detachedPageOfRenderer,
   installDetachedPagesQuitHandling,
   isDetachedPageRenderer,
   listDetachedPageWindows,
@@ -16,6 +16,12 @@ import {
 } from '../window/detached-page-window'
 import { safelyRevealWindow } from '../window/focus-existing-window'
 import {
+  mondayBrowserState,
+  runMondayBrowserAction,
+  showMondayBrowserUrl
+} from '../window/monday-browser-view'
+import { saveMondayTaskUrl } from '../window/detached-page-window-state'
+import {
   getTrustedUIRendererWebContents,
   getTrustedUIRendererWindow,
   isTrustedUIRenderer
@@ -24,6 +30,8 @@ import {
   isDetachedPage,
   isDetachedPagesBroadcastTopic,
   isMainWindowCall,
+  isRecord,
+  isMondayBrowserAction,
   isMondayTaskSelection,
   MAIN_WINDOW_REVEALING_CALLS,
   type MainWindowCall,
@@ -40,6 +48,8 @@ type MainWindowReply = { requestId: string } & (
 
 let offPagesChanged: (() => void) | null = null
 let lastMondayTask: MondayTaskSelection | null = null
+/** The task whose monday.com page the task window loaded; null once that window closes. */
+let shownMondayItemId: string | null = null
 /** Set when the task window is moved back, so the calendar keeps that task open in its panel. */
 let dockedMondayTaskItemId: string | null = null
 
@@ -102,14 +112,16 @@ const CHANNELS = [
   'detachedPages:dock',
   'detachedPages:restore',
   'detachedPages:showMondayTask',
-  'detachedPages:currentMondayTask',
+  'detachedPages:mondayBrowser',
+  'detachedPages:mondayBrowserState',
   'detachedPages:callMainWindow',
   'detachedPages:broadcast'
 ]
 
 export function registerDetachedPagesHandlers(
   store: Store | null,
-  keybindings?: KeybindingService
+  keybindings?: KeybindingService,
+  mondayBrowserPartition?: () => string
 ): void {
   for (const channel of CHANNELS) {
     ipcMain.removeHandler(channel)
@@ -117,13 +129,15 @@ export function registerDetachedPagesHandlers(
   installDetachedPagesQuitHandling()
   const windowOptions: DetachedPageWindowOptions = {
     store,
-    getKeybindings: () => keybindings?.getOverrides()
+    getKeybindings: () => keybindings?.getOverrides(),
+    mondayBrowserPartition
   }
 
   offPagesChanged?.()
   offPagesChanged = onDetachedPagesChanged(({ open, closed }) => {
     // Sent before the open list so the calendar drops its selection before its panel returns.
     if (closed === 'monday-task') {
+      shownMondayItemId = null
       sendToPageRenderers('detachedPages:mondayTaskClosed', { keepItemId: dockedMondayTaskItemId })
       dockedMondayTaskItemId = null
     }
@@ -169,15 +183,29 @@ export function registerDetachedPagesHandlers(
         return
       }
       lastMondayTask = selection
-      if (typeof options === 'object' && options !== null && 'open' in options && options.open) {
+      const open = isRecord(options) && options.open === true
+      if (open) {
         openDetachedPage('monday-task', windowOptions)
       }
-      getDetachedPageWindow('monday-task')?.webContents.send('detachedPages:mondayTask', selection)
+      // Why: the calendar re-sends its pick after every refresh; only a different task reloads the page.
+      if (
+        (open || selection.item.id !== shownMondayItemId) &&
+        showMondayBrowserUrl(selection.item.url)
+      ) {
+        shownMondayItemId = selection.item.id
+        saveMondayTaskUrl(selection.item.url)
+      }
     }
   )
 
-  ipcMain.handle('detachedPages:currentMondayTask', (event) =>
-    isDetachedPageRenderer(event.sender) ? lastMondayTask : null
+  ipcMain.handle('detachedPages:mondayBrowser', (event, action: unknown): void => {
+    if (detachedPageOfRenderer(event.sender) === 'monday-task' && isMondayBrowserAction(action)) {
+      runMondayBrowserAction(action)
+    }
+  })
+
+  ipcMain.handle('detachedPages:mondayBrowserState', (event) =>
+    detachedPageOfRenderer(event.sender) === 'monday-task' ? mondayBrowserState() : null
   )
 
   ipcMain.handle('detachedPages:callMainWindow', async (event, call: unknown) => {

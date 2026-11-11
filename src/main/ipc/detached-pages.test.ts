@@ -1,25 +1,28 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { DetachedPagesChange } from '../window/detached-page-window'
 
-const { handlers, replyListeners, senders, windowMock, revealMock } = vi.hoisted(() => {
-  const makeSender = (id: number) => ({ id, send: vi.fn(), isDestroyed: () => false })
-  const windowState: {
-    changeListener: ((change: DetachedPagesChange) => void) | null
-    closeDetachedPage: ReturnType<typeof vi.fn>
-  } = { changeListener: null, closeDetachedPage: vi.fn() }
-  return {
-    handlers: new Map<string, (...args: unknown[]) => unknown>(),
-    replyListeners: new Set<(...args: unknown[]) => void>(),
-    senders: {
-      main: makeSender(1),
-      servers: makeSender(2),
-      task: makeSender(3),
-      other: makeSender(4)
-    },
-    windowMock: windowState,
-    revealMock: vi.fn()
+const { handlers, replyListeners, senders, windowMock, revealMock, browserMock } = vi.hoisted(
+  () => {
+    const makeSender = (id: number) => ({ id, send: vi.fn(), isDestroyed: () => false })
+    const windowState: {
+      changeListener: ((change: DetachedPagesChange) => void) | null
+      closeDetachedPage: ReturnType<typeof vi.fn>
+    } = { changeListener: null, closeDetachedPage: vi.fn() }
+    return {
+      handlers: new Map<string, (...args: unknown[]) => unknown>(),
+      replyListeners: new Set<(...args: unknown[]) => void>(),
+      senders: {
+        main: makeSender(1),
+        servers: makeSender(2),
+        task: makeSender(3),
+        other: makeSender(4)
+      },
+      windowMock: windowState,
+      revealMock: vi.fn(),
+      browserMock: { show: vi.fn(() => true), saveUrl: vi.fn() }
+    }
   }
-})
+)
 
 vi.mock('electron', () => ({
   ipcMain: {
@@ -37,10 +40,15 @@ vi.mock('./ui', () => ({
   isTrustedUIRenderer: (sender: unknown) => sender === senders.main
 }))
 vi.mock('../window/focus-existing-window', () => ({ safelyRevealWindow: revealMock }))
+vi.mock('../window/monday-browser-view', () => ({
+  mondayBrowserState: vi.fn(),
+  runMondayBrowserAction: vi.fn(),
+  showMondayBrowserUrl: browserMock.show
+}))
+vi.mock('../window/detached-page-window-state', () => ({ saveMondayTaskUrl: browserMock.saveUrl }))
 vi.mock('../window/detached-page-window', () => ({
   closeDetachedPage: windowMock.closeDetachedPage,
-  getDetachedPageWindow: (page: string) =>
-    page === 'monday-task' ? { webContents: senders.task } : null,
+  detachedPageOfRenderer: (sender: unknown) => (sender === senders.task ? 'monday-task' : null),
   installDetachedPagesQuitHandling: () => {},
   isDetachedPageRenderer: (sender: unknown) =>
     sender === senders.servers || sender === senders.task,
@@ -89,6 +97,7 @@ describe('detached pages IPC', () => {
       sender.send.mockClear()
     }
     revealMock.mockClear()
+    browserMock.show.mockClear()
     registerDetachedPagesHandlers(null)
   })
 
@@ -117,14 +126,31 @@ describe('detached pages IPC', () => {
     expect(senders.main.send).not.toHaveBeenCalled()
   })
 
+  it('reloads the task page only when the calendar picks a different task', () => {
+    const pick = (id: string) => ({
+      item: { id, name: 'Report', url: `https://example.monday.com/boards/1/pulses/${id}` },
+      ownerNames: []
+    })
+    invoke('detachedPages:showMondayTask', senders.main, pick('7'), { open: true })
+    // The calendar re-sends its pick after each refresh.
+    invoke('detachedPages:showMondayTask', senders.main, pick('7'), { open: false })
+    invoke('detachedPages:showMondayTask', senders.main, pick('8'), { open: false })
+
+    expect(browserMock.show.mock.calls).toEqual([
+      ['https://example.monday.com/boards/1/pulses/7'],
+      ['https://example.monday.com/boards/1/pulses/8']
+    ])
+    expect(browserMock.saveUrl).toHaveBeenLastCalledWith(
+      'https://example.monday.com/boards/1/pulses/8'
+    )
+  })
+
   it('tells calendars which task came back before the task window leaves the open list', () => {
     const selection = {
       item: { id: 'item-7', name: 'Report', url: 'https://example.monday.com/item-7' },
       ownerNames: ['Jater']
     }
     invoke('detachedPages:showMondayTask', senders.main, selection, { open: false })
-    expect(senders.task.send).toHaveBeenCalledWith('detachedPages:mondayTask', selection)
-    expect(invoke('detachedPages:currentMondayTask', senders.task)).toEqual(selection)
 
     invoke('detachedPages:dock', senders.task, 'monday-task')
     expect(windowMock.closeDetachedPage).toHaveBeenCalledWith('monday-task')
