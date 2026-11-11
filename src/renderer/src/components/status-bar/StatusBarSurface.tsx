@@ -128,7 +128,7 @@ export function StatusBarSurface({
       ref={barRef}
       data-orca-status-bar=""
       // Why: one line at any width — density steps down first. overflow-clip (not hidden) so focus can't scroll the bar; the clip margin spares focus rings and badge dots.
-      className="flex items-center h-6 min-h-[24px] px-3 gap-4 overflow-clip [overflow-clip-margin:3px] whitespace-nowrap border-t border-border bg-[var(--bg-titlebar,var(--card))] text-xs select-none shrink-0 relative"
+      className="flex items-center h-6 min-h-[24px] pl-11 pr-3 gap-4 overflow-clip [overflow-clip-margin:3px] whitespace-nowrap border-t border-border bg-[var(--bg-titlebar,var(--card))] text-xs select-none shrink-0 relative"
       onContextMenuCapture={(event) => {
         if (!shouldOpenStatusBarContextMenu(event.target)) {
           return
@@ -141,6 +141,10 @@ export function StatusBarSurface({
         setMenuOpen(true)
       }}
     >
+      {/* Why: far left, under the bottom panel's tool strip; it sits in the left padding so density math excludes it. */}
+      <div className="absolute top-1/2 left-3 flex -translate-y-1/2 items-center">
+        <BottomPanelStatusSegment />
+      </div>
       {/* Why: usage gives way first — what it drops stays one click away in its popover. */}
       <div
         className="status-bar-usage-cluster flex min-w-0 flex-1 items-center overflow-clip [overflow-clip-margin:3px]"
@@ -314,7 +318,6 @@ export function StatusBarSurface({
       >
         <div ref={segmentsRef} className="flex w-max items-center gap-3">
           <ForkBuildStatusSegment progress={forkBuildProgress} iconOnly={segmentsIconOnly} />
-          <BottomPanelStatusSegment />
           {!isPairedWebClientWindow() ? (
             <>
               <PluginsStatusSegment />
