@@ -16,8 +16,9 @@ export const detachedPagesApi: DetachedPagesApi = {
   onDocked: (callback) => subscribe('detachedPages:docked', callback),
   showMondayTask: (selection, options) =>
     ipcRenderer.invoke('detachedPages:showMondayTask', selection, options),
-  currentMondayTask: () => ipcRenderer.invoke('detachedPages:currentMondayTask'),
-  onMondayTask: (callback) => subscribe('detachedPages:mondayTask', callback),
+  mondayBrowserState: () => ipcRenderer.invoke('detachedPages:mondayBrowserState'),
+  onMondayBrowserState: (callback) => subscribe('detachedPages:mondayBrowserState', callback),
+  mondayBrowser: (action) => ipcRenderer.invoke('detachedPages:mondayBrowser', action),
   onMondayTaskClosed: (callback) => subscribe('detachedPages:mondayTaskClosed', callback),
   callMainWindow: (call) => ipcRenderer.invoke('detachedPages:callMainWindow', call),
   onMainWindowCall: (callback) => subscribe('detachedPages:mainWindowCall', callback),

@@ -33,6 +33,23 @@ export function isMondayTaskSelection(value: unknown): value is MondayTaskSelect
   )
 }
 
+/** What the Monday task window's toolbar shows about the monday.com page beneath it. */
+export type MondayBrowserState = {
+  url: string | null
+  title: string
+  canGoBack: boolean
+  canGoForward: boolean
+  loading: boolean
+}
+
+export const MONDAY_BROWSER_ACTIONS = ['back', 'forward', 'reload', 'stop', 'openExternal'] as const
+
+export type MondayBrowserAction = (typeof MONDAY_BROWSER_ACTIONS)[number]
+
+export function isMondayBrowserAction(value: unknown): value is MondayBrowserAction {
+  return MONDAY_BROWSER_ACTIONS.some((action) => action === value)
+}
+
 export type DetachedWorkspaceGroup = {
   id: string
   /** null labels the folder workspaces group. */
