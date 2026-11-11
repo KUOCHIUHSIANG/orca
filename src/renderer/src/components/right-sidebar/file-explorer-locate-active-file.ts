@@ -1,5 +1,5 @@
 import { getRelativePathInsideRoot } from '@/lib/path'
-import type { OpenFile } from '@/store/slices/editor'
+import type { OpenFile } from '@/store/slices/editor/types/open-file'
 import type { AppState } from '@/store/types'
 
 type LocateActiveFileState = Pick<

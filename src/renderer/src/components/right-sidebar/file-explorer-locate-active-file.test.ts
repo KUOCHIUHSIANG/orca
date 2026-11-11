@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { OpenFile } from '@/store/slices/editor'
+import type { OpenFile } from '@/store/slices/editor/types/open-file'
 import { getLocatableActiveFilePath } from './file-explorer-locate-active-file'
 
 const WORKTREE_PATH = '/repo'

@@ -19,9 +19,23 @@ export type GitToolWindowRemoteAction = 'fetch' | 'pull' | 'push'
 
 const NO_SELECTION_ENTRIES: FlatEntry[] = []
 const NO_BRANCH_ROW_KEYS: readonly string[] = []
-// Why @{upstream}: resolves host-side without knowing the name, and drops out when there is none.
-const CURRENT_BRANCH_LOG_REFS = ['HEAD', 'HEAD@{upstream}']
 const IS_MAC = typeof navigator !== 'undefined' && navigator.userAgent.includes('Mac')
+
+// Why both: history takes full ref names only; search shortens only unambiguous names, so one exists.
+function fullLogRefNames(ref: string): string[] {
+  return ref.startsWith('refs/') ? [ref] : [`refs/heads/${ref}`, `refs/remotes/${ref}`]
+}
+
+/** The current branch with its upstream; undefined (HEAD alone) while detached. */
+function currentBranchLogRefs(
+  branchName: string,
+  upstreamName: string | undefined
+): string[] | undefined {
+  if (!branchName) {
+    return undefined
+  }
+  return [`refs/heads/${branchName}`, ...(upstreamName ? [`refs/remotes/${upstreamName}`] : [])]
+}
 
 /** Everything the bottom panel's Git tab reads and does for the active worktree; mounted only while shown. */
 export function useGitToolWindow() {
@@ -80,7 +94,9 @@ export function useGitToolWindow() {
     isGitHistoryVisible: true,
     worktreeMap,
     limit,
-    refs: logRef ? [logRef] : CURRENT_BRANCH_LOG_REFS
+    refs: logRef
+      ? fullLogRefNames(logRef)
+      : currentBranchLogRefs(branchName, remoteStatus?.upstreamName)
   })
   const { refreshGitHistoryRef } = history
   const rowOpening = useSourceControlRowOpening({
