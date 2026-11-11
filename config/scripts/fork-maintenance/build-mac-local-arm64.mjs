@@ -52,11 +52,15 @@ function expandSteps(command) {
   })
 }
 
+// Why read build:mac's native helpers too: v1.4.256 moved their scripts and added process-footprint.
+// The helpers that build universal binaries take --single-arch; build-computer-macos ignores it.
+const nativeMacSteps = splitSteps(packageScripts['build:mac'])
+  .filter((step) => /^pnpm run build:[\w-]+-macos$/.test(step))
+  .map((step) => `${packageScripts[scriptName(step)]} --single-arch`)
+
 const steps = [
   ...expandSteps(packageScripts['build:desktop']),
-  'node config/scripts/build-computer-macos.mjs',
-  'node config/scripts/build-keyboard-layout-macos.mjs --single-arch',
-  'node config/scripts/build-notification-status-macos.mjs --single-arch',
+  ...nativeMacSteps,
   'pnpm run ensure:electron-runtime'
 ]
 const PACKAGE_STEP = 'electron-builder'
