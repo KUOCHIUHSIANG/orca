@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useMemo, useRef } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ContextMenu, ContextMenuTrigger } from '@/components/ui/context-menu'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import {
   GIT_HISTORY_MAX_LIMIT,
   type GitHistoryItem

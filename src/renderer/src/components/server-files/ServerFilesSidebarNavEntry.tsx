@@ -1,8 +1,8 @@
 import { Server } from 'lucide-react'
 import { useAppStore } from '@/store'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
-import { isWebClientLocation } from '@/lib/web-client-location'
+import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
 
 /** Matches the Monday and To Do entries beside it. */
 export function ServerFilesSidebarNavEntry(): React.JSX.Element | null {

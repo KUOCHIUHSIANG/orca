@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/command'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import type { GitToolWindowModel } from './use-git-tool-window'
 import { useGitBranchSwitcher, type GitBranchSwitcherModel } from './use-git-branch-switcher'
 

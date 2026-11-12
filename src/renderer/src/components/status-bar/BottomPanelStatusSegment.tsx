@@ -1,6 +1,6 @@
 import { PanelBottom } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { useBottomPanelState } from '@/lib/bottom-panel-state'
 
 export function BottomPanelStatusSegment(): React.JSX.Element {

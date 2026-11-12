@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { getIntlLocale } from '@/i18n/i18n'
 
 // 2026-01-04 is a Sunday; calendars here are Sunday-first.

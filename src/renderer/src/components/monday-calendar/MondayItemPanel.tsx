@@ -1,6 +1,6 @@
 import { ExternalLink, LoaderCircle, RefreshCw, SquareArrowOutUpRight, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import { AgentIcon } from '@/components/agent/icons/AgentIcon'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'

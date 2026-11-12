@@ -1,6 +1,6 @@
 import { Star } from 'lucide-react'
 import { Checkbox } from '@/components/ui/checkbox'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { MicrosoftTodoTask } from '../../../../shared/microsoft-todo-types'
 

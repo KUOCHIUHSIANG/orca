@@ -9,7 +9,7 @@ import {
   ContextMenuTrigger
 } from '@/components/ui/context-menu'
 import { createOsFileDropSequence, useOsFileDropOwner } from '@/hooks/use-os-file-drop-owner'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { RemoteEntry } from '../../../../shared/server-files-types'
 import {

@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp, CornerLeftUp, Folder, FolderSymlink } from 'lucide-react'
 import { FileTypeIcon } from '@/components/FileTypeIcon'
 import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { getIntlLocale, translate } from '@/i18n/i18n'
 import { formatRemoteMode } from '../../../../shared/server-files-access'
 import { isSameOrInsideRemotePath } from '../../../../shared/server-files-paths'

@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Toggle } from '@/components/ui/toggle'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { ServerProfileSummary } from '../../../../shared/server-files-types'
 import { CommandTemplateDialog, type TemplateRequest } from './CommandTemplateDialog'

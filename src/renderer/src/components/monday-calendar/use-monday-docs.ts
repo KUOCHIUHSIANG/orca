@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMountedRef } from '@/hooks/useMountedRef'
-import { readIpcErrorMessage } from '@/lib/ipc-error'
+import { readIpcErrorMessage } from '@/runtime/errors/ipc-error'
 import type { MondayDocSummary, MondayFailure } from '../../../../shared/monday-calendar-types'
 
 // Why: in memory only — these docs can hold credentials, so nothing is written to disk.

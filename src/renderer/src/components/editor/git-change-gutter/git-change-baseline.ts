@@ -1,4 +1,4 @@
-import { requireRuntimeTargetForFileOwner } from '@/lib/file-owner-runtime-target'
+import { requireRuntimeTargetForFileOwner } from '@/lib/files/access/file-owner-runtime-target'
 import { getRuntimeGitDiff } from '@/runtime/source-control/git/runtime-git-diff-client'
 import { useAppStore } from '@/store'
 import type { GitDiffResult } from '../../../../../shared/git/diff/git-diff-compare-types'

@@ -1,6 +1,6 @@
 import { CalendarDayCell } from '@/components/calendar/CalendarDayCell'
 import { isInMonth, type MonthCursor } from '@/components/calendar/calendar-dates'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import type { MicrosoftTodoTask } from '../../../../shared/microsoft-todo-types'
 import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 

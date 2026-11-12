@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { translate } from '@/i18n/i18n'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import type { GitBlameCommit } from '../../../../../shared/git-blame'
 import { GitHubUserAvatar } from '../../github/github-user-avatar'
 import { githubNoreplyLogin } from './blame-author-avatar'

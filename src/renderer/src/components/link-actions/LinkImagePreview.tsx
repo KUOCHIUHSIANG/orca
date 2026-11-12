@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocalImageSrc } from '@/components/editor/document-images/useLocalImageSrc'
-import { chatImageAccess } from '@/lib/local-file-access'
+import { chatImageAccess } from '@/lib/files/access/local-file-access'
 import type { LinkImagePreviewTarget } from './link-action-request'
 
 // Why chat-image access: the preview loads before any open gesture, so main serves only real image files.

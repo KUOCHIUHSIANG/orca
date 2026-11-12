@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { MondayStatusDot } from './MondayStatusDot'
 import type { MondayWeekSegment } from './monday-month-layout'
 

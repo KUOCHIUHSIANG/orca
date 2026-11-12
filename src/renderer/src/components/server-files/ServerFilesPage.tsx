@@ -9,7 +9,7 @@ import { useServerFilesStore } from './server-files-store'
 import { ServerListPanel } from './ServerListPanel'
 import { ServerProfileDialog, type ProfileDialogRequest } from './ServerProfileDialog'
 import { ServerWorkspace } from './ServerWorkspace'
-import { isWebClientLocation } from '@/lib/web-client-location'
+import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
 import { DetachedPageHeaderAction } from '../detached-pages/DetachedPageHeaderAction'
 
 function useJobProgress(): void {

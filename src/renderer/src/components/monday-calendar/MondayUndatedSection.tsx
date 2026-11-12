@@ -1,5 +1,5 @@
 import { ChevronRight } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { MondayCalendarItem } from '../../../../shared/monday-calendar-types'
 import { MondayStatusDot } from './MondayStatusDot'

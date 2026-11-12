@@ -1,6 +1,6 @@
 import { Plus, Server } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import { useServerFilesStore, type ServerSessionState } from './server-files-store'
 import { serverEndpointText } from './ServerWorkspace'

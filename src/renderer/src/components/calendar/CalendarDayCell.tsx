@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import type { TaiwanCalendarDay } from '../../../../shared/taiwan-holiday-types'
 import { describeCalendarDay } from './calendar-day-off'
 

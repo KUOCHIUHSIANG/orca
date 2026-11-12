@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useMountedRef } from '@/hooks/useMountedRef'
-import { readIpcErrorMessage } from '@/lib/ipc-error'
+import { readIpcErrorMessage } from '@/runtime/errors/ipc-error'
 import type { MondayFailure, MondayUpdate } from '../../../../shared/monday-calendar-types'
 
 // Why: reopening a task paints its last-seen discussion while the fresh copy loads.

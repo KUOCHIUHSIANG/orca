@@ -1,7 +1,7 @@
 import { ExternalLink, FileText, LoaderCircle, RefreshCw, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CommentMarkdownAsync } from '@/components/sidebar/comment-markdown-lazy'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import { formatUiRelativeTimeFromDate } from '@/i18n/relative-time-format'
 import { CalendarIconAction } from '../calendar/CalendarIconAction'

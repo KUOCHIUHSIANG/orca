@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { JobOutcome } from '../../../../shared/server-files-types'
 import { useServerJobsStore, type ServerJob, type ServerJobKind } from './server-files-jobs-store'

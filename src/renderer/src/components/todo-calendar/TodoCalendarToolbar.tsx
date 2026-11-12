@@ -4,7 +4,7 @@ import { CalendarSourceFilter } from '@/components/calendar/CalendarSourceFilter
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { translate } from '@/i18n/i18n'
 import type { MicrosoftTodoList } from '../../../../shared/microsoft-todo-types'
 import type { TodoCalendarView } from './todo-calendar-model'

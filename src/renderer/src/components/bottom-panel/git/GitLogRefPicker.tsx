@@ -10,7 +10,7 @@ import {
   CommandList
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/class-names'
 import { getRepoExecutionHostId } from '../../../../../shared/execution-host'
 import { useGitToolWindowState } from './git-tool-window-state'
 import type { GitToolWindowModel } from './use-git-tool-window'

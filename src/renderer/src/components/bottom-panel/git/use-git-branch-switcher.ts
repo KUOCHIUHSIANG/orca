@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { getConnectionId } from '@/lib/workspace/ownership/connection-context'
-import { branchName as stripHeadsPrefix } from '@/lib/git-utils'
+import { branchName as stripHeadsPrefix } from '@/lib/source-control/branches/branch-name'
 import { activateAndRevealWorktree } from '@/lib/workspace/activation/worktree-activation'
 import { useAppStore } from '@/store'
 import { useWorktreesForRepo } from '@/store/slices/worktrees/listing/use-worktree-catalog'

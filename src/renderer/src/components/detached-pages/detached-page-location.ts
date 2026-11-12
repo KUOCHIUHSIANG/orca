@@ -1,5 +1,5 @@
 import { isDetachedPage, type DetachedPage } from '../../../../shared/detached-pages'
-import { isWebClientLocation } from '@/lib/web-client-location'
+import { isWebClientLocation } from '@/app-shell/platform/web-client-location'
 
 /** The page this window was opened for, or null in the main window. */
 export function currentDetachedPage(): DetachedPage | null {
