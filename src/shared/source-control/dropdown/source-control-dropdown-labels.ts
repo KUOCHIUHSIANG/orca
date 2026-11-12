@@ -57,10 +57,6 @@ export function formatUnpublishedForcePushTitle(branchCommitsAhead: number | und
   return `Force push ${countText} with lease and set an upstream if needed.`
 }
 
-export function formatCountLabel(base: string, count: number): string {
-  return count > 0 ? `${base} (${count})` : base
-}
-
 export function formatRebaseBaseRef(baseRef: string): string {
   return baseRef.replace(/^refs\/remotes\//, '').replace(/^remotes\//, '')
 }

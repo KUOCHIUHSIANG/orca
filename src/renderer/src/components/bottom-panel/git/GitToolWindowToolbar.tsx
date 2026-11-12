@@ -9,9 +9,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/class-names'
-import { formatCountLabel } from '../../../../../shared/source-control/dropdown/source-control-dropdown-labels'
 import { GitBranchSwitcher } from './GitBranchSwitcher'
 import { GitLogRefPicker } from './GitLogRefPicker'
+import { formatCountLabel } from './git-remote-action-label'
 import { useGitToolWindowState } from './git-tool-window-state'
 import type { GitToolWindowModel, GitToolWindowRemoteAction } from './use-git-tool-window'
 
