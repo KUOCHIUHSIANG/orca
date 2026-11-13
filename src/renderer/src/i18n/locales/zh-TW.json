@@ -1655,7 +1655,8 @@
           "network": "無法連線 Microsoft，請檢查網路連線。",
           "notConfigured": "Microsoft 拒絕了這個應用程式註冊：{{value0}}",
           "rateLimited": "Microsoft 正在限制請求次數，請稍後再試。",
-          "signedOut": "Microsoft 登入已過期，請重新登入。"
+          "signedOut": "Microsoft 登入已過期，請重新登入。",
+          "unavailable": "Microsoft To Do 暫時沒有回應，Orca 會自動重試。"
         },
         "group": {
           "completed": "已完成",

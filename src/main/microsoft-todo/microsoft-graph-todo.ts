@@ -1,7 +1,7 @@
 import { getMainHttpClient } from '../network/http-client'
 import { asArray, asString, isRecord } from '../untrusted-json-guards'
 import type { MicrosoftTodoList, MicrosoftTodoTask } from '../../shared/microsoft-todo-types'
-import { MicrosoftTodoError } from './microsoft-todo-auth'
+import { MicrosoftTodoError, toRequestFailure } from './microsoft-todo-auth'
 
 const GRAPH_BASE = 'https://graph.microsoft.com/v1.0'
 const REQUEST_TIMEOUT_MS = 20_000
@@ -34,10 +34,7 @@ export function createGraphRunner(
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       })
     } catch (error) {
-      throw new MicrosoftTodoError(
-        'network',
-        error instanceof Error ? error.message : String(error)
-      )
+      throw toRequestFailure(error)
     }
   }
   return async (method, pathOrUrl, body) => {
@@ -58,6 +55,12 @@ export function createGraphRunner(
     }
     if (response.status === 401) {
       throw new MicrosoftTodoError('signed-out', message ?? 'Microsoft sign-in expired.')
+    }
+    if (response.status >= 500) {
+      throw new MicrosoftTodoError(
+        'unavailable',
+        message ?? `Microsoft Graph error (HTTP ${response.status}).`
+      )
     }
     throw new MicrosoftTodoError(
       'api',

@@ -45,6 +45,8 @@ export type MicrosoftTodoErrorKind =
   | 'cancelled'
   | 'rate-limited'
   | 'network'
+  /** Microsoft accepted the request but timed out or answered with a server error (5xx). */
+  | 'unavailable'
   | 'api'
 
 export type MicrosoftTodoFailure = { ok: false; kind: MicrosoftTodoErrorKind; message: string }
