@@ -28,27 +28,18 @@ if (process.platform !== 'darwin' || process.arch !== 'arm64') {
 }
 
 // Why read build:desktop instead of copying it: upstream reshapes it between releases (v1.4.226
-// replaced build:relay with build:wsl-guest). Mobile deps are not installed locally, so skip that step.
-const MOBILE_WEB_STEP = 'pnpm run build:mobile-web'
+// replaced build:relay with build:wsl-guest).
 const packageScripts = JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')).scripts
 
 const scriptName = (step) => /^pnpm run ([\w:-]+)$/.exec(step)?.[1]
 const splitSteps = (command) => command.split('&&').map((part) => part.trim())
-const reachesMobileStep = (command) =>
-  splitSteps(command).some((step) => {
-    const body = packageScripts[scriptName(step)]
-    return step === MOBILE_WEB_STEP || (body !== undefined && reachesMobileStep(body))
-  })
 
-/** Drops the mobile step, inlining only the scripts that lead to it (v1.4.229 nests it a level down).
+/** Inlines scripts that only chain `pnpm run` steps, so the status bar times each build step.
  *  Why not inline everything: leaf commands such as `tsc` resolve only through `pnpm run`'s PATH. */
 function expandSteps(command) {
   return splitSteps(command).flatMap((step) => {
-    if (step === MOBILE_WEB_STEP) {
-      return []
-    }
     const body = packageScripts[scriptName(step)]
-    return body && reachesMobileStep(body) ? expandSteps(body) : [step]
+    return body && splitSteps(body).every(scriptName) ? expandSteps(body) : [step]
   })
 }
 
@@ -59,6 +50,9 @@ const nativeMacSteps = splitSteps(packageScripts['build:mac'])
   .map((step) => `${packageScripts[scriptName(step)]} --single-arch`)
 
 const steps = [
+  // Why: build:mobile-web resolves React Native/Expo from mobile/'s own install; without that bundle
+  // the desktop never advertises mobileWeb.bundle.v1 and Orca Mobile keeps asking to update it.
+  'pnpm --dir mobile install --frozen-lockfile',
   ...expandSteps(packageScripts['build:desktop']),
   ...nativeMacSteps,
   'pnpm run ensure:electron-runtime'
