@@ -1655,7 +1655,8 @@
           "network": "无法连接 Microsoft，请检查网络连接。",
           "notConfigured": "Microsoft 拒绝了这个应用程序注册：{{value0}}",
           "rateLimited": "Microsoft 正在限制请求次数，请稍后再试。",
-          "signedOut": "Microsoft 登录已过期，请重新登录。"
+          "signedOut": "Microsoft 登录已过期，请重新登录。",
+          "unavailable": "Microsoft To Do 暂时没有回应，Orca 会自动重试。"
         },
         "group": {
           "completed": "已完成",

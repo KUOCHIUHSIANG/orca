@@ -2451,6 +2451,7 @@
           "cancelled": "Sign-in was cancelled.",
           "rateLimited": "Microsoft is limiting requests. Try again in a minute.",
           "network": "Could not reach Microsoft. Check your network connection.",
+          "unavailable": "Microsoft To Do is not responding right now. Orca will retry automatically.",
           "api": "Microsoft returned an error: {{value0}}"
         },
         "add": {

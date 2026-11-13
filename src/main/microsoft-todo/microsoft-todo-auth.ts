@@ -28,6 +28,15 @@ export class MicrosoftTodoError extends Error {
   }
 }
 
+/** A fetch that never produced a response; a timeout means Microsoft stalled, not that the network is down. */
+export function toRequestFailure(error: unknown): MicrosoftTodoError {
+  const timedOut = error instanceof Error && error.name === 'TimeoutError'
+  return new MicrosoftTodoError(
+    timedOut ? 'unavailable' : 'network',
+    error instanceof Error ? error.message : String(error)
+  )
+}
+
 function base64Url(buffer: Buffer): string {
   return buffer.toString('base64url')
 }
@@ -92,7 +101,7 @@ async function requestTokens(form: Record<string, string>): Promise<MicrosoftTok
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
     })
   } catch (error) {
-    throw new MicrosoftTodoError('network', error instanceof Error ? error.message : String(error))
+    throw toRequestFailure(error)
   }
   let body: unknown = null
   try {

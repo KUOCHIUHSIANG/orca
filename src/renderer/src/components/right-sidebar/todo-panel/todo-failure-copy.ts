@@ -36,6 +36,11 @@ export function describeTodoFailure(failure: MicrosoftTodoFailure): string {
         'auto.components.todoPanel.failure.network',
         'Could not reach Microsoft. Check your network connection.'
       )
+    case 'unavailable':
+      return translate(
+        'auto.components.todoPanel.failure.unavailable',
+        'Microsoft To Do is not responding right now. Orca will retry automatically.'
+      )
     case 'api':
       return translate(
         'auto.components.todoPanel.failure.api',
