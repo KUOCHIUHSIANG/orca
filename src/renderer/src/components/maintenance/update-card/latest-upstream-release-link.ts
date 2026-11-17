@@ -1,5 +1,5 @@
-import type { UpdateStatus } from '../../../../../shared/update-status-types'
-import { getReleaseNotesUrlForVersion } from '../../../../../shared/release-channel'
+import type { UpdateStatus } from '../../../../../shared/updater/update-status-types'
+import { getReleaseNotesUrlForVersion } from '../../../../../shared/updater/release-channel'
 import { translate } from '@/i18n/i18n'
 
 /** Fork builds: names the official release beside "latest version" and links its notes. */

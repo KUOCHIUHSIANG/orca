@@ -11,7 +11,7 @@ import { isTerminalLinkDirectActivation } from '../gestures/terminal-link-activa
 import { requestTerminalLinkAction } from '../terminal-link-action-request'
 import type { TerminalLinkActionContext } from '../terminal-link-action-request'
 import { resolveKnownWorktreeRootPathLink } from './terminal-worktree-path-link'
-import { isImageDropPath } from '../../../../../../shared/image-path-paste'
+import { isImageDropPath } from '../../../../../../shared/terminal/input/image-path-paste'
 import { translate } from '@/i18n/i18n'
 import {
   getRevealInFileManagerLabel,
