@@ -24,7 +24,7 @@
 //                    Claude's summaries go to .git/orca-sync-summary.md, which the updated app
 //                    shows once after its install restarts it.
 import { execFileSync, spawnSync } from 'node:child_process'
-import { existsSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, rmSync } from 'node:fs'
 import path from 'node:path'
 import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
@@ -76,10 +76,11 @@ const SYNC_STEPS = [
 // Reports to the status bar; created once the run gets past its preflight checks.
 let progress = null
 
-function stage(name) {
+/** `claudeTask` tells the status bar what Claude is fixing in the 'resolve' / 'repair' stages. */
+function stage(name, claudeTask = null) {
   emit({ type: 'stage', stage: name })
   if (name === 'resolve' || name === 'repair') {
-    progress?.waitOnClaude()
+    progress?.waitOnClaude(claudeTask)
   } else if (SYNC_STEPS.some((step) => step.key === `sync:${name}`)) {
     progress?.step(`sync:${name}`)
   }
@@ -233,8 +234,29 @@ function previewConflictCommits(currentBase) {
   }
 }
 
+function rebaseMergeDir() {
+  return path.resolve(repoRoot, git('rev-parse', '--git-path', 'rebase-merge'))
+}
+
 function rebaseInProgress() {
-  return existsSync(path.resolve(repoRoot, git('rev-parse', '--git-path', 'rebase-merge')))
+  return existsSync(rebaseMergeDir())
+}
+
+/** The commit the rebase stopped at, e.g. 74 of 84, for the status bar. */
+function conflictTask() {
+  const readCount = (name) => {
+    try {
+      return Number.parseInt(readFileSync(path.join(rebaseMergeDir(), name), 'utf8'), 10)
+    } catch {
+      return null
+    }
+  }
+  return {
+    kind: 'conflict',
+    commitIndex: readCount('msgnum'),
+    commitCount: readCount('end'),
+    commitSubject: stoppedCommitSubject()
+  }
 }
 
 function rebaseOnto(currentBase) {
@@ -283,7 +305,7 @@ function rebaseOnto(currentBase) {
       if (!eventsMode) {
         break
       }
-      stage('resolve')
+      stage('resolve', conflictTask())
       const resolution = resolveConflictsWithClaude({ cwd: repoRoot, files, onto: targetTag })
       if (!resolution.ok) {
         unresolvedReason = resolution.reason
@@ -348,7 +370,7 @@ function verifyTypecheck(base) {
   if (!eventsMode) {
     fail('pnpm tc failed.')
   }
-  stage('repair')
+  stage('repair', { kind: 'typecheck' })
   const repair = repairTypecheckWithClaude({ cwd: repoRoot, onto: targetTag, base, output: errors })
   if (!repair.ok) {
     fail(`型別檢查失敗，交給 Claude Code 修正也失敗：${repair.reason}。`)

@@ -41,13 +41,20 @@ function writeJson(file, value) {
   renameSync(`${file}.tmp`, file)
 }
 
-/** `phase` is what the status bar names; `estimatedEndAt` null means the wait can't be guessed. */
-export function writeBuildProgress(gitDir, { state, phase, startedAt, estimatedEndAt, pid }) {
+/**
+ * `phase` is what the status bar names; `estimatedEndAt` null means the wait can't be guessed.
+ * `claudeTask` ({ kind, commitIndex?, commitCount?, commitSubject? }) says what Claude is fixing.
+ */
+export function writeBuildProgress(
+  gitDir,
+  { state, phase, startedAt, estimatedEndAt, pid, claudeTask }
+) {
   writeJson(path.join(gitDir, PROGRESS_FILE), {
     state,
     phase,
     startedAt,
     estimatedEndAt,
+    ...(claudeTask ? { claudeTask } : {}),
     pid: pid ?? process.pid,
     updatedAt: Date.now()
   })
@@ -79,6 +86,7 @@ export function createProgressReporter({
   let index = -1
   let stepStartedAt = now()
   let waitingOnClaude = false
+  let claudeTask = null
   // Why: a step Claude worked in ran as long as Claude took, which says nothing about the next run.
   let stepHadClaude = false
 
@@ -93,7 +101,8 @@ export function createProgressReporter({
       state: 'running',
       phase: waitingOnClaude ? 'claude' : phase,
       startedAt,
-      estimatedEndAt: waitingOnClaude ? null : now() + remainingMs()
+      estimatedEndAt: waitingOnClaude ? null : now() + remainingMs(),
+      claudeTask: waitingOnClaude ? claudeTask : null
     })
   const closeStep = () => {
     if (steps[index] && !stepHadClaude) {
@@ -119,10 +128,11 @@ export function createProgressReporter({
       stepHadClaude = false
       write()
     },
-    /** Claude's conflict or type fixes have no predictable length. */
-    waitOnClaude() {
+    /** Claude's conflict or type fixes have no predictable length; `task` is what it is fixing. */
+    waitOnClaude(task = null) {
       waitingOnClaude = true
       stepHadClaude = true
+      claudeTask = task
       write()
     },
     /** Keeps this phase's durations without ending the run, for a phase another script continues. */

@@ -20413,6 +20413,8 @@
         "elapsed": "{{value0}} min elapsed",
         "restarting": "Restarting soon",
         "claude": "Claude is fixing conflicts",
+        "claudeAtCommit": "Claude is fixing conflicts ({{value0}}/{{value1}})",
+        "claudeTypecheck": "Claude is fixing type errors",
         "almostDone": "almost done",
         "underMinute": "under a minute left",
         "minutesLeft": "about {{value0}} min left",

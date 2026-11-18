@@ -1,13 +1,38 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
-import type { ForkBuildProgress } from '../shared/fork-build-progress-types'
-import { isRecord } from './untrusted-json-guards'
+import type { ForkBuildClaudeTask, ForkBuildProgress } from '../shared/fork-build-progress-types'
+import { asString, isRecord } from './untrusted-json-guards'
 
 // Written by config/scripts/fork-maintenance/build-progress.mjs into the repo's .git directory.
 const PROGRESS_FILE = 'orca-build-progress.json'
 const POLL_MS = 2_000
 const PHASES: readonly ForkBuildProgress['phase'][] = ['sync', 'claude', 'build', 'restart']
+const CLAUDE_TASK_KINDS: readonly ForkBuildClaudeTask['kind'][] = ['conflict', 'typecheck']
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0
+}
+
+/** Drops whatever part of the task is malformed instead of hiding the whole progress. */
+function readClaudeTask(raw: unknown): ForkBuildClaudeTask | null {
+  if (!isRecord(raw)) {
+    return null
+  }
+  const kind = CLAUDE_TASK_KINDS.find((candidate) => candidate === raw.kind)
+  if (!kind) {
+    return null
+  }
+  const { commitIndex, commitCount } = raw
+  const counted =
+    isPositiveInteger(commitIndex) && isPositiveInteger(commitCount) && commitIndex <= commitCount
+  const commitSubject = asString(raw.commitSubject)
+  return {
+    kind,
+    ...(counted ? { commitIndex, commitCount } : {}),
+    ...(commitSubject ? { commitSubject } : {})
+  }
+}
 
 function isProcessAlive(pid: number): boolean {
   try {
@@ -44,7 +69,11 @@ export function readBuildProgress(
     return null
   }
   // Why: a killed build leaves its last "running" state behind.
-  return isAlive(pid) ? { phase, startedAt, estimatedEndAt } : null
+  if (!isAlive(pid)) {
+    return null
+  }
+  const claudeTask = phase === 'claude' ? readClaudeTask(raw.claudeTask) : null
+  return { phase, startedAt, estimatedEndAt, ...(claudeTask ? { claudeTask } : {}) }
 }
 
 let current: ForkBuildProgress | null = null

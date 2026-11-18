@@ -19542,6 +19542,8 @@
         "elapsed": "已经过 {{value0}} 分钟",
         "restarting": "即将重新启动",
         "claude": "Claude 正在处理冲突",
+        "claudeAtCommit": "Claude 正在处理冲突（{{value0}}/{{value1}}）",
+        "claudeTypecheck": "Claude 正在修正类型错误",
         "almostDone": "快完成了",
         "underMinute": "不到 1 分钟",
         "minutesLeft": "约剩 {{value0}} 分钟",

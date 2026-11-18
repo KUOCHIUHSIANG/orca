@@ -1,7 +1,24 @@
 import { translate } from '@/i18n/i18n'
-import type { ForkBuildProgress } from '../../../../shared/fork-build-progress-types'
+import type {
+  ForkBuildClaudeTask,
+  ForkBuildProgress
+} from '../../../../shared/fork-build-progress-types'
 
 const MINUTE_MS = 60_000
+
+function describeClaudeTask(task: ForkBuildClaudeTask | undefined): string {
+  if (task?.kind === 'typecheck') {
+    return translate('auto.components.forkBuild.claudeTypecheck', 'Claude is fixing type errors')
+  }
+  if (task?.commitIndex && task.commitCount) {
+    return translate(
+      'auto.components.forkBuild.claudeAtCommit',
+      'Claude is fixing conflicts ({{value0}}/{{value1}})',
+      { value0: task.commitIndex, value1: task.commitCount }
+    )
+  }
+  return translate('auto.components.forkBuild.claude', 'Claude is fixing conflicts')
+}
 
 /** Plain words for the status bar: what is happening and roughly how long until the restart. */
 export function describeForkBuildProgress(
@@ -23,9 +40,10 @@ export function describeForkBuildProgress(
     }
   }
   if (progress.phase === 'claude' || progress.estimatedEndAt === null) {
+    const subject = progress.claudeTask?.commitSubject
     return {
-      label: translate('auto.components.forkBuild.claude', 'Claude is fixing conflicts'),
-      tooltip,
+      label: describeClaudeTask(progress.claudeTask),
+      tooltip: subject ? `${tooltip} · ${subject}` : tooltip,
       percent: null
     }
   }
