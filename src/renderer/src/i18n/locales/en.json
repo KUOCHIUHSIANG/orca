@@ -3547,11 +3547,256 @@
       }
     },
     "components": {
+      "forkUpdate": {
+        "dismiss": "Dismiss",
+        "syncNotesTitle": "Handled automatically during sync",
+        "updatedTitle": "Updated to {{value0}}",
+        "latestRelease": "Latest official release: {{value0}}"
+      },
       "hostPicker": {
         "searchHosts": "Search hosts…",
         "noHostsMatch": "No hosts match.",
         "moreHosts_one": "{{count}} more host. Search by name to find it.",
         "moreHosts_other": "{{count}} more hosts. Search by name to find one."
+      },
+      "todoPanel": {
+        "steps": {
+          "remove": "Remove step"
+        },
+        "delete": {
+          "button": "Delete task",
+          "toast": "Deleted “{{value0}}”",
+          "undo": "Undo"
+        },
+        "details": {
+          "title": "Title",
+          "clearDue": "Clear due date",
+          "notesPlaceholder": "Add a note",
+          "notes": "Notes",
+          "stepsFailed": "Could not load steps.",
+          "reminder": "Reminder",
+          "created": "Created",
+          "save": "Save"
+        },
+        "failure": {
+          "credentialUnreadable": "This Orca can’t read the saved Microsoft sign-in (for example, it was saved by a development build). Sign in again.",
+          "invalidClientId": "That does not look like an application ID (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).",
+          "notConfigured": "Microsoft rejected the app registration: {{value0}}",
+          "signedOut": "Your Microsoft sign-in expired. Sign in again.",
+          "cancelled": "Sign-in was cancelled.",
+          "rateLimited": "Microsoft is limiting requests. Try again in a minute.",
+          "network": "Could not reach Microsoft. Check your network connection.",
+          "unavailable": "Microsoft To Do is not responding right now. Orca will retry automatically.",
+          "api": "Microsoft returned an error: {{value0}}"
+        },
+        "add": {
+          "placeholder": "Add a task, press Enter",
+          "label": "New task",
+          "dueDate": "Due date",
+          "notesPlaceholder": "Note (optional)",
+          "submit": "Add"
+        },
+        "group": {
+          "overdue": "Overdue",
+          "today": "Today",
+          "upcoming": "Upcoming",
+          "noDate": "No due date",
+          "completed": "Completed"
+        },
+        "refresh": "Refresh",
+        "more": "More actions",
+        "signOut": "Sign out of Microsoft",
+        "list": "List",
+        "empty": "Nothing to do. Nice.",
+        "connect": {
+          "title": "Connect Microsoft To Do",
+          "description": "Shows the tasks you add from your phone (Reminders with your Microsoft account, or the To Do app). Sign-in stays encrypted on this computer.",
+          "clientIdLabel": "Application (client) ID",
+          "clientIdHelp": "From your app registration in Microsoft Entra. It is an ID, not a password.",
+          "guide": "Setup guide",
+          "save": "Save",
+          "waiting": "Finish signing in in your browser…",
+          "signIn": "Sign in with Microsoft",
+          "changeClientId": "Change application ID"
+        },
+        "due": {
+          "today": "Today",
+          "tomorrow": "Tomorrow",
+          "nextWeek": "Next week",
+          "previousMonth": "Previous month",
+          "nextMonth": "Next month"
+        },
+        "row": {
+          "openWeb": "Open in To Do on the web",
+          "showDetails": "Show details",
+          "hideDetails": "Hide details",
+          "markOpen": "Mark as not completed",
+          "markDone": "Mark as completed",
+          "important": "Important"
+        }
+      },
+      "detachedPages": {
+        "openWindow": "Open in separate window",
+        "dock": "Move back to main window",
+        "placeholder": "{{value0}} is open in a separate window.",
+        "showWindow": "Show window",
+        "dockHere": "Move back here",
+        "mondayTaskEmpty": "Pick a task in the Monday calendar to show it here.",
+        "errorTitle": "This window hit an error.",
+        "errorDescription": "Retry, or close the window and open the page again."
+      },
+      "mondayCalendar": {
+        "holidays": {
+          "makeupWorkday": "Make-up workday",
+          "substituteFor": "{{value0}} (day off)",
+          "substitute": "Day off in lieu",
+          "toggle": "Show Taiwan public holidays",
+          "source": "From the government office calendar (New Taipei open data), refreshed weekly."
+        },
+        "tabs": {
+          "calendar": "Calendar",
+          "docs": "Docs"
+        },
+        "docs": {
+          "emptyTitle": "No docs yet",
+          "emptyDescription": "Paste a monday doc URL (…/docs/123…) into Monday settings to read it here.",
+          "updated": "Edited {{value0}}",
+          "loading": "Loading doc…"
+        },
+        "boardSettings": {
+          "range": "Time range",
+          "allTime": "All time",
+          "thisWeek": "This week",
+          "recentWeeks": "Last {{value0}} weeks",
+          "includeDone": "Always show done tasks on this board",
+          "title": "Board display",
+          "description": "Limit a board to one group or recent weeks, or keep showing its tasks whoever they belong to.",
+          "group": "Group",
+          "allGroups": "All groups",
+          "ignorePeople": "Show everyone’s tasks on this board, ignoring the people filter"
+        },
+        "boards": {
+          "label": "Boards",
+          "all": "All boards"
+        },
+        "undated": {
+          "title": "No date"
+        },
+        "panel": {
+          "updates": "Updates",
+          "refreshUpdates": "Refresh updates",
+          "loadingUpdates": "Loading updates…",
+          "noUpdates": "No updates yet.",
+          "close": "Close"
+        },
+        "failure": {
+          "docNotFound": "Doc {{value0}} was not found, or this token cannot access it.",
+          "notConnected": "Enter a monday.com API token.",
+          "unauthorized": "monday.com rejected the API token. Check that it is still valid.",
+          "rateLimited": "The monday.com API limit was reached. Try again later.",
+          "boardNotFound": "Board {{value0}} was not found, or this token cannot access it.",
+          "boardMissing": "Enter at least one board or doc URL.",
+          "network": "Could not reach monday.com. Check your network connection.",
+          "api": "monday.com returned an error: {{value0}}"
+        },
+        "connect": {
+          "unrecognized": "Not a monday board or doc URL: {{value0}}",
+          "tokenLabel": "API token",
+          "tokenHelp": "In monday.com, open your avatar → Developers → API token. The token is encrypted on this computer.",
+          "tokenKeepPlaceholder": "Saved — leave empty to keep it",
+          "boardsLabel": "Boards and docs",
+          "boardsHelp": "One board or doc URL (or just its ID) per line. Boards go on the calendar and docs in the Docs tab; subitems are included automatically.",
+          "tokenDocs": "How to get a token"
+        },
+        "settings": {
+          "disconnectFailed": "Could not remove the saved monday.com token.",
+          "title": "Monday settings",
+          "connectedAs": "Reading boards with {{value0}}’s API token. View only — nothing is changed in monday.com.",
+          "description": "View only — nothing is changed in monday.com.",
+          "save": "Save",
+          "disconnect": "Disconnect"
+        },
+        "people": {
+          "label": "People",
+          "others": "Other people",
+          "everyone": "Everyone",
+          "search": "Search people...",
+          "empty": "No matching people."
+        },
+        "toolbar": {
+          "previousMonth": "Previous month",
+          "nextMonth": "Next month",
+          "today": "Today",
+          "showDone": "Show done",
+          "updatedJustNow": "Updated just now",
+          "updated": "Updated {{value0}}",
+          "refresh": "Refresh",
+          "settings": "Monday settings"
+        },
+        "item": {
+          "subitemOf": "Subitem of {{value0}}",
+          "board": "Board",
+          "status": "Status",
+          "owners": "Owners",
+          "dates": "Dates",
+          "open": "Open in Monday",
+          "openInOrcaBrowser": "Open in Orca browser",
+          "openInSystemBrowser": "Open in system browser"
+        },
+        "claude": {
+          "actionLabel": "What Claude should do",
+          "implement": "Implement / fix",
+          "reply": "Understand & reply",
+          "askTask": "Ask Claude",
+          "askUpdate": "Ask Claude about this comment",
+          "search": "Open Claude in project…",
+          "noProjects": "No projects found.",
+          "folders": "Folders",
+          "copyOnly": "Copy prompt to clipboard only",
+          "copied": "Prompt copied.",
+          "copyFailed": "Could not copy the prompt.",
+          "unavailable": "Claude is not available on this project’s host.",
+          "launchFailed": "Could not open Claude in this project."
+        },
+        "claudePrompt": {
+          "implementTask": "Implement or fix this monday task according to its content.",
+          "implementComment": "Implement or fix what the monday comment below asks for.",
+          "replyTask": "Help me understand this monday task, and tell me how I should reply.",
+          "replyComment": "Help me understand what the monday comment below is saying, and tell me how I should reply.",
+          "instructions": "First use the monday tools to read all of the task’s updates and replies (opening the link directly only lands on the login page). To look at an image, get a fresh link from the monday tools (image links expire after an hour), download it into the system temp folder, and delete the file right after viewing it.",
+          "task": "Task: {{value0}}",
+          "updateFocus": "Comment: {{value0}} (update id {{value1}})",
+          "replyFocus": "Comment: {{value0}} (a reply under update id {{value2}}, reply id {{value1}})"
+        },
+        "page": {
+          "openSettings": "Open settings",
+          "retry": "Retry",
+          "connectTitle": "Connect Monday",
+          "connectDescription": "Reads your monday.com boards with a personal API token and shows each task’s start and end dates on a calendar. View only — nothing is changed in monday.com.",
+          "connect": "Connect",
+          "loadingTasks": "Loading monday tasks…"
+        },
+        "notifications": {
+          "title": "Notifications",
+          "titleWithUnread": "Notifications, {{value0}} unread",
+          "unread": "Unread",
+          "unreadCount": "{{value0}} unread monday.com notifications",
+          "someone": "Someone",
+          "mention": "{{value0}} mentioned you",
+          "threadReply": "{{value0}} replied in a thread you joined",
+          "ownerAdded": "{{value0}} added you as an owner",
+          "taskUpdate": "{{value0}} posted on your task",
+          "statusChange": "{{value0}} changed the status of your task",
+          "markAllRead": "Mark all read",
+          "refresh": "Check now",
+          "chooseRecipient": "Choose who you are in monday.com to see your notifications. The API token can belong to someone else.",
+          "checking": "Checking…",
+          "empty": "No notifications in the last 14 days.",
+          "checked": "Checked {{value0}}",
+          "recipient": "Notify me as",
+          "off": "Off",
+          "recipientHint": "Checks every 3 minutes, less often while the computer is idle, for mentions, replies in your threads, being added as an owner, and new comments or status changes on your tasks. Comments by monday agents are skipped."
+        }
       },
       "BrowserCookieImportDisclosure": {
         "title": "Google logins aren't imported",
@@ -7786,6 +8031,7 @@
           "collapseAllProjects": "Collapse all projects"
         },
         "SidebarNav": {
+          "monday": "Monday",
           "80611a8b10": "Search",
           "0c3395fd32": "Search worktrees and browser tabs",
           "c86d83b5c3": "New",
@@ -7798,7 +8044,9 @@
           "fee535205b": "Tasks",
           "d599269755": "Hide from sidebar",
           "artifacts": "Artifacts",
-          "skills": "Skills"
+          "skills": "Skills",
+          "todo": "To Do",
+          "servers": "Servers"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "Clear",
@@ -15327,6 +15575,7 @@
             "31b4c3195d": "More Explorer Actions",
             "d95e30fe28": "Refresh Explorer",
             "6026b16950": "Collapse All",
+            "revealActiveFile": "Reveal Active File",
             "c1f3f3ec70": "Search file contents",
             "openInApp": "Open in {{app}}"
           },
@@ -16104,6 +16353,7 @@
             }
           },
           "index": {
+            "todos": "To Do",
             "70893f017b": "Side",
             "7b415c39e9": "Top",
             "864111caa2": "Activity Bar Position",
@@ -17926,6 +18176,14 @@
           "052c184f24": "Text diff is unavailable for this file.",
           "7dffb0f563": "Binary file",
           "54e0035b15": "Loading diff..."
+        },
+        "GitChangePeekHeader": {
+          "457d2979e3": "Uncommitted changes",
+          "786781f46d": "{{value0}} of {{value1}}",
+          "48cca39ed8": "Previous change",
+          "d3d50ef92d": "Next change",
+          "29fd43681e": "Close",
+          "ca3f71d030": "Revert change"
         },
         "CodeBlockCopyButton": {
           "28921f5bf9": "Copied",
@@ -20978,6 +21236,312 @@
         "noWslDistros": "No WSL distros found",
         "wslDistro": "WSL distro",
         "wslDistroHint": "A Linux distro on this PC"
+      },
+      "todoCalendar": {
+        "addOn": "Add a task on {{value0}}",
+        "closeDetails": "Close details",
+        "view": {
+          "week": "Week",
+          "month": "Month"
+        },
+        "previousWeek": "Previous week",
+        "nextWeek": "Next week",
+        "lists": "Lists",
+        "allLists": "All lists",
+        "showCompleted": "Show completed",
+        "refresh": "Refresh"
+      },
+      "forkBuild": {
+        "justStarted": "Just started",
+        "elapsed": "{{value0}} min elapsed",
+        "restarting": "Restarting soon",
+        "claude": "Claude is fixing conflicts",
+        "claudeAtCommit": "Claude is fixing conflicts ({{value0}}/{{value1}})",
+        "claudeTypecheck": "Claude is fixing type errors",
+        "almostDone": "almost done",
+        "underMinute": "under a minute left",
+        "minutesLeft": "about {{value0}} min left",
+        "syncing": "Syncing upstream",
+        "building": "Building"
+      },
+      "serverFiles": {
+        "template": {
+          "terminalGone": "That terminal is no longer connected to the server, so a new one was opened",
+          "description": "The command is typed at the terminal prompt without pressing Enter. Check it there, then press Enter yourself.",
+          "command": "Command (you can edit it)",
+          "exists": "{{value0}} already exists; running this replaces it",
+          "sendTo": "Type into",
+          "newTerminal": "A new terminal in {{value0}}",
+          "copied": "Command copied",
+          "copy": "Copy",
+          "send": "Type into terminal"
+        },
+        "dialog": {
+          "cancel": "Cancel",
+          "ok": "OK"
+        },
+        "copy": {
+          "leftoversTitle": "{{value0}} already holds {{value1}} items",
+          "leftoversHint": "Often the last backup, possibly of another project. Mixing them makes a later restore ambiguous.",
+          "cannotClear": "Cannot be cleared here: {{value0}}",
+          "clearFirst": "Delete these first, then back up",
+          "keep": "Keep them; overwrite same names",
+          "backupTitle": "Back up {{value0}} items to {{value1}}",
+          "copyTitle": "Copy {{value0}} items to {{value1}}",
+          "onServer": "Copied on the server with cp -a, keeping permissions and times. Nothing passes through this computer.",
+          "exists": "(exists)",
+          "overwriteExisting": "Overwrite the {{value0}} that already exist",
+          "showCommands": "Commands that will run",
+          "backup": "Back up",
+          "copy": "Copy",
+          "clearTitle": "Delete {{value0}} items from {{value1}} first?",
+          "clearConfirm": "Delete and back up",
+          "backupJob": "Back up to {{value0}}",
+          "copyJob": "Copy to {{value0}}"
+        },
+        "table": {
+          "name": "Name",
+          "size": "Size",
+          "modified": "Modified",
+          "permissions": "Permissions",
+          "owner": "Owner",
+          "group": "Group",
+          "empty": "This folder is empty",
+          "justCopied": "Just copied"
+        },
+        "name": {
+          "taken": "Something with this name is already here",
+          "invalid": "Names cannot contain / or be . or .."
+        },
+        "pane": {
+          "retry": "Try again",
+          "selected": "{{value0}} selected · {{value1}}",
+          "count": "{{value0}} items",
+          "free": "{{value0}} free"
+        },
+        "notice": {
+          "protected": "Protected path {{value0}}: nothing here can be deleted or renamed, and overwriting asks once more.",
+          "you": "you are {{value0}} (groups: {{value1}})",
+          "readOnly": "This folder is on a read-only file system.",
+          "notWritable": "No write permission here: {{value0}}; {{value1}}",
+          "unknown": "This account cannot run commands, so permissions are not checked in advance; the server decides."
+        },
+        "toolbar": {
+          "upload": "Upload",
+          "download": "Download"
+        },
+        "path": {
+          "up": "Up one folder",
+          "editHint": "Double-click to type a path",
+          "refresh": "Refresh"
+        },
+        "page": {
+          "intro": "Browse, upload and back up files on your servers over SFTP. Nothing is installed on them.",
+          "desktopOnly": "Servers are available in the desktop app only."
+        },
+        "list": {
+          "add": "New connection",
+          "title": "Connections",
+          "empty": "No servers yet"
+        },
+        "profile": {
+          "name": "Name",
+          "useConfig": "Host from ~/.ssh/config",
+          "manual": "Enter host and account",
+          "alias": "Host alias",
+          "pickAlias": "Pick a host",
+          "jumpWarning": "This host goes through ProxyJump or ProxyCommand. The terminal works; the file panel does not support it yet.",
+          "host": "Host",
+          "port": "Port",
+          "user": "Account",
+          "auth": "Sign in with",
+          "authAuto": "ssh-agent and the keys in ~/.ssh/config",
+          "authKey": "A specific key file",
+          "authPassword": "Password",
+          "passwordSaved": "Saved; leave empty to keep it",
+          "passwordNote": "Encrypted with a key kept in the macOS Keychain; never written in plain text. Terminals still ask for it themselves.",
+          "passwordUnavailable": "This computer cannot encrypt saved passwords, so none can be stored. You will be asked when connecting.",
+          "startPath": "Open at (server)",
+          "startHint": "Empty opens your home folder",
+          "downloadDir": "Download to (this computer)",
+          "downloadHint": "Empty uses Downloads",
+          "needName": "Give the connection a name",
+          "needHost": "Choose a host",
+          "badPort": "The port must be between 1 and 65535",
+          "absolutePaths": "Server paths must start with /",
+          "needProjectName": "Every project needs a name",
+          "needTemplate": "Every command needs a name and a command",
+          "deleteTitle": "Delete the connection “{{value0}}”?",
+          "deleteMessage": "Only this saved connection and its password are removed. Nothing on the server changes.",
+          "delete": "Delete connection",
+          "editTitle": "Connection settings",
+          "newTitle": "New connection",
+          "tabConnection": "Connection",
+          "tabProtected": "Protected paths",
+          "tabProjects": "Projects",
+          "tabTemplates": "Commands",
+          "save": "Save",
+          "protectedLabel": "Protected paths, one per line",
+          "protectedHint": "Nothing at or under these paths can be deleted or renamed from here, even when the server allows it. Overwriting files there asks once more and lists them. Symlinked spellings are covered too.",
+          "removeProject": "Remove project",
+          "projectName": "Project name",
+          "service": "Service",
+          "projectPath": "Project folder",
+          "backupPath": "Backup folder",
+          "database": "Database",
+          "projectsHint": "Back up copies items to the backup folder at the same path inside it. Commands fill {專案} {資料庫} {服務} from the project you are browsing.",
+          "addProject": "Add project",
+          "templatesHint": "Fields you can use: {{value0}}. Commands are typed into the terminal without Enter.",
+          "templateName": "Name",
+          "templateCommand": "Command",
+          "removeTemplate": "Remove command",
+          "addTemplate": "Add command",
+          "gitHost": " (Git service, not a server)",
+          "templatesOneLine": "One line only. For programs that open their own prompt, such as mysql, use the form that runs and exits:",
+          "templatesPasswordFlag": "mysql -p asks for the MySQL password; if it is empty, just press Enter. Without -p the command only works where root has no password; servers with one answer Access denied.",
+          "templateNoPassword": "No -p: this only works on servers where MySQL root has no password; elsewhere it fails with Access denied."
+        },
+        "templates": {
+          "stop": "Stop service",
+          "restart": "Restart service",
+          "status": "Service status",
+          "backupDatabase": "Back up database"
+        },
+        "workspace": {
+          "alias": "ssh-config: {{value0}}",
+          "connecting": "Connecting…",
+          "signedInAs": "Signed in as {{value0}}",
+          "connected": "Connected",
+          "templates": "Commands",
+          "manageTemplates": "Manage commands…",
+          "split": "Split view",
+          "settings": "Connection settings",
+          "disconnect": "Disconnect",
+          "connect": "Connect"
+        },
+        "conflict": {
+          "newer": "Overwrite only newer",
+          "overwriteAll": "Overwrite all",
+          "skipAll": "Skip all",
+          "each": "Decide per file",
+          "notWritable": "No write permission",
+          "local": "This computer",
+          "server": "Server",
+          "title": "{{value0}} files already exist in {{value1}}",
+          "summary": "{{value0}} newer here, {{value1}} with the same time, {{value2}} newer at the destination. {{value3}} new files are copied as well.",
+          "file": "File",
+          "unwritableWarning": "{{value0}} of the files to overwrite have no write permission; the transfer stops at the first one.",
+          "result": "Overwrite {{value0}}, keep {{value1}}",
+          "upload": "Upload",
+          "download": "Download"
+        },
+        "jobs": {
+          "verified": "Checked {{value0}} files: sizes and times match",
+          "mismatched": "{{value0}} of {{value1}} files differ from the original",
+          "timesNotPreserved": "{{value0}} files kept the upload time (you do not own them)",
+          "existingKept": "{{value0}} existing items were kept",
+          "cancel": "Cancel",
+          "files": "{{value0}}/{{value1}} items",
+          "retry": "Try again",
+          "copyError": "Copy error",
+          "reveal": "Go to the copies",
+          "title": "Transfers",
+          "clear": "Clear finished",
+          "speed": "{{value0}}/s"
+        },
+        "download": {
+          "show": "Show in folder",
+          "jobTitle": "Download to {{value0}}",
+          "done": "Downloaded to {{value0}}"
+        },
+        "messages": {
+          "permissionDenied": "Permission denied on the server",
+          "notFound": "No such file or folder",
+          "noSpace": "Not enough disk space",
+          "quotaExceeded": "Disk quota exceeded",
+          "readOnlyFilesystem": "The file system is read-only",
+          "alreadyExists": "Something with this name already exists",
+          "protected": "Blocked by a protected path",
+          "unsupportedTransport": "This server needs ProxyJump, ProxyCommand or a hardware key, which the file panel does not support yet. The terminal still works.",
+          "commandsUnavailable": "This account can only use SFTP, not run commands",
+          "authFailed": "Sign-in failed",
+          "connection": "Could not reach the server",
+          "cancelled": "Cancelled",
+          "planExpired": "This confirmation expired; start again",
+          "invalid": "This request was not accepted",
+          "failure": "The server reported a failure",
+          "noSelection": "Select an item first",
+          "denyProtected": "{{value0}} is under a protected path",
+          "denyProtectedDescendant": "{{value0}} contains a protected path",
+          "denyFolderNotWritable": "You have no write permission on {{value0}}",
+          "denyReadOnly": "{{value0}} is on a read-only file system",
+          "denySticky": "This folder only lets owners delete or rename their own items ({{value0}})",
+          "denyNotReadable": "You have no read permission on {{value0}}",
+          "blockProtected": "Protected path",
+          "blockProtectedDescendant": "Contains a protected path",
+          "blockParent": "No write permission on the folder that holds it",
+          "blockSticky": "The folder only lets owners delete their own items",
+          "blockSubfolder": "No write permission on this subfolder",
+          "refuseOverlapsProject": "The backup folder overlaps the project folder",
+          "refuseOverlapsProtected": "The backup folder overlaps a protected path",
+          "refuseHome": "The backup folder is your home folder or above it",
+          "refuseNotRemovable": "Some of its contents cannot be deleted with your permissions",
+          "errorAt": "{{value0}}: {{value1}}"
+        },
+        "remove": {
+          "blockedTitle": "These items cannot be deleted",
+          "blockedMessage": "Nothing was deleted. Everything is checked first, so a folder is never left half deleted.",
+          "title": "Delete {{value0}} items from {{value1}}?",
+          "message": "This cannot be undone.",
+          "folderCounts": "{{value0}} files, {{value1}} folders inside",
+          "confirm": "Delete",
+          "jobTitle": "Delete {{value0}} items"
+        },
+        "rename": {
+          "title": "Rename",
+          "label": "New name",
+          "confirm": "Rename"
+        },
+        "mkdir": {
+          "title": "New folder",
+          "label": "Folder name",
+          "confirm": "Create"
+        },
+        "upload": {
+          "protectedTitle": "Overwrite {{value0}} files under a protected path?",
+          "protectedConfirm": "Overwrite",
+          "protectedMessage": "These files are protected. They cannot be deleted from here, but a deploy may overwrite them once you confirm.",
+          "nothing": "There are no files to upload",
+          "spaceTitle": "The server may not have enough space",
+          "spaceMessage": "The upload is {{value0}}, but only {{value1}} is free there.",
+          "spaceConfirm": "Upload anyway",
+          "jobTitle": "Upload to {{value0}}"
+        },
+        "terminal": {
+          "floatingOff": "The floating terminal is turned off",
+          "turnOn": "Turn on",
+          "prefillHint": "Edit if needed, then press Enter to run. Ctrl+C cancels."
+        },
+        "actions": {
+          "notReady": "Still loading",
+          "noProject": "Set a project folder and backup folder in this connection’s settings first",
+          "outsideProject": "Only items inside {{value0}} can be backed up",
+          "uploadFiles": "Upload files…",
+          "uploadFolders": "Upload folders…",
+          "uploadContents": "Upload a folder’s contents… (e.g. publish)",
+          "mkdir": "New folder",
+          "download": "Download",
+          "downloadTo": "Download to…",
+          "backup": "Back up",
+          "copyAcross": "Copy to the other pane",
+          "terminal": "Open terminal here",
+          "rename": "Rename",
+          "renameOne": "Rename one item at a time",
+          "remove": "Delete",
+          "copyPath": "Copy path",
+          "unprotect": "Remove from protected paths",
+          "protect": "Add to protected paths"
+        }
       }
     },
     "i18n": {

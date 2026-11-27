@@ -2816,11 +2816,256 @@
       }
     },
     "components": {
+      "forkUpdate": {
+        "dismiss": "关闭",
+        "syncNotesTitle": "同步时自动处理的内容",
+        "updatedTitle": "已更新到 {{value0}}",
+        "latestRelease": "官方最新正式版：{{value0}}"
+      },
       "hostPicker": {
         "searchHosts": "搜索主机…",
         "noHostsMatch": "没有匹配的主机",
         "moreHosts_one": "还有 {{count}} 个主机，请按名称搜索",
         "moreHosts_other": "还有 {{count}} 个主机，请按名称搜索"
+      },
+      "todoPanel": {
+        "steps": {
+          "remove": "移除步骤"
+        },
+        "delete": {
+          "button": "删除待办",
+          "toast": "已删除「{{value0}}」",
+          "undo": "复原"
+        },
+        "details": {
+          "title": "标题",
+          "clearDue": "清除到期日",
+          "notesPlaceholder": "新增备注",
+          "notes": "备注",
+          "stepsFailed": "无法加载步骤。",
+          "reminder": "提醒",
+          "created": "建立时间",
+          "save": "保存"
+        },
+        "add": {
+          "dueDate": "到期日",
+          "label": "新增待办",
+          "placeholder": "新增待办，按 Enter 送出",
+          "notesPlaceholder": "备注（选填）",
+          "submit": "新增"
+        },
+        "connect": {
+          "changeClientId": "更换应用程序 ID",
+          "clientIdHelp": "来自你在 Microsoft Entra 注册的应用程序。这是 ID，不是密码。",
+          "clientIdLabel": "应用程序（客户端）ID",
+          "description": "显示你从手机新增的待办（提醒事项里的 Microsoft 账号，或 To Do App）。登录凭证会加密保存在这台电脑。",
+          "guide": "设置说明",
+          "save": "保存",
+          "signIn": "使用 Microsoft 登录",
+          "title": "连接 Microsoft To Do",
+          "waiting": "请在浏览器中完成登录…"
+        },
+        "due": {
+          "today": "今天",
+          "tomorrow": "明天",
+          "nextWeek": "下周",
+          "previousMonth": "上个月",
+          "nextMonth": "下个月"
+        },
+        "empty": "没有待办，太棒了。",
+        "failure": {
+          "credentialUnreadable": "这个 Orca 无法读取先前保存的 Microsoft 登录（例如之前是在开发版登录的），请重新登录。",
+          "api": "Microsoft 返回错误：{{value0}}",
+          "cancelled": "已取消登录。",
+          "invalidClientId": "这看起来不是应用程序 ID（xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx）。",
+          "network": "无法连接 Microsoft，请检查网络连接。",
+          "notConfigured": "Microsoft 拒绝了这个应用程序注册：{{value0}}",
+          "rateLimited": "Microsoft 正在限制请求次数，请稍后再试。",
+          "signedOut": "Microsoft 登录已过期，请重新登录。",
+          "unavailable": "Microsoft To Do 暂时没有回应，Orca 会自动重试。"
+        },
+        "group": {
+          "completed": "已完成",
+          "noDate": "没有到期日",
+          "overdue": "已逾期",
+          "today": "今天",
+          "upcoming": "之后"
+        },
+        "list": "清单",
+        "more": "更多操作",
+        "refresh": "刷新",
+        "row": {
+          "openWeb": "在 To Do 网页版打开",
+          "showDetails": "显示详情",
+          "hideDetails": "隐藏详情",
+          "important": "重要",
+          "markDone": "标记为已完成",
+          "markOpen": "标记为未完成"
+        },
+        "signOut": "登出 Microsoft"
+      },
+      "detachedPages": {
+        "openWindow": "在独立窗口中打开",
+        "dock": "移回主窗口",
+        "placeholder": "{{value0}} 已在独立窗口中打开。",
+        "showWindow": "显示窗口",
+        "dockHere": "移回这里",
+        "mondayTaskEmpty": "在 Monday 行事历中点选任务，即可在这里显示。",
+        "errorTitle": "此窗口发生错误。",
+        "errorDescription": "请重试，或关闭此窗口后重新打开该页面。"
+      },
+      "mondayCalendar": {
+        "holidays": {
+          "makeupWorkday": "补班",
+          "substituteFor": "{{value0}}补假",
+          "substitute": "补假",
+          "toggle": "显示台湾国定假日",
+          "source": "资料来源：政府行政机关办公日历表（新北市资料开放平台），每周自动更新。"
+        },
+        "tabs": {
+          "calendar": "行事历",
+          "docs": "澳康文件"
+        },
+        "docs": {
+          "emptyTitle": "还没有文件",
+          "emptyDescription": "在 Monday 设置中贴上文件网址（…/docs/123…），就能在这里阅读。",
+          "updated": "{{value0}}编辑",
+          "loading": "正在加载文件…"
+        },
+        "boardSettings": {
+          "range": "时间范围",
+          "allTime": "全部时间",
+          "thisWeek": "本周",
+          "recentWeeks": "最近 {{value0}} 个星期",
+          "includeDone": "此看板的已完成任务一律显示",
+          "title": "看板显示",
+          "description": "可以只显示看板的某个群组或最近几周，或不论负责人是谁都显示它的任务。",
+          "group": "群组",
+          "allGroups": "所有群组",
+          "ignorePeople": "显示此看板所有人的任务，不套用人员筛选"
+        },
+        "boards": {
+          "label": "看板",
+          "all": "所有看板"
+        },
+        "undated": {
+          "title": "没有日期"
+        },
+        "panel": {
+          "updates": "讨论",
+          "refreshUpdates": "刷新讨论",
+          "loadingUpdates": "正在加载讨论…",
+          "noUpdates": "还没有讨论。",
+          "close": "关闭"
+        },
+        "failure": {
+          "docNotFound": "找不到文件 {{value0}}，或此密钥没有访问权限。",
+          "notConnected": "请输入 monday.com API 密钥。",
+          "unauthorized": "monday.com 拒绝了此 API 密钥，请确认密钥仍然有效。",
+          "rateLimited": "已达到 monday.com API 使用上限，请稍后再试。",
+          "boardNotFound": "找不到看板 {{value0}}，或此密钥没有访问权限。",
+          "boardMissing": "请至少输入一个看板或文件网址。",
+          "network": "无法连接 monday.com，请检查网络连接。",
+          "api": "monday.com 返回错误：{{value0}}"
+        },
+        "connect": {
+          "unrecognized": "不是 monday 看板或文件网址：{{value0}}",
+          "tokenLabel": "API 密钥",
+          "tokenHelp": "在 monday.com 点击头像 → Developers → API token 取得。密钥会加密保存在这台电脑上。",
+          "tokenKeepPlaceholder": "已保存，留空则继续使用",
+          "boardsLabel": "看板与文件",
+          "boardsHelp": "每行一个看板或文件的网址（或只贴 ID）。看板显示在行事历，文件显示在文件分页；子任务会自动一起读取。",
+          "tokenDocs": "如何取得密钥"
+        },
+        "settings": {
+          "disconnectFailed": "无法删除已保存的 monday.com 密钥。",
+          "title": "Monday 设置",
+          "connectedAs": "正在使用 {{value0}} 的 API 密钥读取看板。仅供查看，不会修改 monday.com 上的任何内容。",
+          "description": "仅供查看，不会修改 monday.com 上的任何内容。",
+          "save": "保存",
+          "disconnect": "断开连接"
+        },
+        "people": {
+          "label": "人员",
+          "others": "其他人员",
+          "everyone": "所有人",
+          "search": "搜索人员...",
+          "empty": "没有符合的人员。"
+        },
+        "toolbar": {
+          "previousMonth": "上个月",
+          "nextMonth": "下个月",
+          "today": "今天",
+          "showDone": "显示已完成",
+          "updatedJustNow": "刚刚更新",
+          "updated": "{{value0}}更新",
+          "refresh": "刷新",
+          "settings": "Monday 设置"
+        },
+        "item": {
+          "subitemOf": "{{value0}} 的子任务",
+          "board": "看板",
+          "status": "状态",
+          "owners": "负责人",
+          "dates": "日期",
+          "open": "在 Monday 中打开",
+          "openInOrcaBrowser": "在 Orca 浏览器中打开",
+          "openInSystemBrowser": "在系统浏览器中打开"
+        },
+        "claude": {
+          "actionLabel": "要 Claude 做什么",
+          "implement": "实现／修正",
+          "reply": "理解并回复",
+          "askTask": "请 Claude 协助",
+          "askUpdate": "请 Claude 协助处理这则留言",
+          "search": "选择要打开 Claude 的项目…",
+          "noProjects": "找不到项目。",
+          "folders": "文件夹",
+          "copyOnly": "仅复制提示词到剪贴板",
+          "copied": "已复制提示词。",
+          "copyFailed": "无法复制提示词。",
+          "unavailable": "此项目所在的主机上没有可用的 Claude。",
+          "launchFailed": "无法在此项目中打开 Claude。"
+        },
+        "claudePrompt": {
+          "implementTask": "请依照这个 Monday 任务的内容实现或修正。",
+          "implementComment": "请依照下面这则 Monday 留言的要求实现或修正。",
+          "replyTask": "请帮我理解这个 Monday 任务的内容，并告诉我该如何回复。",
+          "replyComment": "请帮我理解下面这则 Monday 留言想表达什么，并告诉我该如何回复。",
+          "instructions": "请先用 monday 工具读取任务的所有讨论与回复（直接打开网址会卡在登录页）。需要看图片时，请用 monday 工具取得新的图片链接（图片链接 1 小时后失效），下载到系统暂存文件夹，看完立刻删除该文件。",
+          "task": "任务：{{value0}}",
+          "updateFocus": "留言：{{value0}}（update id {{value1}}）",
+          "replyFocus": "留言：{{value0}}（update id {{value2}} 底下的回复，reply id {{value1}}）"
+        },
+        "page": {
+          "openSettings": "打开设置",
+          "retry": "重试",
+          "connectTitle": "连接 Monday",
+          "connectDescription": "使用 monday.com 个人 API 密钥读取看板，在行事历上显示每个任务的开始与结束日期。仅供查看，不会修改 monday.com 上的任何内容。",
+          "connect": "连接",
+          "loadingTasks": "正在载入 monday 任务…"
+        },
+        "notifications": {
+          "title": "通知",
+          "titleWithUnread": "通知，{{value0}} 条未读",
+          "unread": "未读",
+          "unreadCount": "{{value0}} 条未读的 monday.com 通知",
+          "someone": "有人",
+          "mention": "{{value0}} 提到了你",
+          "threadReply": "{{value0}} 在你参与的讨论中回复",
+          "ownerAdded": "{{value0}} 将你加为负责人",
+          "taskUpdate": "{{value0}} 在你负责的任务留言",
+          "statusChange": "{{value0}} 更改了你负责的任务状态",
+          "markAllRead": "全部标为已读",
+          "refresh": "立即检查",
+          "chooseRecipient": "选择你在 monday.com 的身份，才能看到你的通知。API 密钥可以是别人的。",
+          "checking": "正在检查…",
+          "empty": "最近 14 天没有通知。",
+          "checked": "{{value0}}已检查",
+          "recipient": "接收通知的身份",
+          "off": "关闭",
+          "recipientHint": "每 3 分钟检查一次（电脑闲置时会放慢）：有人提到你、你参与的讨论有新回复、你被加为负责人，以及你负责的任务有新留言或状态变更。monday 代理发的留言会略过。"
+        }
       },
       "CodexRestartChip": {
         "c72a5fb234": "重新启动",
@@ -6904,6 +7149,7 @@
           "collapseAllProjects": "折叠所有项目"
         },
         "SidebarNav": {
+          "monday": "Monday",
           "80611a8b10": "搜索",
           "0c3395fd32": "搜索工作树和浏览器标签页",
           "c86d83b5c3": "新功能",
@@ -6916,7 +7162,9 @@
           "fee535205b": "任务",
           "d599269755": "从侧边栏隐藏",
           "artifacts": "产物",
-          "skills": "技能"
+          "skills": "技能",
+          "todo": "待办",
+          "servers": "服务器"
         },
         "SidebarRepositoryFilterSection": {
           "d3a9c4cea1": "清除",
@@ -14454,6 +14702,7 @@
             "31b4c3195d": "更多文件管理器操作",
             "d95e30fe28": "刷新文件管理器",
             "6026b16950": "全部折叠",
+            "revealActiveFile": "定位当前文件",
             "c1f3f3ec70": "搜索文件内容",
             "openInApp": "在 {{app}} 中打开"
           },
@@ -15216,6 +15465,7 @@
             }
           },
           "index": {
+            "todos": "待办",
             "70893f017b": "边",
             "7b415c39e9": "顶部",
             "864111caa2": "活动栏位置",
@@ -17018,6 +17268,14 @@
           "052c184f24": "此文件的文本差异不可用",
           "7dffb0f563": "二进制文件",
           "54e0035b15": "加载差异..."
+        },
+        "GitChangePeekHeader": {
+          "457d2979e3": "未提交的更改",
+          "786781f46d": "第 {{value0}} 处，共 {{value1}} 处",
+          "48cca39ed8": "上一处更改",
+          "d3d50ef92d": "下一处更改",
+          "29fd43681e": "关闭",
+          "ca3f71d030": "还原此处更改"
         },
         "CodeBlockCopyButton": {
           "28921f5bf9": "已复制",
@@ -20030,6 +20288,312 @@
         "noWslDistros": "没有找到 WSL 发行版",
         "wslDistro": "WSL 发行版",
         "wslDistroHint": "这台电脑上的 Linux 发行版"
+      },
+      "todoCalendar": {
+        "addOn": "在 {{value0}} 新增待办",
+        "closeDetails": "关闭详情",
+        "view": {
+          "week": "周",
+          "month": "月"
+        },
+        "previousWeek": "上一周",
+        "nextWeek": "下一周",
+        "lists": "清单",
+        "allLists": "所有清单",
+        "showCompleted": "显示已完成",
+        "refresh": "刷新"
+      },
+      "forkBuild": {
+        "justStarted": "刚开始",
+        "elapsed": "已经过 {{value0}} 分钟",
+        "restarting": "即将重新启动",
+        "claude": "Claude 正在处理冲突",
+        "claudeAtCommit": "Claude 正在处理冲突（{{value0}}/{{value1}}）",
+        "claudeTypecheck": "Claude 正在修正类型错误",
+        "almostDone": "快完成了",
+        "underMinute": "不到 1 分钟",
+        "minutesLeft": "约剩 {{value0}} 分钟",
+        "syncing": "同步上游",
+        "building": "构建中"
+      },
+      "serverFiles": {
+        "template": {
+          "terminalGone": "那个终端已不在服务器上，所以改为打开新的终端",
+          "description": "指令会打在终端的命令行上，不会按 Enter。在终端确认后，再自己按 Enter。",
+          "command": "指令（可以直接修改）",
+          "exists": "{{value0}} 已经存在，执行后会被覆盖",
+          "sendTo": "输入到",
+          "newTerminal": "新的终端（在 {{value0}}）",
+          "copied": "已复制指令",
+          "copy": "复制",
+          "send": "输入到终端"
+        },
+        "dialog": {
+          "cancel": "取消",
+          "ok": "知道了"
+        },
+        "copy": {
+          "leftoversTitle": "{{value0}} 里已经有 {{value1}} 个项目",
+          "leftoversHint": "通常是上次的备份，可能是别的项目的。混在一起的话，之后还原时会分不清。",
+          "cannotClear": "无法从这里清空：{{value0}}",
+          "clearFirst": "先删除这些再备份",
+          "keep": "保留，同名的覆盖",
+          "backupTitle": "将 {{value0}} 个项目备份到 {{value1}}",
+          "copyTitle": "将 {{value0}} 个项目复制到 {{value1}}",
+          "onServer": "在服务器上用 cp -a 复制，保留权限与时间，不会经过这台电脑。",
+          "exists": "（已存在）",
+          "overwriteExisting": "覆盖已存在的 {{value0}} 个",
+          "showCommands": "将执行的指令",
+          "backup": "备份",
+          "copy": "复制",
+          "clearTitle": "要先删除 {{value1}} 里的 {{value0}} 个项目吗？",
+          "clearConfirm": "删除并备份",
+          "backupJob": "备份到 {{value0}}",
+          "copyJob": "复制到 {{value0}}"
+        },
+        "table": {
+          "name": "名称",
+          "size": "大小",
+          "modified": "修改时间",
+          "permissions": "权限",
+          "owner": "拥有者",
+          "group": "群组",
+          "empty": "此文件夹是空的",
+          "justCopied": "刚复制"
+        },
+        "name": {
+          "taken": "这里已有同名的文件或文件夹",
+          "invalid": "名称不能包含 /，也不能是 . 或 .."
+        },
+        "pane": {
+          "retry": "重试",
+          "selected": "已选取 {{value0}} 个 · {{value1}}",
+          "count": "{{value0}} 个项目",
+          "free": "剩余 {{value0}}"
+        },
+        "notice": {
+          "protected": "受保护路径 {{value0}}：这里的内容不能删除或重命名，覆盖前会再确认一次。",
+          "you": "你是 {{value0}}（群组：{{value1}}）",
+          "readOnly": "此文件夹位于只读的文件系统。",
+          "notWritable": "这里没有写入权限：{{value0}}；{{value1}}",
+          "unknown": "此账号无法执行指令，所以不会事先检查权限，以服务器的回应为准。"
+        },
+        "toolbar": {
+          "upload": "上传",
+          "download": "下载"
+        },
+        "path": {
+          "up": "上一层",
+          "editHint": "双击可输入路径",
+          "refresh": "刷新"
+        },
+        "page": {
+          "intro": "通过 SFTP 浏览、上传和备份服务器上的文件，不会在服务器上安装任何东西。",
+          "desktopOnly": "服务器功能只能在桌面版使用。"
+        },
+        "list": {
+          "add": "新建连接",
+          "title": "连接",
+          "empty": "还没有服务器"
+        },
+        "profile": {
+          "name": "名称",
+          "useConfig": "使用 ~/.ssh/config 的 Host",
+          "manual": "手动输入主机和账号",
+          "alias": "Host 别名",
+          "pickAlias": "选择主机",
+          "jumpWarning": "这台主机经过 ProxyJump 或 ProxyCommand。终端可以使用，文件面板暂不支持。",
+          "host": "主机",
+          "port": "Port",
+          "user": "账号",
+          "auth": "登录方式",
+          "authAuto": "ssh-agent 与 ~/.ssh/config 设定的密钥",
+          "authKey": "指定密钥文件",
+          "authPassword": "密码",
+          "passwordSaved": "已保存，留空表示不变",
+          "passwordNote": "以保存在 macOS 钥匙串的密钥加密，绝不以明文写入。终端仍会自己询问密码。",
+          "passwordUnavailable": "这台电脑无法加密保存的密码，所以不会保存。连接时会再询问。",
+          "startPath": "打开时的文件夹（服务器）",
+          "startHint": "留空表示家目录",
+          "downloadDir": "下载到（这台电脑）",
+          "downloadHint": "留空则使用“下载”文件夹",
+          "needName": "连接需要名称",
+          "needHost": "选择主机",
+          "badPort": "Port 必须介于 1 到 65535",
+          "absolutePaths": "服务器路径必须以 / 开头",
+          "needProjectName": "每个项目都需要名称",
+          "needTemplate": "每个指令都需要名称与内容",
+          "deleteTitle": "要删除连接“{{value0}}”吗？",
+          "deleteMessage": "只会删除这个保存的连接与它的密码，服务器上不会有任何变动。",
+          "delete": "删除连接",
+          "editTitle": "连接设置",
+          "newTitle": "新建连接",
+          "tabConnection": "连接",
+          "tabProtected": "受保护路径",
+          "tabProjects": "项目",
+          "tabTemplates": "常用指令",
+          "save": "保存",
+          "protectedLabel": "受保护路径，每行一个",
+          "protectedHint": "这些路径本身及其底下的内容一律不能从这里删除或重命名，即使服务器允许也一样。覆盖其中的文件前会再确认一次并逐一列出。通过符号链接到达的路径也受保护。",
+          "removeProject": "移除项目",
+          "projectName": "项目名称",
+          "service": "服务",
+          "projectPath": "项目文件夹",
+          "backupPath": "备份文件夹",
+          "database": "数据库",
+          "projectsHint": "备份时，选取的内容会复制到备份文件夹内相同的路径。常用指令的 {專案} {資料庫} {服務} 会依你正在浏览的项目自动带入。",
+          "addProject": "新建项目",
+          "templatesHint": "可用的字段：{{value0}}。指令会输入到终端，但不会按 Enter。",
+          "templateName": "名称",
+          "templateCommand": "指令",
+          "removeTemplate": "移除指令",
+          "addTemplate": "新建指令",
+          "gitHost": "（Git 服务，不是服务器）",
+          "templatesOneLine": "指令只能是一行。像 mysql 这种会进入自己提示字符的程序，改用执行完就离开的写法：",
+          "templatesPasswordFlag": "mysql 的 -p 会询问 MySQL 密码，没有密码就直接按 Enter。拿掉 -p 只适用于 root 没有密码的服务器，有密码的会出现 Access denied。",
+          "templateNoPassword": "没有 -p：只适用于 MySQL root 没有密码的服务器，其他服务器会出现 Access denied。"
+        },
+        "templates": {
+          "stop": "停止服务",
+          "restart": "重启服务",
+          "status": "查看服务状态",
+          "backupDatabase": "备份数据库"
+        },
+        "workspace": {
+          "alias": "ssh-config：{{value0}}",
+          "connecting": "连接中…",
+          "signedInAs": "以 {{value0}} 登录",
+          "connected": "已连接",
+          "templates": "常用指令",
+          "manageTemplates": "管理常用指令…",
+          "split": "分割视图",
+          "settings": "连接设置",
+          "disconnect": "断开连接",
+          "connect": "连接"
+        },
+        "conflict": {
+          "newer": "只覆盖较新的",
+          "overwriteAll": "全部覆盖",
+          "skipAll": "全部略过",
+          "each": "逐一决定",
+          "notWritable": "没有写入权限",
+          "local": "这台电脑",
+          "server": "服务器",
+          "title": "{{value1}} 里已经有 {{value0}} 个同名文件",
+          "summary": "本机较新 {{value0}} 个、时间相同 {{value1}} 个、目的地较新 {{value2}} 个。另有 {{value3}} 个新文件会一并传输。",
+          "file": "文件",
+          "unwritableWarning": "要覆盖的文件中有 {{value0}} 个没有写入权限，传输会在第一个停下。",
+          "result": "覆盖 {{value0}} 个、保留 {{value1}} 个",
+          "upload": "上传",
+          "download": "下载"
+        },
+        "jobs": {
+          "verified": "已比对 {{value0}} 个文件，大小与时间一致",
+          "mismatched": "{{value1}} 个文件中有 {{value0}} 个与原文件不一致",
+          "timesNotPreserved": "{{value0}} 个文件保留了上传时间（你不是拥有者）",
+          "existingKept": "保留了 {{value0}} 个已存在的项目",
+          "cancel": "取消",
+          "files": "{{value0}}/{{value1}} 个项目",
+          "retry": "重试",
+          "copyError": "复制错误内容",
+          "reveal": "前往副本所在位置",
+          "title": "传输",
+          "clear": "清除已完成",
+          "speed": "{{value0}}/秒"
+        },
+        "download": {
+          "show": "在文件夹中显示",
+          "jobTitle": "下载到 {{value0}}",
+          "done": "已下载到 {{value0}}"
+        },
+        "messages": {
+          "permissionDenied": "服务器拒绝：权限不足",
+          "notFound": "找不到文件或文件夹",
+          "noSpace": "磁盘空间不足",
+          "quotaExceeded": "超出磁盘配额",
+          "readOnlyFilesystem": "文件系统为只读",
+          "alreadyExists": "已有同名的文件或文件夹",
+          "protected": "被受保护路径挡下",
+          "unsupportedTransport": "这台服务器需要 ProxyJump、ProxyCommand 或硬件密钥，文件面板暂不支持。终端仍可使用。",
+          "commandsUnavailable": "此账号只能使用 SFTP，无法执行指令",
+          "authFailed": "登录失败",
+          "connection": "无法连接到服务器",
+          "cancelled": "已取消",
+          "planExpired": "此确认已过期，重新操作一次",
+          "invalid": "此请求未被接受",
+          "failure": "服务器回报失败",
+          "noSelection": "先选取项目",
+          "denyProtected": "{{value0}} 位于受保护路径内",
+          "denyProtectedDescendant": "{{value0}} 里含有受保护路径",
+          "denyFolderNotWritable": "你对 {{value0}} 没有写入权限",
+          "denyReadOnly": "{{value0}} 位于只读的文件系统",
+          "denySticky": "此文件夹只允许拥有者删除或重命名自己的项目（{{value0}}）",
+          "denyNotReadable": "你对 {{value0}} 没有读取权限",
+          "blockProtected": "受保护路径",
+          "blockProtectedDescendant": "含有受保护路径",
+          "blockParent": "对所在的文件夹没有写入权限",
+          "blockSticky": "此文件夹只允许拥有者删除自己的项目",
+          "blockSubfolder": "对此子文件夹没有写入权限",
+          "refuseOverlapsProject": "备份文件夹与项目文件夹重叠",
+          "refuseOverlapsProtected": "备份文件夹与受保护路径重叠",
+          "refuseHome": "备份文件夹是你的家目录或其上层",
+          "refuseNotRemovable": "以你的权限无法删除其中部分内容",
+          "errorAt": "{{value0}}：{{value1}}"
+        },
+        "remove": {
+          "blockedTitle": "这些项目无法删除",
+          "blockedMessage": "没有删除任何东西。会先全部检查过，所以文件夹不会只删一半。",
+          "title": "要从 {{value1}} 删除 {{value0}} 个项目吗？",
+          "message": "删除后无法复原。",
+          "folderCounts": "内含 {{value0}} 个文件、{{value1}} 个文件夹",
+          "confirm": "删除",
+          "jobTitle": "删除 {{value0}} 个项目"
+        },
+        "rename": {
+          "title": "重命名",
+          "label": "新名称",
+          "confirm": "重命名"
+        },
+        "mkdir": {
+          "title": "新建文件夹",
+          "label": "文件夹名称",
+          "confirm": "创建"
+        },
+        "upload": {
+          "protectedTitle": "要覆盖受保护路径内的 {{value0}} 个文件吗？",
+          "protectedConfirm": "覆盖",
+          "protectedMessage": "这些文件受保护，无法从这里删除，但确认后部署可以覆盖它们。",
+          "nothing": "没有可上传的文件",
+          "spaceTitle": "服务器空间可能不足",
+          "spaceMessage": "这次上传需要 {{value0}}，但那里只剩 {{value1}}。",
+          "spaceConfirm": "仍要上传",
+          "jobTitle": "上传到 {{value0}}"
+        },
+        "terminal": {
+          "floatingOff": "浮动终端已关闭",
+          "turnOn": "开启",
+          "prefillHint": "需要的话可以修改，按 Enter 执行，Ctrl+C 取消。"
+        },
+        "actions": {
+          "notReady": "仍在加载",
+          "noProject": "先在这个连接的设置中设定项目文件夹与备份文件夹",
+          "outsideProject": "只有 {{value0}} 里的内容可以这样备份",
+          "uploadFiles": "上传文件…",
+          "uploadFolders": "上传文件夹…",
+          "uploadContents": "上传文件夹里的内容…（例如 publish）",
+          "mkdir": "新建文件夹",
+          "download": "下载",
+          "downloadTo": "下载到…",
+          "backup": "备份",
+          "copyAcross": "复制到另一侧",
+          "terminal": "在此打开终端",
+          "rename": "重命名",
+          "renameOne": "一次只能重命名一个项目",
+          "remove": "删除",
+          "copyPath": "复制路径",
+          "unprotect": "从受保护路径移除",
+          "protect": "加入受保护路径"
+        }
       }
     },
     "i18n": {
