@@ -13,6 +13,7 @@ import {
 import { useAppStore } from '@/store/index'
 import { translate } from '@/i18n/i18n'
 import { useTranslate } from '@/i18n/use-translate'
+import { serverFilesCredentialLabel } from '../server-files/server-files-store'
 
 export function SshPassphraseDialog(): React.JSX.Element | null {
   const t = useTranslate()
@@ -105,7 +106,10 @@ export function SshPassphraseDialog(): React.JSX.Element | null {
     return null
   }
 
-  const label = targetLabels.get(request.targetId) ?? request.targetId
+  const label =
+    targetLabels.get(request.targetId) ??
+    serverFilesCredentialLabel(request.targetId) ??
+    request.targetId
   const isPassword = request.kind === 'password'
   const isKeyboardInteractive = request.kind === 'keyboard-interactive'
 
