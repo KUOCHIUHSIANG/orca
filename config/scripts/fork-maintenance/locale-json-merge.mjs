@@ -16,7 +16,13 @@ import { pathToFileURL } from 'node:url'
 import { isDeepStrictEqual } from 'node:util'
 
 const DRIVER = 'orca-locale-json'
-const CATALOGS = 'src/renderer/src/i18n/locales/*.json'
+const MERGE_RULES = [
+  `src/renderer/src/i18n/locales/*.json merge=${DRIVER}`,
+  `src/renderer/src/i18n/en-runtime-required.json merge=${DRIVER}`,
+  // A generated, sorted catalog: keeping both sides' added lines is right, and the sync's typecheck
+  // catches the rare clash.
+  'src/shared/rpc-contract/rpc-params-catalog.generated.ts merge=union'
+]
 
 function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -85,10 +91,11 @@ export function mergeLocaleJson(baseText, oursText, theirsText) {
 }
 
 /**
- * Registers the driver for the locale catalogs in this clone's own git config and info/attributes,
- * shared by its worktrees; nothing committed, so no upstream file changes.
+ * Registers the sync's merge rules (this driver for the catalogs, git's union for a generated
+ * file) in this clone's own git config and info/attributes, shared by its worktrees; nothing
+ * committed, so no upstream file changes.
  */
-export function installLocaleMergeDriver(cwd) {
+export function installSyncMergeRules(cwd) {
   const git = (...args) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim()
   const commonDir = path.resolve(cwd, git('rev-parse', '--git-common-dir'))
   const driverCopy = path.join(commonDir, 'orca-locale-json-merge.mjs')
@@ -96,14 +103,12 @@ export function installLocaleMergeDriver(cwd) {
   git('config', `merge.${DRIVER}.name`, 'Orca locale catalog key merge')
   git('config', `merge.${DRIVER}.driver`, `node "${driverCopy}" %O %A %B`)
   const attributes = path.join(commonDir, 'info', 'attributes')
-  const rule = `${CATALOGS} merge=${DRIVER}`
   const current = existsSync(attributes) ? readFileSync(attributes, 'utf8') : ''
-  if (!current.split('\n').includes(rule)) {
+  const missing = MERGE_RULES.filter((rule) => !current.split('\n').includes(rule))
+  if (missing.length > 0) {
     mkdirSync(path.dirname(attributes), { recursive: true })
-    writeFileSync(
-      attributes,
-      `${current}${current && !current.endsWith('\n') ? '\n' : ''}${rule}\n`
-    )
+    const separator = current && !current.endsWith('\n') ? '\n' : ''
+    writeFileSync(attributes, `${current}${separator}${missing.join('\n')}\n`)
   }
 }
 

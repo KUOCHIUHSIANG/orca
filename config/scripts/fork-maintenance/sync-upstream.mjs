@@ -31,7 +31,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveConflictsWithClaude } from './claude-conflict-resolution.mjs'
 import { CONSOLIDATE_ABOVE_COMMITS, consolidateForkCommits } from './consolidate-fork-commits.mjs'
-import { installLocaleMergeDriver } from './locale-json-merge.mjs'
+import { installSyncMergeRules } from './locale-json-merge.mjs'
 import { repairTypecheckWithClaude } from './claude-typecheck-repair.mjs'
 import { previewRebaseConflicts } from './rebase-conflict-preview.mjs'
 import { resolveRebaseBase } from './rebase-base.mjs'
@@ -524,7 +524,7 @@ if (plan.rollsBack) {
     `\n[sync-upstream] ${targetTag} was cut from an older base than ${git('describe', '--tags', '--always', plan.base)}; upstream commits it leaves out are dropped too.`
   )
 }
-installLocaleMergeDriver(repoRoot)
+installSyncMergeRules(repoRoot)
 if (plan.kind !== 'already-based') {
   consolidateIfLong(plan.base)
 }

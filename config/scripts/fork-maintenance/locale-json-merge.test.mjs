@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { installLocaleMergeDriver, mergeLocaleJson } from './locale-json-merge.mjs'
+import { installSyncMergeRules, mergeLocaleJson } from './locale-json-merge.mjs'
 
 const CATALOG = 'src/renderer/src/i18n/locales/en.json'
 let repo = null
@@ -42,7 +42,7 @@ describe('mergeLocaleJson', () => {
   })
 })
 
-describe('installLocaleMergeDriver', () => {
+describe('installSyncMergeRules', () => {
   it('lets a rebase through when upstream and the fork add neighbouring keys', () => {
     repo = mkdtempSync(path.join(os.tmpdir(), 'locale-json-merge-'))
     git('init', '-q', '-b', 'main')
@@ -60,7 +60,7 @@ describe('installLocaleMergeDriver', () => {
     writeCatalog({ app: { a: 'A', upstream: 'U', z: 'Z' } })
     git('commit', '-q', '-am', 'upstream adds a key')
 
-    installLocaleMergeDriver(repo)
+    installSyncMergeRules(repo)
     git('rebase', '-q', 'main', 'fork')
 
     expect(JSON.parse(readFileSync(path.join(repo, CATALOG), 'utf8'))).toEqual({
