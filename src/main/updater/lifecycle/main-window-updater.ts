@@ -41,6 +41,17 @@ import {
   watchEmergencyUpdateFloor
 } from '../releases/updater-emergency-policy'
 import { applyEmergencyUpdateFloor } from '../releases/updater-release-policy'
+import {
+  getForkSource,
+  isForkBuild,
+  checkForkUpdate,
+  getForkUpdateStatus,
+  installForkUpdate,
+  startForkUpdateChecks,
+  syncAndBuild
+} from '../../fork-update'
+import { registerForkSyncSummaryHandlers } from '../../fork-sync-summary'
+import { registerForkBuildProgress } from '../../fork-build-progress'
 
 const UPDATER_SETUP_FALLBACK_MS = 15_000
 
@@ -194,6 +205,12 @@ export function scheduleMainWindowAutoUpdaterSetup(
       return
     }
     updaterSetupDone = true
+    // Why: electron-updater's background checks read the upstream release feed, which a fork build can't install.
+    if (isForkBuild()) {
+      clearDeferredSetup()
+      startForkUpdateChecks()
+      return
+    }
     try {
       setupAutoUpdaterWithAppProxy(mainWindow, nativeSettings, options)
       logStartupMilestone('updater-setup-done')
@@ -226,14 +243,29 @@ export function registerUpdaterHandlers(): void {
   ipcMain.removeHandler('updater:showLinuxPackage')
   ipcMain.removeHandler('updater:listBuilds')
 
-  ipcMain.handle('updater:getStatus', () => getUpdateStatus())
+  ipcMain.handle('updater:getStatus', () =>
+    isForkBuild() ? getForkUpdateStatus() : getUpdateStatus()
+  )
   ipcMain.handle('updater:getVersion', () => app.getVersion())
   ipcMain.handle('updater:check', (_event, options?: UpdateCheckOptions) => {
+    if (isForkBuild()) {
+      return checkForkUpdate()
+    }
     ensureAutoUpdaterConfigured()
     return checkForUpdatesFromMenu(options)
   })
-  ipcMain.handle('updater:download', () => downloadUpdate())
-  ipcMain.handle('updater:quitAndInstall', () => quitAndInstall())
+  ipcMain.handle('updater:download', () => {
+    if (isForkBuild()) {
+      return syncAndBuild()
+    }
+    return downloadUpdate()
+  })
+  ipcMain.handle('updater:quitAndInstall', () => {
+    if (isForkBuild()) {
+      return installForkUpdate()
+    }
+    return quitAndInstall()
+  })
   ipcMain.handle('updater:dismissNudge', () => dismissNudge())
   ipcMain.handle('updater:dismissAvailableUpdate', () => dismissAvailableUpdate())
   ipcMain.handle('updater:snoozeRequiredUpdate', (event) => {
@@ -271,6 +303,8 @@ export function registerUpdaterHandlers(): void {
       }
     }
   )
+  registerForkSyncSummaryHandlers()
+  registerForkBuildProgress(getForkSource()?.repoRoot ?? null)
 }
 
 function assertTrustedUpdaterRecoverySender(event: IpcMainInvokeEvent): void {

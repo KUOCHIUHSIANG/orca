@@ -106,6 +106,8 @@ export type UpdateStatus = (
       delayedUpdate?: DelayedUpdate
       /** Optional so older paired clients keep rendering "up to date". */
       unsupportedSystemUpdate?: UnsupportedSystemUpdate
+      /** Fork builds: the newest official upstream release, which the fork is already on. */
+      latestUpstreamVersion?: string
     }
   | { state: 'downloading'; percent: number; version: string; activeNudgeId?: string }
   | {
@@ -116,6 +118,8 @@ export type UpdateStatus = (
       /** Install preparation is in progress; older clients can still render downloaded. */
       installing?: boolean
       teamRestart?: TeamUpdateRestart
+      /** Fork builds only: what the upstream sync changed on its own (e.g. conflicts Claude resolved). */
+      notes?: string
     }
   | {
       state: 'error'

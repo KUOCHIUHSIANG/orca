@@ -15,6 +15,7 @@ import type { createWebContentsTimedFlag } from './web-contents-timed-flag'
 import { recordCrashBreadcrumb } from '../../crash-reporting/breadcrumbs/crash-breadcrumb-store'
 import { recordDurableCrashBreadcrumb } from '../../crash-reporting/breadcrumbs/durable-crash-breadcrumb'
 import { checkForUpdatesFromMenu, isQuittingForUpdate } from '../../updater/updater-service'
+import { checkForkUpdate, isForkBuild } from '../../fork-update'
 import {
   createSystemTray,
   setMacMenuBarIconVisible,
@@ -29,6 +30,7 @@ import { mainProcessState as state } from '../main-process-state'
 import { quitTeardownStartGate } from '../quit/quit-teardown-start-gate'
 import { getDashboardPopoutWindow } from '../../window/dashboard-popout-window'
 import { getWorkspaceSpaceWindow } from '../../window/workspace-space-window'
+import { listDetachedPageWindows } from '../../window/detached-page-window'
 import { markUserQuitWindowClose } from '../../window/main-window/user-quit-window-close'
 import { loadMainWindow } from '../../window/createMainWindow'
 import {
@@ -214,6 +216,11 @@ export async function quitAfterRendererStoppedAllSessions(
 
 export function runUserInitiatedUpdateCheck(options?: UpdateCheckOptions): void {
   ensureAutoUpdaterConfigured()
+  // Why: fork builds never set up electron-updater, so its menu check would do nothing.
+  if (isForkBuild()) {
+    checkForkUpdate()
+    return
+  }
   checkForUpdatesFromMenu(options)
 }
 
@@ -280,7 +287,9 @@ function resolveMenuTargetRenderer(targetWindow?: BrowserWindow | null): WebCont
   const invokingWindow = targetWindow && !targetWindow.isDestroyed() ? targetWindow : undefined
   const isCompanion =
     invokingWindow &&
-    (invokingWindow === getDashboardPopoutWindow() || invokingWindow === getWorkspaceSpaceWindow())
+    (invokingWindow === getDashboardPopoutWindow() ||
+      invokingWindow === getWorkspaceSpaceWindow() ||
+      listDetachedPageWindows().includes(invokingWindow))
   if (invokingWindow && !isCompanion && !isNativeBrowserPopupWindow(invokingWindow)) {
     return invokingWindow.webContents
   }

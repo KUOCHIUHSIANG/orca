@@ -9,6 +9,7 @@ import { UpdateErrorCardContent, type UpdateErrorCardModel } from './UpdateError
 import { LinuxPackageInstallRecoveryCard } from './LinuxPackageInstallRecoveryCard'
 import { useTranslate } from '@/i18n/use-translate'
 import { UpdateCheckFeedback } from './UpdateCheckFeedback'
+import { getLatestUpstreamReleaseLink } from './latest-upstream-release-link'
 import {
   UpdateAvailableRichContent,
   UpdateAvailableSimpleContent
@@ -75,6 +76,7 @@ export function UpdateCardStateContent({
               )
             : t('auto.components.UpdateCard.ea2a41adbe', "You're on the latest version.")
         }
+        action={getLatestUpstreamReleaseLink(status) ?? undefined}
       />
     )
   }

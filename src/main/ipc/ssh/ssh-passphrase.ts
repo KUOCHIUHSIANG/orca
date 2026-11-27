@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { SSH_CREDENTIAL_TIMEOUT_MS } from '../../ssh/connection/ssh-connection-timing'
 import type { SshCredentialKind } from '../../ssh/connection/ssh-connection-callbacks'
 import { recordSshCredentialDeclined } from '../../ssh/authentication/ssh-credential-decline'
-import { sshDesktopHost } from '../../ssh/application/ssh-desktop-host'
+import { sshDesktopHost, type SshDesktopHost } from '../../ssh/application/ssh-desktop-host'
 const pendingRequests = new Map<
   string,
   { targetId: string; resolve: (value: string | null) => void; close: () => void }
@@ -13,7 +13,10 @@ export function requestCredential(
   kind: SshCredentialKind,
   detail: string,
   echo?: boolean,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  // Fork: the Servers page prompts in whichever window shows it.
+  publish: SshDesktopHost['publish'] = (channel, payload) =>
+    sshDesktopHost().publish(channel, payload)
 ): Promise<string | null> {
   const requestId = randomUUID()
   const { promise, resolve } = Promise.withResolvers<string | null>()
@@ -24,7 +27,7 @@ export function requestCredential(
     }
     clearTimeout(timer)
     signal?.removeEventListener('abort', onAbort)
-    sshDesktopHost().publish('ssh:credential-resolved', { requestId })
+    publish('ssh:credential-resolved', { requestId })
     resolve(value)
   }
   const onAbort = (): void => finish(null)
@@ -54,9 +57,7 @@ export function requestCredential(
   }
   signal?.addEventListener('abort', onAbort, { once: true })
 
-  if (
-    !sshDesktopHost().publish('ssh:credential-request', { requestId, targetId, kind, detail, echo })
-  ) {
+  if (!publish('ssh:credential-request', { requestId, targetId, kind, detail, echo })) {
     finish(null)
   }
   return promise

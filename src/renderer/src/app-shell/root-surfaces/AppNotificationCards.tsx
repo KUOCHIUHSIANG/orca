@@ -6,6 +6,7 @@ import { CodexSharedSettingsNoticeCard } from '../../components/terminal-pane/pr
 import { NotificationCardStack } from '../../components/notifications/NotificationCardStack'
 import { StarNagCard } from '../../components/star-nag/StarNagCard'
 import { WorkspaceCleanupRunCard } from '../../components/workspace-cleanup/removal/run/WorkspaceCleanupRunCard'
+import { ForkSyncSummaryCard } from '../../components/ForkSyncSummaryCard'
 import { OverlayBoundary } from './app-root-surface-boundaries'
 
 const ChatUiHereCornerCard = lazy(() =>
@@ -70,6 +71,9 @@ export function AppNotificationCards({
       </OverlayBoundary>
       <OverlayBoundary boundaryId="overlay.star-nag" resetKey={activeView}>
         <StarNagCard />
+      </OverlayBoundary>
+      <OverlayBoundary boundaryId="overlay.fork-sync-summary" resetKey={activeView}>
+        <ForkSyncSummaryCard />
       </OverlayBoundary>
       <OverlayBoundary boundaryId="overlay.codex-shared-settings-notice" resetKey={activeView}>
         <CodexSharedSettingsNoticeCard />
