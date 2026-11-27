@@ -16,6 +16,7 @@ import ClaudeAccountSwitchDialog from './components/provider-accounts/claude/Cla
 import { AppBackgroundServices } from './app-shell/AppBackgroundServices'
 import { AppRootSurfaces } from './app-shell/AppRootSurfaces'
 import { AppWorkspaceShell } from './app-shell/AppWorkspaceShell'
+import { WorkspaceBottomPanel } from './components/bottom-panel/WorkspaceBottomPanel'
 import { WindowControls } from './app-shell/chrome/WindowControls'
 import {
   MAC_TRAFFIC_LIGHTS_WIDTH,
@@ -113,6 +114,7 @@ function App(): React.JSX.Element {
             <AppBackgroundServices />
             <SpaceWindowStatePublisher />
             <AppWorkspaceShell layout={layout} floatingWorkspace={floatingWorkspace} />
+            <WorkspaceBottomPanel />
             <AppRootSurfaces
               floatingWorkspace={floatingWorkspace}
               onboardingGate={onboardingGate}
