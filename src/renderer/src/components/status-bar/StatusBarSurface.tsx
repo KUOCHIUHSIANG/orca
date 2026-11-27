@@ -12,6 +12,9 @@ import { NativeChatResumeStatusSegment } from './NativeChatResumeStatusSegment'
 import { CaffeinateStatusSegment } from './CaffeinateStatusSegment'
 import { PluginsStatusSegment } from './plugins/PluginsStatusSegment'
 import { PluginStatusBarItems } from './plugins/PluginStatusBarItems'
+import { BottomPanelStatusSegment } from './BottomPanelStatusSegment'
+import { ForkBuildStatusSegment } from './ForkBuildStatusSegment'
+import { useForkBuildProgress } from './use-fork-build-progress'
 import { RemoteServerUpdateStatusSegment } from './updates/RemoteServerUpdateStatusSegment'
 import { TOGGLE_FLOATING_TERMINAL_EVENT } from '@/components/floating-terminal/workspace/floating-workspace-open-intent'
 import { FloatingTerminalIconContextMenu } from '@/components/floating-terminal/trigger/FloatingTerminalIconContextMenu'
@@ -65,6 +68,7 @@ export function StatusBarSurface({
   // Memoized labels still need to follow language changes.
   useTranslation()
   const controller = useStatusBarController(floatingTerminalOpen)
+  const forkBuildProgress = useForkBuildProgress()
   if (!controller) {
     return null
   }
@@ -85,7 +89,7 @@ export function StatusBarSurface({
     <div
       data-orca-status-bar=""
       // Why: one line at any width. overflow-clip (not hidden) so focus can't scroll the bar; the clip margin spares focus rings and badge dots.
-      className="flex items-center h-6 min-h-[24px] px-3 gap-4 overflow-clip [overflow-clip-margin:3px] whitespace-nowrap border-t border-border bg-[var(--bg-titlebar,var(--card))] text-xs select-none shrink-0 relative"
+      className="flex items-center h-6 min-h-[24px] pl-11 pr-3 gap-4 overflow-clip [overflow-clip-margin:3px] whitespace-nowrap border-t border-border bg-[var(--bg-titlebar,var(--card))] text-xs select-none shrink-0 relative"
       onContextMenuCapture={(event) => {
         if (!shouldOpenStatusBarContextMenu(event.target)) {
           return
@@ -98,6 +102,10 @@ export function StatusBarSurface({
         setMenuOpen(true)
       }}
     >
+      {/* Why: far left, under the bottom panel's tool strip; it sits in the left padding so it never scrolls with the segments. */}
+      <div className="absolute top-1/2 left-3 flex -translate-y-1/2 items-center">
+        <BottomPanelStatusSegment />
+      </div>
       <StatusBarUsageArea controller={controller} />
 
       {/* Why: attention segments shrink only after usage reaches its minimum, then scroll instead of
@@ -107,6 +115,7 @@ export function StatusBarSurface({
         className="-mx-1 flex min-w-0 items-center self-stretch overflow-x-auto scrollbar-none"
       >
         <div className="flex w-max items-center gap-3 px-1">
+          <ForkBuildStatusSegment progress={forkBuildProgress} />
           {!isPairedWebClientWindow() ? (
             <>
               <PluginsStatusSegment />
@@ -118,7 +127,8 @@ export function StatusBarSurface({
           <SkillUpdateStatusSegment />
           <AgentCliUpdateStatusSegment />
           <NativeChatResumeStatusSegment />
-          <UpdateStatusSegment />
+          {/* Why: a fork build reports its own progress; the download percent would repeat it. */}
+          {forkBuildProgress ? null : <UpdateStatusSegment />}
           {showGitBlame ? <GitBlameStatusSegment /> : null}
           <React.Suspense fallback={null}>
             {petEnabled ? <PetStatusSegment /> : null}

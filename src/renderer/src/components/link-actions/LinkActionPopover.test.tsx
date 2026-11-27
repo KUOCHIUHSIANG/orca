@@ -1,0 +1,131 @@
+// @vitest-environment happy-dom
+import type { ReactNode } from 'react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { LinkActionRequest } from './link-action-request'
+
+const mocks = vi.hoisted(() => ({
+  openSettingsPage: vi.fn(),
+  openSettingsTarget: vi.fn(),
+  toastError: vi.fn(),
+  toastSuccess: vi.fn(),
+  imageSrc: vi.fn((): string | undefined => undefined)
+}))
+
+vi.mock('@/components/editor/document-images/useLocalImageSrc', () => ({
+  useLocalImageSrc: () => mocks.imageSrc()
+}))
+
+vi.mock('sonner', () => ({
+  toast: { error: mocks.toastError, success: mocks.toastSuccess }
+}))
+
+vi.mock('@/store', () => ({
+  useAppStore: (
+    selector: (state: {
+      openSettingsPage: () => void
+      openSettingsTarget: (target: unknown) => void
+    }) => unknown
+  ) =>
+    selector({
+      openSettingsPage: mocks.openSettingsPage,
+      openSettingsTarget: mocks.openSettingsTarget
+    })
+}))
+
+vi.mock('@/components/ui/tooltip', () => ({
+  Tooltip: ({ children }: { children: ReactNode }) => children,
+  TooltipTrigger: ({ children }: { children: ReactNode }) => children,
+  TooltipContent: ({ children }: { children: ReactNode }) => <span>{children}</span>
+}))
+
+vi.mock('@/components/ui/popover', () => ({
+  Popover: ({
+    children,
+    open,
+    onOpenChange
+  }: {
+    children: ReactNode
+    open: boolean
+    onOpenChange: (open: boolean) => void
+  }) =>
+    open ? (
+      <div>
+        <button data-testid="dismiss-popover" onClick={() => onOpenChange(false)} />
+        {children}
+      </div>
+    ) : null,
+  PopoverAnchor: () => null,
+  PopoverContent: ({ children, className }: { children: ReactNode; className?: string }) => (
+    <div className={className}>{children}</div>
+  )
+}))
+
+import { LinkActionPopover } from './LinkActionPopover'
+
+const PREVIEW_CONTEXT = {
+  target: { kind: 'local' },
+  worktreeId: 'wt-1',
+  worktreePath: '/repo'
+} as const
+
+afterEach(() => {
+  cleanup()
+  vi.clearAllMocks()
+  mocks.imageSrc.mockReset()
+  vi.unstubAllGlobals()
+})
+
+describe('LinkActionPopover', () => {
+  it('shows a linked image above the rows and opens it like the primary row', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    mocks.imageSrc.mockReturnValue('blob:preview')
+    const onClose = vi.fn()
+    const restoreFocus = vi.fn()
+    const run = vi.fn()
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: 'file:///tmp/claude/images/1.png',
+      kind: 'file',
+      primary: { label: 'Open file', run },
+      imagePreview: {
+        filePath: '/tmp/claude/images/1.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus
+    }
+
+    render(<LinkActionPopover request={request} onClose={onClose} />)
+
+    const image = screen.getByRole('img', { name: '1.png' })
+    expect(image.getAttribute('src')).toBe('blob:preview')
+    const buttons = screen.getAllByRole('button', { name: 'Open file' })
+    expect(buttons[0]).toBe(image.closest('button'))
+    fireEvent.click(image)
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(restoreFocus).toHaveBeenCalledOnce()
+    expect(run).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the plain rows while the linked image is unreadable', () => {
+    vi.stubGlobal('navigator', { userAgent: 'Macintosh' })
+    const request: LinkActionRequest = {
+      anchorX: 100,
+      anchorY: 200,
+      destination: '/tmp/missing.png',
+      kind: 'file',
+      primary: { label: 'Open file', run: vi.fn() },
+      imagePreview: {
+        filePath: '/tmp/missing.png',
+        context: PREVIEW_CONTEXT
+      },
+      restoreFocus: vi.fn()
+    }
+
+    render(<LinkActionPopover request={request} onClose={vi.fn()} />)
+
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(screen.getByText('Open file')).toBeTruthy()
+  })
+})

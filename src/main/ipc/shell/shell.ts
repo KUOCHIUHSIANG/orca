@@ -38,6 +38,7 @@ import {
 } from './shell-owned-path-target'
 import { inspectLinkedFile } from './linked-file-inspection'
 import { registerShellPathExistenceHandlers } from './shell-path-existence-handlers'
+import { openExternalUrlInFrontBrowserWindow } from '../../external-link-chromium-front-window'
 
 const REPO_ICON_IMAGE_MIME_TYPES: Record<string, string> = {
   '.png': 'image/png'
@@ -186,7 +187,7 @@ export function registerShellHandlers(
       return
     }
 
-    return shell.openExternal(parsed.toString())
+    return openExternalUrlInFrontBrowserWindow(parsed.toString())
   })
 
   ipcMain.handle(
