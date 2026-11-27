@@ -139,6 +139,9 @@ export type UiViewHistory =
   | 'skills'
   | 'artifacts'
   | 'mobile'
+  | 'monday'
+  | 'todo'
+  | 'servers'
 
 export type UISliceCore = {
   sidebarOpen: boolean
@@ -179,6 +182,9 @@ export type UISliceCore = {
   previousViewBeforeSkills: Exclude<UiViewHistory, 'skills'>
   previousViewBeforeMobile: Exclude<UiViewHistory, 'mobile'>
   previousViewBeforeArtifacts: Exclude<UiViewHistory, 'artifacts'>
+  previousViewBeforeMonday: Exclude<UiViewHistory, 'monday'>
+  previousViewBeforeTodo: Exclude<UiViewHistory, 'todo'>
+  previousViewBeforeServers: Exclude<UiViewHistory, 'servers'>
   setActiveView: (view: UISliceCore['activeView']) => void
   taskPageData: TaskPageData
   taskResumeState: TaskResumeState | undefined
@@ -218,6 +224,12 @@ export type UISliceCore = {
   closeSpacePage: () => void
   openSkillsPage: () => void
   closeSkillsPage: () => void
+  openMondayPage: () => void
+  closeMondayPage: () => void
+  openTodoPage: () => void
+  closeTodoPage: () => void
+  openServersPage: () => void
+  closeServersPage: () => void
   /** The template Bot templates last showed; it reopens on it. Null shows the first. */
   botTemplateSelected: string | null
   selectBotTemplate: (templateId: string) => void

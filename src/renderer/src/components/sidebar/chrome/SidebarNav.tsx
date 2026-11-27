@@ -1,5 +1,14 @@
 import React from 'react'
-import { BookOpen, CalendarClock, EyeOff, Files, Search, Smartphone } from 'lucide-react'
+import {
+  BookOpen,
+  CalendarClock,
+  CalendarDays,
+  EyeOff,
+  Files,
+  ListTodo,
+  Search,
+  Smartphone
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '@/store/index'
 import { cn } from '@/lib/class-names'
@@ -11,6 +20,9 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SetupGuideSidebarEntry } from '../../setup-guide/SetupGuideSidebarEntry'
 import { SidebarTaskNavButton } from './SidebarTaskNavButton'
+import { ServerFilesSidebarNavEntry } from '../../server-files/ServerFilesSidebarNavEntry'
+import { useMondayNotifications } from '../../monday-calendar/use-monday-notifications'
+import { Badge } from '@/components/ui/badge'
 import { HideSidebarMenu, SIDEBAR_NAV_DIMMED_ICON_CLASS_NAME } from './sidebar-nav-controls'
 import { useTranslate } from '@/i18n/use-translate'
 import { lazyWithRetry } from '@/app-shell/startup/lazy-with-retry'
@@ -62,6 +74,9 @@ const SidebarNav = React.memo(function SidebarNav() {
   const openMobilePage = useAppStore((s) => s.openMobilePage)
   const openArtifactsPage = useAppStore((s) => s.openArtifactsPage)
   const openSkillsPage = useAppStore((s) => s.openSkillsPage)
+  const openMondayPage = useAppStore((s) => s.openMondayPage)
+  const mondayUnread = useMondayNotifications()?.unreadCount ?? 0
+  const openTodoPage = useAppStore((s) => s.openTodoPage)
   const openModal = useAppStore((s) => s.openModal)
   const updateSettings = useAppStore((s) => s.updateSettings)
   const activeView = useAppStore((s) => s.activeView)
@@ -76,6 +91,8 @@ const SidebarNav = React.memo(function SidebarNav() {
   const mobileActive = activeView === 'mobile'
   const artifactsActive = activeView === 'artifacts'
   const skillsActive = activeView === 'skills'
+  const mondayActive = activeView === 'monday'
+  const todoActive = activeView === 'todo'
   // The badge's paired-device lookup runs only while the list shows the Mobile row.
   const mobileOnboardingBadge = useMobileSidebarOnboardingBadge(showMobileButton && !appRailVisible)
   const hideAutomationsButton = React.useCallback(() => {
@@ -131,6 +148,53 @@ const SidebarNav = React.memo(function SidebarNav() {
       </button>
       <SetupGuideSidebarEntry />
       {appRailVisible ? null : <SidebarTaskNavButton />}
+      <button
+        type="button"
+        onClick={openMondayPage}
+        aria-current={mondayActive ? 'page' : undefined}
+        className={cn(
+          'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-medium tracking-tight transition-colors',
+          mondayActive
+            ? 'bg-worktree-sidebar-accent text-worktree-sidebar-accent-foreground'
+            : 'text-worktree-sidebar-foreground/60 hover:bg-worktree-sidebar-foreground/8'
+        )}
+      >
+        <CalendarDays
+          className={cn('size-4 shrink-0', !mondayActive && 'text-worktree-sidebar-foreground/30')}
+          strokeWidth={mondayActive ? 2.25 : 1.75}
+        />
+        <span className="flex-1">{t('auto.components.sidebar.SidebarNav.monday', 'Monday')}</span>
+        {mondayUnread > 0 ? (
+          <Badge
+            aria-label={t(
+              'auto.components.mondayCalendar.notifications.unreadCount',
+              '{{value0}} unread monday.com notifications',
+              { value0: mondayUnread }
+            )}
+            className="h-4 min-w-4 px-1 py-0 text-3xs tabular-nums"
+          >
+            {mondayUnread > 99 ? '99+' : mondayUnread}
+          </Badge>
+        ) : null}
+      </button>
+      <button
+        type="button"
+        onClick={openTodoPage}
+        aria-current={todoActive ? 'page' : undefined}
+        className={cn(
+          'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[13px] font-medium tracking-tight transition-colors',
+          todoActive
+            ? 'bg-worktree-sidebar-accent text-worktree-sidebar-accent-foreground'
+            : 'text-worktree-sidebar-foreground/60 hover:bg-worktree-sidebar-foreground/8'
+        )}
+      >
+        <ListTodo
+          className={cn('size-4 shrink-0', !todoActive && 'text-worktree-sidebar-foreground/30')}
+          strokeWidth={todoActive ? 2.25 : 1.75}
+        />
+        <span className="flex-1">{t('auto.components.sidebar.SidebarNav.todo', 'To Do')}</span>
+      </button>
+      <ServerFilesSidebarNavEntry />
       {showArtifactsButton && !appRailVisible ? (
         <ContextMenu>
           <ContextMenuTrigger asChild>

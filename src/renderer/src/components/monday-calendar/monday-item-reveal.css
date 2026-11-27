@@ -1,0 +1,18 @@
+/* A task a notification revealed: amber pulses like the file explorer's reveal, then its own
+   selection ring returns. */
+[data-monday-item][data-flashing='true'] {
+  animation: monday-item-reveal-flash 600ms ease-in-out 3;
+}
+
+@keyframes monday-item-reveal-flash {
+  50% {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-amber-400) 85%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-monday-item][data-flashing='true'] {
+    animation: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-amber-400) 85%, transparent);
+  }
+}

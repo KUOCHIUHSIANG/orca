@@ -127,6 +127,45 @@ export function createUiViewActions(set: UISliceSet, get: UISliceGet): Partial<U
         activeView: state.previousViewBeforeArtifacts,
         worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'artifacts')
       })),
+    openMondayPage: () => {
+      get().recordViewVisit('monday')
+      set((state) => ({
+        activeView: 'monday',
+        previousViewBeforeMonday:
+          state.activeView === 'monday' ? state.previousViewBeforeMonday : state.activeView
+      }))
+    },
+    closeMondayPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeMonday,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'monday')
+      })),
+    openTodoPage: () => {
+      get().recordViewVisit('todo')
+      set((state) => ({
+        activeView: 'todo',
+        previousViewBeforeTodo:
+          state.activeView === 'todo' ? state.previousViewBeforeTodo : state.activeView
+      }))
+    },
+    closeTodoPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeTodo,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'todo')
+      })),
+    openServersPage: () => {
+      get().recordViewVisit('servers')
+      set((state) => ({
+        activeView: 'servers',
+        previousViewBeforeServers:
+          state.activeView === 'servers' ? state.previousViewBeforeServers : state.activeView
+      }))
+    },
+    closeServersPage: () =>
+      set((state) => ({
+        activeView: state.previousViewBeforeServers,
+        worktreeNavHistoryIndex: rewindHistoryIndexPastView(state, 'servers')
+      })),
     openMobilePage: () =>
       set((state) => ({
         activeView: 'mobile',

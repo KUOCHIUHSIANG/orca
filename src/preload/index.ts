@@ -32,6 +32,11 @@ import { hostedReviewApi } from './api/hosted-review/hosted-review-bridge'
 import { glApi } from './api/gitlab/gitlab'
 import { bitbucketApi } from './api/hosted-review/bitbucket-bridge'
 import { linearApi } from './api/work-items/linear-bridge'
+import { mondayApi } from './api/monday-bridge'
+import { detachedPagesApi } from './api/detached-pages-bridge'
+import { forkSyncApi } from './api/fork-sync-bridge'
+import { microsoftTodoApi } from './api/microsoft-todo-bridge'
+import { serverFilesApi } from './api/server-files-bridge'
 import { jiraApi } from './api/work-items/jira-bridge'
 import { starNagApi } from './api/onboarding/star-nag-bridge'
 import { diagnosticsApi } from './api/diagnostics/diagnostics-bridge'
@@ -143,6 +148,11 @@ const api = {
   bitbucket: bitbucketApi,
   linear: linearApi,
   jira: jiraApi,
+  monday: mondayApi,
+  detachedPages: detachedPagesApi,
+  forkSync: forkSyncApi,
+  microsoftTodo: microsoftTodoApi,
+  serverFiles: serverFilesApi,
   starNag: starNagApi,
   telemetryTrack: telemetryTrackApi,
   telemetrySetOptIn: telemetrySetOptInApi,

@@ -1,5 +1,6 @@
 import type { BrowserWindow } from 'electron'
 import { registerCoreHandlers } from '../../ipc/register-core-handlers/register-core-handlers'
+import { registerForkFeatureHandlers } from '../../ipc/fork-feature-handlers'
 import { attachMainWindowServices } from '../../window/attach-main-window-services'
 import { initTccPromptNotice } from '../../macos-permissions/macos-tcc-prompt-notice'
 import { resolveUpdateInstallMode } from '../../updater/updater-service'
@@ -135,6 +136,7 @@ async function installMainWindowCoreServices(
   if (window.isDestroyed() || state.mainWindow !== window || state.isQuitting) {
     throw new Error('Main window closed while preparing services')
   }
+  registerForkFeatureHandlers(store, keybindings)
   automations.start()
   await attachMainWindowServices(
     window,

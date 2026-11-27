@@ -3,7 +3,14 @@ import type { WorktreeNavHistoryViewEntry } from '@/store/slices/ui/workspace-na
 
 // Replay via setActiveView: open*Page would mutate previousViewBefore* or duplicate history (navigateToIndex).
 export function applyWorktreeNavViewEntry(entry: WorktreeNavHistoryViewEntry): void {
-  if (entry === 'automations' || entry === 'artifacts' || entry === 'skills') {
+  if (
+    entry === 'automations' ||
+    entry === 'artifacts' ||
+    entry === 'skills' ||
+    entry === 'monday' ||
+    entry === 'todo' ||
+    entry === 'servers'
+  ) {
     if (entry === 'automations') {
       // Why: Back/Forward is a user navigation; the page focuses its title once it settles.
       useAppStore.setState({ automationsPageFocusTitleOnOpen: true })

@@ -20,6 +20,7 @@ import { flushUnsavedCloudSessions } from '../orca-profiles/cloud-session/profil
 import type { NativeSettingsProjection } from '../core-desktop/native-settings-projection'
 import { closeDashboardPopout } from './dashboard-popout-window'
 import { closeWorkspaceSpaceWindow } from './workspace-space-window'
+import { closeDetachedPagesWithMainWindow } from './detached-page-window'
 import { installMainWindowCloseLifecycle } from './main-window/main-window-close-lifecycle'
 import type {
   CreateMainWindowOptions,
@@ -249,6 +250,7 @@ export function createMainWindow(
   mainWindow.on('closed', () => {
     closeDashboardPopout()
     closeWorkspaceSpaceWindow()
+    closeDetachedPagesWithMainWindow()
     state.clearInitialRevealFallbackTimer()
     closeLifecycle.dispose()
     activity.dispose()

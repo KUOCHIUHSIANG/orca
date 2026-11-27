@@ -98,6 +98,7 @@ export const STATIC_RIGHT_SIDEBAR_TABS = [
   'pr-checks',
   'source-control',
   'checks',
+  'todos',
   'ports',
   'bot-activity',
   'bot-automations',
@@ -133,3 +134,6 @@ export type TopLevelView =
   | 'skills'
   | 'artifacts'
   | 'mobile'
+  | 'monday'
+  | 'todo'
+  | 'servers'

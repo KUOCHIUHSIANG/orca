@@ -1,0 +1,88 @@
+import { toast } from 'sonner'
+import { translate } from '@/i18n/i18n'
+import { useAppStore } from '@/store'
+import { ensureDetectedAgentsForWorktree } from '@/lib/agent-session/launch/inventory/agent-detection-target-inventory'
+import { describeClipboardWriteFailure } from '@/lib/clipboard/clipboard-write-failure'
+import { focusTerminalTabSurface } from '@/components/terminal-pane/input/focus/focus-terminal-tab-surface'
+import { launchAgentInNewTabWithOutcome } from '@/lib/agent-session/launch/new-tab/launch-agent-in-new-tab'
+import { activateAndRevealWorkspace } from '@/lib/workspace/activation/worktree-activation'
+import { isTuiAgentEnabled } from '../../../../shared/agent-launch/catalog/tui-agent-selection'
+import { createNonSecureContextUuid } from '../../../../shared/identifiers/non-secure-context-uuid'
+import { isDetachedPageWindow } from '../detached-pages/detached-page-location'
+
+export async function copyMondayPrompt(prompt: string): Promise<boolean> {
+  try {
+    await window.api.ui.writeClipboardText(prompt)
+    return true
+  } catch (error) {
+    toast.error(
+      translate('auto.components.mondayCalendar.claude.copyFailed', 'Could not copy the prompt.'),
+      { description: describeClipboardWriteFailure(error) }
+    )
+    return false
+  }
+}
+
+/** Switches to the workspace and opens a new Claude tab with the prompt typed in but not sent. */
+export async function openMondayPromptInClaude(workspaceId: string, prompt: string): Promise<void> {
+  if (isDetachedPageWindow()) {
+    // Projects and tabs live in the main window; it opens Claude there and comes forward.
+    await window.api.detachedPages
+      .callMainWindow({ action: 'openPromptInClaude', workspaceId, prompt })
+      .catch(() => {
+        toast.error(
+          translate(
+            'auto.components.mondayCalendar.claude.launchFailed',
+            'Could not open Claude in this project.'
+          )
+        )
+      })
+    return
+  }
+  await copyMondayPrompt(prompt)
+  const detectedAgents = await ensureDetectedAgentsForWorktree(useAppStore.getState(), workspaceId)
+  const disabledAgents = useAppStore.getState().settings?.disabledTuiAgents
+  if (!detectedAgents.includes('claude') || !isTuiAgentEnabled('claude', disabledAgents)) {
+    toast.error(
+      translate(
+        'auto.components.mondayCalendar.claude.unavailable',
+        'Claude is not available on this project’s host.'
+      )
+    )
+    return
+  }
+  let revealFailed = false
+  const result = launchAgentInNewTabWithOutcome({
+    requestId: createNonSecureContextUuid(),
+    agent: 'claude',
+    worktreeId: workspaceId,
+    prompt,
+    promptDelivery: 'draft',
+    launchSource: 'task_page',
+    beforeSurfaceOpen: () => {
+      // Why: the launcher owns the initial surface, so revealing must not seed a sibling shell.
+      revealFailed =
+        activateAndRevealWorkspace(workspaceId, { providesInitialSurface: true }) === false
+      return !revealFailed
+    }
+  })
+  if (!result) {
+    // Why: a folder that cannot be revealed already explains why in its own toast.
+    if (!revealFailed) {
+      toast.error(
+        translate(
+          'auto.components.mondayCalendar.claude.launchFailed',
+          'Could not open Claude in this project.'
+        )
+      )
+    }
+    return
+  }
+  // The launcher already toasted its refusal.
+  if ('refused' in result) {
+    return
+  }
+  if (result.surface.kind === 'local-terminal') {
+    focusTerminalTabSurface(result.surface.tabId)
+  }
+}

@@ -14,6 +14,8 @@ import RightSidebar from '../components/right-sidebar/RightSidebar'
 import { RecoverableRenderErrorBoundary } from '../components/error-boundaries/RecoverableRenderErrorBoundary'
 import { FloatingTerminalToggleButton } from '../components/floating-terminal/trigger/FloatingTerminalToggleButton'
 import { TerminalWorkbenchContainer } from '../components/terminal/workbench/TerminalWorkbenchContainer'
+import { DetachedPageGate } from '../components/detached-pages/DetachedPageGate'
+import { DetachedPagesMainWindowHost } from '../components/detached-pages/DetachedPagesMainWindowHost'
 import type { VirtualizedScrollAnchor } from '../lib/list-interaction/virtualized-scrolling/useVirtualizedScrollAnchor'
 import { TitlebarLeftControls } from './chrome/TitlebarLeftControls'
 import { AppShellLeftColumn } from './chrome/AppShellLeftColumn'
@@ -41,6 +43,9 @@ const SkillsPage = lazy(() => import('../components/skills/SkillsPage'))
 const ArtifactsPage = lazy(() => import('../components/artifacts/ArtifactsPage'))
 const WorkspaceSpacePage = lazy(() => import('../components/workspace-space/WorkspaceSpacePage'))
 const MobilePage = lazy(() => import('../components/mobile/MobilePage'))
+const MondayCalendarPage = lazy(() => import('../components/monday-calendar/MondayCalendarPage'))
+const TodoCalendarPage = lazy(() => import('../components/todo-calendar/TodoCalendarPage'))
+const ServerFilesPage = lazy(() => import('../components/server-files/ServerFilesPage'))
 const HandToBotFlow = lazy(() =>
   import('../components/bots/hand-to-bot/HandToBotFlow').then((module) => ({
     default: module.HandToBotFlow
@@ -149,6 +154,21 @@ function ActivePage({ layout }: { layout: AppChromeLayout }): React.JSX.Element 
       {activeView === 'activity' ? <ActivityPrototypePage /> : null}
       {activeView === 'space' ? <WorkspaceSpacePage /> : null}
       {activeView === 'mobile' ? <MobilePage /> : null}
+      {activeView === 'monday' ? (
+        <DetachedPageGate page="monday">
+          <MondayCalendarPage />
+        </DetachedPageGate>
+      ) : null}
+      {activeView === 'todo' ? (
+        <DetachedPageGate page="todo">
+          <TodoCalendarPage />
+        </DetachedPageGate>
+      ) : null}
+      {activeView === 'servers' ? (
+        <DetachedPageGate page="servers">
+          <ServerFilesPage />
+        </DetachedPageGate>
+      ) : null}
       <BotShareReceiveMount />
       <BotTemplatesMount />
       <HandToBotMount />
@@ -202,6 +222,7 @@ export function AppWorkspaceShell(props: {
         'The app is still running. Retry the shell or use the menu to report the crash details.'
       )}
     >
+      <DetachedPagesMainWindowHost />
       <div className="flex flex-row flex-1 min-h-0 overflow-hidden">
         {/* Keep the non-workspace titlebar from spanning the right sidebar. */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
