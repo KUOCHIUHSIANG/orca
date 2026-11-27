@@ -38,6 +38,8 @@ import {
 import { useMonacoTheme } from '@/lib/editor/appearance/use-monaco-theme'
 import { useEditorModelRekeyCarry } from '../model-lifetime/identity/editor-model-rekey-carry'
 import { useNewModelLineEnding } from '../model-lifetime/buffer-text/editor-new-model-line-ending'
+import { MonacoInlineBlame } from '../inline-blame/MonacoInlineBlame'
+import { MonacoGitChangeGutter } from '../git-change-gutter/MonacoGitChangeGutter'
 
 type MonacoEditorProps = {
   fileId: string
@@ -59,11 +61,13 @@ type MonacoEditorProps = {
   noteSource?: WorkspaceResource
   markdownAnnotationsEnabled?: boolean
   conflictDecorationsEnabled?: boolean
+  inlineBlameEnabled?: boolean
   readOnly?: boolean
   // Why: shows another tab's record read-only; never moves its cursor line or takes its reveals.
   passiveMirror?: boolean
   liveTail?: boolean
   autoHeight?: boolean
+  gitChangeGutterEnabled?: boolean
 }
 
 export default function MonacoEditor({
@@ -84,10 +88,12 @@ export default function MonacoEditor({
   noteSource = NO_RESOURCE_EVIDENCE,
   markdownAnnotationsEnabled = false,
   conflictDecorationsEnabled = false,
+  inlineBlameEnabled = false,
   readOnly = false,
   passiveMirror = false,
   liveTail = false,
-  autoHeight = false
+  autoHeight = false,
+  gitChangeGutterEnabled = false
 }: MonacoEditorProps): React.JSX.Element {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
   const editorContainerRef = useRef<HTMLDivElement | null>(null)
@@ -202,11 +208,14 @@ export default function MonacoEditor({
     })
   }, [typographyOptions, editorWordWrap, readOnly])
 
+  const inlineBlameSetting = settings?.editorInlineBlame === true
+  const showGitLensBlame = inlineBlameEnabled && inlineBlameSetting && !!worktreeId
   useMonacoGitBlame({
     mountedEditor,
     fileId,
     passiveMirror,
-    inlineEnabled: settings?.editorInlineBlame === true
+    // Why: the GitLens-style annotation replaces the plain one; the status-bar item still reads it.
+    inlineEnabled: inlineBlameSetting && !showGitLensBlame
   })
 
   const decorations = useMonacoEditorDecorations({
@@ -344,6 +353,15 @@ export default function MonacoEditor({
         keepCurrentModel
       />
 
+      {showGitLensBlame && mountedEditor && worktreeId && (
+        <MonacoInlineBlame
+          editorInstance={mountedEditor}
+          fileId={fileId}
+          filePath={filePath}
+          relativePath={relativePath}
+          worktreeId={worktreeId}
+        />
+      )}
       {toastNode}
       <MonacoGutterContextMenu
         open={gutterMenuOpen}
@@ -356,6 +374,16 @@ export default function MonacoEditor({
         relativePath={relativePath}
         worktreeId={worktreeId}
       />
+      {gitChangeGutterEnabled && mountedEditor && worktreeId && (
+        <MonacoGitChangeGutter
+          editorInstance={mountedEditor}
+          fileId={fileId}
+          filePath={filePath}
+          relativePath={relativePath}
+          worktreeId={worktreeId}
+          readOnly={readOnly}
+        />
+      )}
     </div>
   )
 }

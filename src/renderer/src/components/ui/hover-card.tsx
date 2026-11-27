@@ -98,7 +98,9 @@ const hoverCardContentVariants = cva('', {
         'w-[360px] max-w-[calc(100vw-2rem)] max-h-[28rem] overflow-y-auto p-3 text-xs scrollbar-sleek',
       // A list row's details beside its panel: compact, one short fact per line.
       'row-details':
-        'max-h-(--radix-hover-card-content-available-height) w-64 overflow-y-auto p-2.5 text-xs leading-4 [overflow-wrap:anywhere]'
+        'max-h-(--radix-hover-card-content-available-height) w-64 overflow-y-auto p-2.5 text-xs leading-4 [overflow-wrap:anywhere]',
+      // Wide enough for a commit message and a code excerpt from the editor's inline blame.
+      'commit-details': 'w-[36rem] max-w-[calc(100vw-2rem)] p-3 text-xs'
     },
     motion: {
       default:

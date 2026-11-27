@@ -6,6 +6,11 @@ import type {
 import type { GitBlameResult } from '../../../../shared/git/blame/git-blame-types'
 import { assertGitDiffWithinTransportBudget } from '../../../../shared/git/diff/git-diff-transport-budget'
 import { getBranchDiff } from '../../../git/source-control/comparisons/branch-diff'
+import type {
+  GitBlameResult as GitBufferBlameResult,
+  GitBlameSubmoduleCommit
+} from '../../../../shared/git-blame'
+import { getBlameSubmoduleCommit } from '../../../git/blame-submodule-commit'
 import type { GitAdmissionTier } from '../../../../shared/rpc-contract/source-control/git-admission-tier-params'
 import { normalizeRuntimeRelativePath } from '../../files/paths/runtime-relative-paths'
 import {
@@ -108,6 +113,31 @@ export class RuntimeGitDiffCommands {
       }),
       maxContentBytes
     )
+  }
+
+  async getRuntimeGitBufferBlame(
+    worktreeSelector: string,
+    filePath: string,
+    contents?: string
+  ): Promise<GitBufferBlameResult> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    const relativePath = normalizeRuntimeGitRelativePath(filePath)
+    return requireRuntimeGitProvider(target).getBufferBlame(target.worktree.path, relativePath, {
+      contents
+    })
+  }
+
+  async getRuntimeGitBlameSubmoduleCommit(
+    worktreeSelector: string,
+    submodulePath: string,
+    sha: string
+  ): Promise<GitBlameSubmoduleCommit> {
+    const target = await this.host.resolveRuntimeGitTarget(worktreeSelector)
+    requireLocalRuntimeGitRoute(target)
+    return getBlameSubmoduleCommit(target.worktree.path, submodulePath, sha, {
+      ...localGitOptionsForTarget(target),
+      admissionTier: 'interactive'
+    })
   }
 
   async getRuntimeGitRemoteFileUrl(

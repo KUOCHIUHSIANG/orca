@@ -19,6 +19,10 @@ import type {
   GitHistoryResult
 } from '../../../shared/git/history/git-history-types'
 import type {
+  GitBlameResult as GitBufferBlameResult,
+  GitBlameSubmoduleCommit
+} from '../../../shared/git-blame'
+import type {
   CommitMessageAgentCapability,
   CommitMessageModelCapability
 } from '../../../shared/source-control/ai/generation/commit-message-agent-spec'
@@ -133,6 +137,20 @@ export type GitInspectionApi = {
     connectionId?: string
     wakeWslDistro?: boolean
   }) => Promise<GitDiffResult>
+  /** Per-line blame; `contents` blames an unsaved buffer instead of the working-tree file. */
+  bufferBlame: (args: {
+    worktreePath: string
+    filePath: string
+    contents?: string
+    connectionId?: string
+  }) => Promise<GitBufferBlameResult>
+  /** Full message and web URL of a blamed commit that lives in a submodule's own repo. */
+  blameSubmoduleCommit: (args: {
+    worktreePath: string
+    submodulePath: string
+    sha: string
+    connectionId?: string
+  }) => Promise<GitBlameSubmoduleCommit>
   discoverCommitMessageModels: (args: {
     agentId: string
     worktreePath?: string
@@ -165,4 +183,6 @@ export type GitInspectionApi = {
     knownHeadOid?: string
     connectionId?: string
   }) => Promise<GitBlameResult>
+  /** Avatar URL for a commit's author, looked up with this machine's gh/glab sign-in. */
+  commitAuthorAvatar: (args: { commitUrl: string; email: string }) => Promise<string | null>
 }

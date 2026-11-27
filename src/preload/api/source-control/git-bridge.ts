@@ -25,6 +25,10 @@ import type {
   GitHistoryOptions,
   GitHistoryResult
 } from '../../../shared/git/history/git-history-types'
+import type {
+  GitBlameResult as GitBufferBlameResult,
+  GitBlameSubmoduleCommit
+} from '../../../shared/git-blame'
 import type { PreloadApi } from '../../api-types'
 
 export const gitApi = {
@@ -170,6 +174,18 @@ export const gitApi = {
     connectionId?: string
     wakeWslDistro?: boolean
   }) => ipcRenderer.invoke('git:commitDiff', args),
+  bufferBlame: (args: {
+    worktreePath: string
+    filePath: string
+    contents?: string
+    connectionId?: string
+  }): Promise<GitBufferBlameResult> => ipcRenderer.invoke('git:bufferBlame', args),
+  blameSubmoduleCommit: (args: {
+    worktreePath: string
+    submodulePath: string
+    sha: string
+    connectionId?: string
+  }): Promise<GitBlameSubmoduleCommit> => ipcRenderer.invoke('git:blameSubmoduleCommit', args),
   commit: (args: {
     worktreePath: string
     message: string
@@ -294,5 +310,7 @@ export const gitApi = {
     filePath: string
     knownHeadOid?: string
     connectionId?: string
-  }): Promise<GitBlameResult> => ipcRenderer.invoke('git:blame', args)
+  }): Promise<GitBlameResult> => ipcRenderer.invoke('git:blame', args),
+  commitAuthorAvatar: (args: { commitUrl: string; email: string }): Promise<string | null> =>
+    ipcRenderer.invoke('git:commitAuthorAvatar', args)
 } satisfies PreloadApi['git']

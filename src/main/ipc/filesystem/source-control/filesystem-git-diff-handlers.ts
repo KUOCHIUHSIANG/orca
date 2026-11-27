@@ -1,5 +1,8 @@
 import { ipcMain } from 'electron'
+import type { GitBlameResult, GitBlameSubmoduleCommit } from '../../../../shared/git-blame'
 import type { GitDiffResult } from '../../../../shared/git/diff/git-diff-compare-types'
+import { getBufferBlame } from '../../../git/blame'
+import { getBlameSubmoduleCommit } from '../../../git/blame-submodule-commit'
 import { getBranchDiff } from '../../../git/source-control/comparisons/branch-diff'
 import { getCommitDiff } from '../../../git/source-control/comparisons/commit-diff'
 import {
@@ -89,6 +92,54 @@ export function registerFilesystemGitDiffHandlers(context: FilesystemHandlerCont
             },
             { ...gitOptions, admissionTier: 'interactive' }
           )
+      )
+    }
+  )
+
+  ipcMain.handle(
+    'git:bufferBlame',
+    async (
+      _event,
+      args: { worktreePath: string; filePath: string; contents?: string; connectionId?: string }
+    ): Promise<GitBlameResult> => {
+      const contents = typeof args.contents === 'string' ? args.contents : undefined
+      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      // Why: blame follows cursor moves, a background read that must not boot a stopped distro.
+      return readWorktreeGitUnlessWslStopped(
+        store,
+        args.worktreePath,
+        false,
+        (worktreePath, gitOptions) =>
+          getBufferBlame(worktreePath, validateGitRelativeFilePath(worktreePath, args.filePath), {
+            ...gitOptions,
+            contents,
+            admissionTier: 'interactive'
+          })
+      )
+    }
+  )
+  ipcMain.handle(
+    'git:blameSubmoduleCommit',
+    async (
+      _event,
+      args: { worktreePath: string; submodulePath: unknown; sha: string; connectionId?: string }
+    ): Promise<GitBlameSubmoduleCommit> => {
+      requireReachableGitRoute(getConnectionExecutionHostId(args.connectionId))
+      if (typeof args.submodulePath !== 'string') {
+        throw new Error('Access denied: invalid submodule path')
+      }
+      const submodulePath = args.submodulePath
+      const sha = validateFullGitObjectId(args.sha, 'sha')
+      // Why: the blame hover card is a background read that must not boot a stopped distro.
+      return readWorktreeGitUnlessWslStopped(
+        store,
+        args.worktreePath,
+        false,
+        (worktreePath, gitOptions) =>
+          getBlameSubmoduleCommit(worktreePath, submodulePath, sha, {
+            ...gitOptions,
+            admissionTier: 'interactive'
+          })
       )
     }
   )

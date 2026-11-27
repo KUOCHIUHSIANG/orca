@@ -22,6 +22,8 @@ export class RuntimeGitCommands {
   readonly getRuntimeGitCommitCompare: RuntimeGitDiffCommands['getRuntimeGitCommitCompare']
   readonly getRuntimeGitBranchDiff: RuntimeGitDiffCommands['getRuntimeGitBranchDiff']
   readonly getRuntimeGitCommitDiff: RuntimeGitDiffCommands['getRuntimeGitCommitDiff']
+  readonly getRuntimeGitBufferBlame: RuntimeGitDiffCommands['getRuntimeGitBufferBlame']
+  readonly getRuntimeGitBlameSubmoduleCommit: RuntimeGitDiffCommands['getRuntimeGitBlameSubmoduleCommit']
   readonly getRuntimeGitRemoteFileUrl: RuntimeGitDiffCommands['getRuntimeGitRemoteFileUrl']
   readonly getRuntimeGitRemoteCommitUrl: RuntimeGitDiffCommands['getRuntimeGitRemoteCommitUrl']
   readonly getRuntimeGitBlame: RuntimeGitDiffCommands['getRuntimeGitBlame']
@@ -80,6 +82,8 @@ export class RuntimeGitCommands {
     this.getRuntimeGitCommitCompare = diff.getRuntimeGitCommitCompare.bind(diff)
     this.getRuntimeGitBranchDiff = diff.getRuntimeGitBranchDiff.bind(diff)
     this.getRuntimeGitCommitDiff = diff.getRuntimeGitCommitDiff.bind(diff)
+    this.getRuntimeGitBufferBlame = diff.getRuntimeGitBufferBlame.bind(diff)
+    this.getRuntimeGitBlameSubmoduleCommit = diff.getRuntimeGitBlameSubmoduleCommit.bind(diff)
     this.getRuntimeGitRemoteFileUrl = diff.getRuntimeGitRemoteFileUrl.bind(diff)
     this.getRuntimeGitRemoteCommitUrl = diff.getRuntimeGitRemoteCommitUrl.bind(diff)
     this.getRuntimeGitBlame = diff.getRuntimeGitBlame.bind(diff)

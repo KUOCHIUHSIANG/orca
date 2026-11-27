@@ -28,6 +28,8 @@ type RuntimeGitCommandName =
   | 'pushRuntimeGit'
   | 'getRuntimeGitBranchDiff'
   | 'getRuntimeGitCommitDiff'
+  | 'getRuntimeGitBufferBlame'
+  | 'getRuntimeGitBlameSubmoduleCommit'
   | 'commitRuntimeGit'
   | 'createRuntimeGitBranch'
   | 'cherryPickRuntimeGit'
@@ -86,6 +88,8 @@ export function installRuntimeGitCommandSurface(
     pushRuntimeGit: commands.pushRuntimeGit.bind(commands),
     getRuntimeGitBranchDiff: commands.getRuntimeGitBranchDiff.bind(commands),
     getRuntimeGitCommitDiff: commands.getRuntimeGitCommitDiff.bind(commands),
+    getRuntimeGitBufferBlame: commands.getRuntimeGitBufferBlame.bind(commands),
+    getRuntimeGitBlameSubmoduleCommit: commands.getRuntimeGitBlameSubmoduleCommit.bind(commands),
     commitRuntimeGit: commands.commitRuntimeGit.bind(commands),
     createRuntimeGitBranch: commands.createRuntimeGitBranch.bind(commands),
     cherryPickRuntimeGit: commands.cherryPickRuntimeGit.bind(commands),

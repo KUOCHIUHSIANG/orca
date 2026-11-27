@@ -1,6 +1,7 @@
 import { isGitHistoryRefName } from '../../git/history/git-history-revisions'
 import { z } from 'zod'
 import { lazyZodSchema } from '../../schema/lazy-zod-schema'
+import { GIT_BLAME_MAX_CONTENT_LENGTH } from '../../git-blame'
 import { OptionalGitAdmissionTier } from './git-admission-tier-params'
 import { CONFLICT_RESOLUTIONS } from '../../source-control/listing/source-control-entry-actions'
 
@@ -162,6 +163,33 @@ export const GitCommitDiff = lazyZodSchema(() =>
     commitOid: FullGitObjectId,
     parentOid: FullGitObjectId.nullable().optional(),
     oldPath: z.string().optional()
+  })
+)
+
+export const GitBufferBlame = lazyZodSchema(() =>
+  WorktreeSelector.extend({
+    filePath: z
+      .unknown()
+      .transform((v) => (typeof v === 'string' ? v : ''))
+      .pipe(
+        z
+          .string()
+          .min(1, 'Missing file path')
+          .refine((value) => !value.startsWith('-'), 'File path must not start with -')
+      ),
+    // Why: the unsaved editor buffer, so blamed line numbers match what the user sees.
+    contents: z.string().max(GIT_BLAME_MAX_CONTENT_LENGTH).optional()
+  })
+)
+
+export const GitBlameSubmoduleCommit = lazyZodSchema(() =>
+  WorktreeSelector.extend({
+    submodulePath: z
+      .string()
+      .min(1, 'Missing submodule path')
+      // Why: never let a submodule path be parsed as a git flag (arg injection).
+      .refine((value) => !value.startsWith('-'), 'Submodule path must not start with -'),
+    sha: FullGitObjectId
   })
 )
 

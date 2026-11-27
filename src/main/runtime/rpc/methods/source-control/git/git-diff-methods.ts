@@ -4,9 +4,11 @@ import {
   remoteRpcResultExceedsContentBudget
 } from '../../../../../../shared/remote-runtime/rpc/remote-rpc-content-budget'
 import {
-  GitBranchDiff,
-  GitCommitDiff,
   GitBlame,
+  GitBlameSubmoduleCommit,
+  GitBranchDiff,
+  GitBufferBlame,
+  GitCommitDiff,
   GitDiff
 } from '../../../../../../shared/rpc-contract/source-control/git-params'
 
@@ -80,5 +82,19 @@ export const GIT_DIFF_METHODS = [
         ? { kind: 'too-large' as const }
         : result
     }
+  }),
+  defineMethod({
+    name: 'git.bufferBlame',
+    permission: 'workspace',
+    params: GitBufferBlame,
+    handler: async (params, { runtime }) =>
+      runtime.getRuntimeGitBufferBlame(params.worktree, params.filePath, params.contents)
+  }),
+  defineMethod({
+    name: 'git.blameSubmoduleCommit',
+    permission: 'workspace',
+    params: GitBlameSubmoduleCommit,
+    handler: async (params, { runtime }) =>
+      runtime.getRuntimeGitBlameSubmoduleCommit(params.worktree, params.submodulePath, params.sha)
   })
 ]

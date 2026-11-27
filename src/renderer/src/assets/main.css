@@ -1516,6 +1516,31 @@ html.native-shell .app-layout {
   transition: none;
 }
 
+/* Dense tool-window splitters: a hairline at rest, the shared grip while hovered or dragged. */
+.tab-group-split-resize-handle.is-hairline::after {
+  background: var(--border);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical::after {
+  width: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal::after {
+  height: 1px;
+}
+
+.tab-group-split-resize-handle.is-hairline.is-vertical:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-vertical.is-dragging::after {
+  width: 3px;
+  background: var(--split-divider-hover);
+}
+
+.tab-group-split-resize-handle.is-hairline.is-horizontal:hover::after,
+.tab-group-split-resize-handle.is-hairline.is-horizontal.is-dragging::after {
+  height: 3px;
+  background: var(--split-divider-hover);
+}
+
 /* Electron drag hit-testing ignores z-index; every overlapping Radix portal needs explicit no-drag. */
 [data-radix-popper-content-wrapper],
 [data-slot='sheet-overlay'],
@@ -1967,6 +1992,28 @@ html.native-shell .app-layout {
 
 .dark [data-file-explorer-row][data-selected='true']:hover {
   background: color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+/* Why: animation values outrank the unlayered selection rules above, so each pulse
+   starts and ends on the row's own selected look. */
+[data-file-explorer-row][data-flashing='true'] {
+  animation: file-explorer-reveal-flash 600ms ease-in-out 3;
+}
+
+@keyframes file-explorer-reveal-flash {
+  50% {
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-file-explorer-row][data-flashing='true'],
+  .dark [data-file-explorer-row][data-flashing='true'] {
+    animation: none;
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
 }
 
 .sidebar {
@@ -2887,6 +2934,30 @@ html.native-shell .app-layout {
   }
 }
 
+/* Why: line-through can't animate, so a completed to-do draws its strike as a growing line;
+   clone repeats it on every wrapped line. */
+[data-todo-title] {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 60%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 300ms ease-out,
+    color 300ms ease-out;
+}
+
+[data-todo-title][data-done='true'] {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-todo-title] {
+    transition: none;
+  }
+}
+
 .sidebar.collapsed {
   width: 0;
   border-right: none;
@@ -3410,6 +3481,70 @@ html.native-shell .app-layout {
   opacity: 0.92;
 }
 
+/* ── Uncommitted-change gutter (git-change-gutter/) ─────────────── */
+
+/* Why: Monaco's folding toggle ignores the first 4px of its lane, so a 4px-wide
+   marker never fires both actions; z-index keeps it above the folding icon. */
+.monaco-editor .orca-git-change-marker {
+  width: 4px !important;
+  margin-left: 3px;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.monaco-editor .orca-git-change-added {
+  border-left: 3px solid var(--git-decoration-added);
+}
+
+.monaco-editor .orca-git-change-modified {
+  border-left: 3px solid var(--git-decoration-modified);
+}
+
+.monaco-editor .orca-git-change-deleted::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 4px solid var(--git-decoration-deleted);
+  pointer-events: none;
+}
+
+.monaco-editor .orca-git-change-deleted-top::after {
+  top: 0;
+  bottom: auto;
+}
+
+.monaco-editor .orca-git-change-peek {
+  position: absolute;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-top: 1px solid var(--git-decoration-modified);
+  border-bottom: 1px solid var(--git-decoration-modified);
+  background: var(--editor-surface);
+}
+
+.monaco-editor .orca-git-change-peek[data-kind='added'] {
+  border-color: var(--git-decoration-added);
+}
+
+.monaco-editor .orca-git-change-peek[data-kind='deleted'] {
+  border-color: var(--git-decoration-deleted);
+}
+
+.monaco-editor .orca-git-change-peek-header {
+  flex-shrink: 0;
+}
+
+.monaco-editor .orca-git-change-peek-body {
+  flex: 1;
+  min-height: 0;
+}
+
 /* Compact Monaco tooltip wrappers overlap find buttons, causing mouseleave/dispose/mouseover flicker.
    Disable hit-testing only on context-view chains containing compact hovers; preserve menus and interactive markdown. */
 .context-view:has(> .workbench-hover-container > .workbench-hover.compact),
@@ -3459,6 +3594,46 @@ html.native-shell .app-layout {
 
 .animate-update-card-exit {
   animation: update-card-exit 150ms ease-in both;
+}
+
+/* Why: a light sweeping over the filled part of the fork build bar shows the build is still moving. */
+@keyframes fork-build-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-fork-build-shimmer {
+  /* A highlight over a colored bar, not a theme color, so it stays white in both themes. */
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+  animation: fork-build-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Why: the full restart bar and its label breathe together so an imminent restart is hard to miss. */
+@keyframes fork-build-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-fork-build-breathe {
+  animation: fork-build-breathe 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fork-build-shimmer {
+    display: none;
+  }
+  .animate-fork-build-breathe {
+    animation: none;
+  }
 }
 
 /* Waveform bars in the FeatureTipsModal voice tip — purely decorative. */

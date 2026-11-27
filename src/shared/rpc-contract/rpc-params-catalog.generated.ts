@@ -864,8 +864,10 @@ import {
 } from './skills/skills-params'
 import {
   GitBlame,
+  GitBlameSubmoduleCommit,
   GitBranchCompare,
   GitBranchDiff,
+  GitBufferBlame,
   GitCheckIgnored,
   GitCommit,
   GitCommitAction,
@@ -1669,8 +1671,10 @@ export const RPC_PARAMS_BY_METHOD = {
   'git.abortRebase': WorktreeSelectorOfGitCoreParams,
   'git.atRiskLocalFiles': WorktreeSelectorOfGitCoreParams,
   'git.blame': GitBlame,
+  'git.blameSubmoduleCommit': GitBlameSubmoduleCommit,
   'git.branchCompare': GitBranchCompare,
   'git.branchDiff': GitBranchDiff,
+  'git.bufferBlame': GitBufferBlame,
   'git.bulkDiscard': GitBulkPaths,
   'git.bulkStage': GitBulkStage,
   'git.bulkUnstage': GitBulkPaths,

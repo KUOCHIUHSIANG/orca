@@ -49,7 +49,10 @@ export function useSourceControlGitHistory({
   isBranchVisible,
   isGitHistoryNeeded,
   isGitHistoryVisible,
-  worktreeMap
+  worktreeMap,
+  branchOnly = true,
+  limit = GIT_HISTORY_DEFAULT_LIMIT,
+  refs
 }: {
   activeRepoTarget: RuntimeClientTarget | null
   activeWorktreeId: string | null
@@ -65,6 +68,11 @@ export function useSourceControlGitHistory({
   isGitHistoryNeeded: boolean
   isGitHistoryVisible: boolean
   worktreeMap: ReadonlyMap<string, unknown>
+  /** The scope menu's commits the base lacks; false lists the whole log of `refs`. */
+  branchOnly?: boolean
+  limit?: number
+  /** Revisions to list instead of HEAD alone; needs branchOnly false. */
+  refs?: readonly string[]
 }): {
   gitHistoryContextKey: string
   gitHistoryState: GitHistoryPanelState
@@ -75,12 +83,16 @@ export function useSourceControlGitHistory({
   const connectionId = activeWorktreeId
     ? sourceControlConnectionId(scope, activeWorktreeId)
     : undefined
+  // Why: a string key keeps a fresh refs array from re-firing the load; ref names cannot hold newlines.
+  const refsKey = refs?.join('\n') ?? ''
   // The authority that answers: same worktree id on another runtime or SSH host is another page.
   const slotKey = JSON.stringify([
     activeWorktreeId,
     activeRepoTarget?.kind ?? null,
     activeRepoTarget?.kind === 'environment' ? activeRepoTarget.environmentId : null,
-    connectionId ?? null
+    connectionId ?? null,
+    // A whole-ref log is another page than the scope menu's branch list.
+    ...(branchOnly ? [] : [refsKey])
   ])
   const statusHeadOid = headOid === '(initial)' ? null : headOid
   const historyFence = useMemo<GitHistoryFence>(
@@ -183,11 +195,14 @@ export function useSourceControlGitHistory({
             connectionId
           },
           {
-            limit: GIT_HISTORY_DEFAULT_LIMIT,
+            limit,
             baseRef: compareBaseRef,
-            // Commits the base lacks, without the pushed state, statistics or counts the menu never shows.
-            branchOnly: true,
-            branchListOnly: true,
+            ...(branchOnly
+              ? // Commits the base lacks, without the pushed state, statistics or counts the menu never shows.
+                { branchOnly: true, branchListOnly: true }
+              : refsKey
+                ? { refs: refsKey.split('\n') }
+                : {}),
             ...(options?.wakeWslDistro ? { wakeWslDistro: true } : {})
           }
         )
@@ -220,6 +235,7 @@ export function useSourceControlGitHistory({
     [
       activeRepoTarget,
       activeWorktreeId,
+      branchOnly,
       compareBaseRef,
       connectionId,
       historyFence,
@@ -227,6 +243,8 @@ export function useSourceControlGitHistory({
       isFolder,
       isGitHistoryNeeded,
       isGitHistoryVisible,
+      limit,
+      refsKey,
       slotKey,
       worktreePath
     ]
@@ -266,10 +284,12 @@ export function useSourceControlGitHistory({
     isFolder,
     isGitHistoryNeeded,
     isGitHistoryVisible,
+    limit,
     // Owner changes can occur without worktree/path changes; refetch rather than retain another host’s commits.
     slotKey,
     // A same-name base that moved (fetch) changes the range even with HEAD unchanged.
     compareBaseOid,
+    refsKey,
     worktreePath
   ])
 

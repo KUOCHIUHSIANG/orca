@@ -29,6 +29,10 @@ import type {
   GitHistoryOptions,
   GitHistoryResult
 } from '../../../shared/git/history/git-history-types'
+import type {
+  GitBlameOptions,
+  GitBlameResult as GitBufferBlameResult
+} from '../../../shared/git-blame'
 import type { CommitMessageDraftContext } from '../../../shared/source-control/ai/generation/commit-message-generation'
 import type { ConflictResolution } from '../../../shared/source-control/listing/source-control-entry-actions'
 import type { GitProviderStatusOptions } from './status-options'
@@ -135,6 +139,11 @@ export type IGitProvider = {
     worktreePath: string,
     args: { commitOid: string; parentOid?: string | null; filePath: string; oldPath?: string }
   ): Promise<GitDiffResult>
+  getBufferBlame(
+    worktreePath: string,
+    filePath: string,
+    options?: GitBlameOptions
+  ): Promise<GitBufferBlameResult>
   listWorktrees(repoPath: string, options?: { signal?: AbortSignal }): Promise<GitWorktreeInfo[]>
   addWorktree(
     repoPath: string,

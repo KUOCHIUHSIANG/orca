@@ -35,6 +35,7 @@ import PluginCustomEditorFrame from '../plugin-editors/PluginCustomEditorFrame'
 import PluginBytesCustomEditorSurface from '../plugin-editors/PluginBytesCustomEditorSurface'
 import { ExternalFileChangeBanner } from '../external-changes/ExternalFileChangeBanner'
 import { isEditorWritableView } from '../save/queue/editor-save-writer-view'
+import { canUseChangesModeForFile } from '../view-mode/editor-panel-file-mode'
 
 // Retry is a user act: it may start a stopped WSL distro.
 
@@ -286,6 +287,7 @@ export function EditorEditFileSurface({
         worktreeId={activeFile.worktreeId}
         markdownAnnotationsEnabled={markdownAnnotationsEnabled && isMarkdown}
         conflictDecorationsEnabled={activeFile.conflict?.conflictStatus === 'unresolved'}
+        inlineBlameEnabled={activeFile.liveTail !== true}
         revealLine={
           matchesPendingEditorReveal(pendingEditorReveal, activeFile, viewStateScopeId)
             ? pendingEditorReveal.line
@@ -302,6 +304,12 @@ export function EditorEditFileSurface({
             : undefined
         }
         markdownDocuments={isMarkdown ? markdownDocuments.markdownDocuments : undefined}
+        // Why: conflict markers would all read as added lines, and live-tail logs churn every line.
+        gitChangeGutterEnabled={
+          canUseChangesModeForFile(activeFile) &&
+          activeFile.liveTail !== true &&
+          activeFile.conflict === undefined
+        }
       />
     </RecoverableRenderErrorBoundary>
   )
