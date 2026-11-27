@@ -16,7 +16,6 @@ export function getDefaultRightSidebarActivityItems({
   t,
   explorerShortcut,
   sourceControlShortcut,
-  checksShortcut,
   portsShortcut,
   isBot = false,
   showsHomeTab = isBot,
@@ -26,7 +25,6 @@ export function getDefaultRightSidebarActivityItems({
   t: Translate
   explorerShortcut: string
   sourceControlShortcut: string
-  checksShortcut: string
   portsShortcut: string
   isBot?: boolean
   showsHomeTab?: boolean
@@ -113,12 +111,13 @@ export function getDefaultRightSidebarActivityItems({
       shortcut: sourceControlShortcut === 'Unassigned' ? '' : sourceControlShortcut,
       gitOnly: true
     },
+    // Fork: Microsoft To Do takes the Checks slot and icon; CI checks stay reachable through
+    // their shortcut and PR flows, which still route to the 'checks' panel.
     {
-      id: 'checks',
+      id: 'todos',
       icon: ListChecks,
-      title: t('auto.components.right.sidebar.index.83a10e3c44', 'Checks'),
-      shortcut: checksShortcut === 'Unassigned' ? '' : checksShortcut,
-      gitOnly: true
+      title: t('auto.components.right.sidebar.index.todos', 'To Do'),
+      shortcut: ''
     },
     {
       id: 'ports',

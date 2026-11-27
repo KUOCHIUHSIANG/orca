@@ -76,18 +76,33 @@ describe('activity bar arrangement', () => {
   it.each([
     [
       ['explorer', 'plugin:test/panel', 'vault'],
-      ['explorer', 'plugin:test/panel', 'vault', 'workspaces', 'pr-checks', 'source-control']
+      [
+        'explorer',
+        'plugin:test/panel',
+        'vault',
+        'workspaces',
+        'pr-checks',
+        'source-control',
+        'todos'
+      ]
     ],
     [
       ['plugin:test/panel', 'explorer', 'vault'],
-      ['plugin:test/panel', 'explorer', 'vault', 'workspaces', 'pr-checks', 'source-control']
+      [
+        'plugin:test/panel',
+        'explorer',
+        'vault',
+        'workspaces',
+        'pr-checks',
+        'source-control',
+        'todos'
+      ]
     ]
   ])('inserts folder tabs using the production default for saved %j', (saved, expected) => {
     const defaults = getDefaultRightSidebarActivityItems({
       t: translate,
       explorerShortcut: '',
       sourceControlShortcut: '',
-      checksShortcut: '',
       portsShortcut: ''
     })
     const plugin = {
@@ -112,7 +127,6 @@ describe('activity bar arrangement', () => {
       t: translate,
       explorerShortcut: '',
       sourceControlShortcut: '',
-      checksShortcut: '',
       portsShortcut: ''
     })
     const plugin = {
@@ -124,7 +138,7 @@ describe('activity bar arrangement', () => {
     }
     const available = [
       ...defaults.filter((item) =>
-        ['explorer', 'vault', 'pr-checks', 'source-control', 'checks'].includes(item.id)
+        ['explorer', 'vault', 'pr-checks', 'source-control', 'todos'].includes(item.id)
       ),
       plugin
     ]
@@ -134,16 +148,15 @@ describe('activity bar arrangement', () => {
         'plugin:test/panel',
         'vault',
         'source-control',
-        'checks'
+        'todos'
       ]).map((item) => item.id)
-    ).toEqual(['explorer', 'plugin:test/panel', 'vault', 'pr-checks', 'source-control', 'checks'])
+    ).toEqual(['explorer', 'plugin:test/panel', 'vault', 'pr-checks', 'source-control', 'todos'])
   })
   it('keeps bot-page tabs in their page order and lets a saved order move them', () => {
     const defaults = getDefaultRightSidebarActivityItems({
       t: translate,
       explorerShortcut: '',
       sourceControlShortcut: '',
-      checksShortcut: '',
       portsShortcut: '',
       isBot: true,
       needsYou: 0,

@@ -1,0 +1,219 @@
+import { useEffect, useRef, useState } from 'react'
+import { CalendarDays, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/class-names'
+import { getIntlLocale, translate } from '@/i18n/i18n'
+import {
+  addDays,
+  monthCursorOfIso,
+  parseIsoDate,
+  shiftMonth,
+  type MonthCursor
+} from '@/components/calendar/calendar-dates'
+import { describeCalendarDay } from '@/components/calendar/calendar-day-off'
+import { isWeekendColumn } from '@/components/calendar/CalendarWeekdayHeader'
+import { useTaiwanHolidays } from '@/components/calendar/use-taiwan-holidays'
+import type { TaiwanCalendarDay } from '../../../../../shared/taiwan-holiday-types'
+import { dueLabel, monthGrid, nextMonday } from './todo-due-dates'
+
+const NO_HOLIDAYS: readonly TaiwanCalendarDay[] = []
+
+const ARROW_STEPS = new Map([
+  ['ArrowLeft', -1],
+  ['ArrowRight', 1],
+  ['ArrowUp', -7],
+  ['ArrowDown', 7]
+])
+
+function formatDate(iso: string, options: Intl.DateTimeFormatOptions): string {
+  return new Intl.DateTimeFormat(getIntlLocale(), options).format(parseIsoDate(iso))
+}
+
+/** Due date button opening quick picks and a month grid; arrow keys move between days. */
+export function TodoDueDatePicker(props: {
+  value: string | null
+  today: string
+  disabled?: boolean
+  onChange: (value: string | null) => void
+}): React.JSX.Element {
+  const { value, today } = props
+  const [open, setOpen] = useState(false)
+  const [month, setMonth] = useState<MonthCursor>(() => monthCursorOfIso(value ?? today))
+  const [focusDay, setFocusDay] = useState<string | null>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const holidaysByDate = useTaiwanHolidays(open)
+  const days = monthGrid(month)
+  const inMonth = (iso: string | null): iso is string =>
+    iso !== null && days.some((day) => day.iso === iso && day.inMonth)
+  // Why one tab stop: 42 day buttons would otherwise each take a Tab press.
+  const tabStop = [focusDay, value, today].find(inMonth) ?? days.find((day) => day.inMonth)?.iso
+
+  useEffect(() => {
+    if (focusDay) {
+      gridRef.current?.querySelector<HTMLButtonElement>(`[data-day="${focusDay}"]`)?.focus()
+    }
+  }, [focusDay, month])
+
+  const pick = (next: string | null): void => {
+    props.onChange(next)
+    setOpen(false)
+  }
+  const quickPicks = [
+    { iso: today, label: translate('auto.components.todoPanel.due.today', 'Today') },
+    {
+      iso: addDays(today, 1),
+      label: translate('auto.components.todoPanel.due.tomorrow', 'Tomorrow')
+    },
+    {
+      iso: nextMonday(today),
+      label: translate('auto.components.todoPanel.due.nextWeek', 'Next week')
+    }
+  ]
+  const weekdays = days
+    .slice(0, 7)
+    .map((day) => ({ iso: day.iso, label: formatDate(day.iso, { weekday: 'narrow' }) }))
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        if (next) {
+          setMonth(monthCursorOfIso(value ?? today))
+          setFocusDay(null)
+        }
+        setOpen(next)
+      }}
+    >
+      <PopoverTrigger asChild>
+        <Button type="button" variant="outline" size="xs" disabled={props.disabled}>
+          <CalendarDays />
+          {value
+            ? dueLabel(value, today)
+            : translate('auto.components.todoPanel.add.dueDate', 'Due date')}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64">
+        <div className="p-2">
+          <div className="grid grid-cols-3 gap-1">
+            {quickPicks.map((option) => (
+              <button
+                key={option.label}
+                type="button"
+                aria-pressed={value === option.iso}
+                onClick={() => pick(option.iso)}
+                className={cn(
+                  'flex flex-col items-center rounded-md px-1 py-1 text-xs hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
+                  value === option.iso && 'bg-accent'
+                )}
+              >
+                <span className="font-medium">{option.label}</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {formatDate(option.iso, { month: 'numeric', day: 'numeric', weekday: 'short' })}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-border pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              aria-label={translate(
+                'auto.components.todoPanel.due.previousMonth',
+                'Previous month'
+              )}
+              onClick={() => setMonth(shiftMonth(month, -1))}
+            >
+              <ChevronLeft />
+            </Button>
+            <span className="text-xs font-medium">
+              {new Intl.DateTimeFormat(getIntlLocale(), { year: 'numeric', month: 'long' }).format(
+                new Date(month.year, month.month, 1)
+              )}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              aria-label={translate('auto.components.todoPanel.due.nextMonth', 'Next month')}
+              onClick={() => setMonth(shiftMonth(month, 1))}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+          <div className="mt-1 grid grid-cols-7 text-center text-[11px]">
+            {weekdays.map((weekday, column) => (
+              <span
+                key={weekday.iso}
+                className={cn(
+                  'py-1',
+                  isWeekendColumn(column) ? 'text-destructive' : 'text-muted-foreground'
+                )}
+              >
+                {weekday.label}
+              </span>
+            ))}
+          </div>
+          <div
+            ref={gridRef}
+            className="grid grid-cols-7 gap-0.5"
+            onKeyDown={(event) => {
+              const step = ARROW_STEPS.get(event.key)
+              const current = event.target instanceof HTMLElement ? event.target.dataset.day : null
+              if (step === undefined || !current) {
+                return
+              }
+              event.preventDefault()
+              const next = addDays(current, step)
+              setMonth(monthCursorOfIso(next))
+              setFocusDay(next)
+            }}
+          >
+            {days.map((day, index) => {
+              // Why: days off read red like the calendars; holidays keep their green fill.
+              const { holidayOff, dayOff, label } = describeCalendarDay(
+                index % 7,
+                holidaysByDate.get(day.iso) ?? NO_HOLIDAYS
+              )
+              return (
+                <button
+                  key={day.iso}
+                  type="button"
+                  data-day={day.iso}
+                  data-day-off={holidayOff ? 'holiday' : dayOff ? 'weekend' : undefined}
+                  tabIndex={day.iso === tabStop ? 0 : -1}
+                  title={label || undefined}
+                  aria-label={[formatDate(day.iso, { dateStyle: 'full' }), label]
+                    .filter(Boolean)
+                    .join(' ')}
+                  aria-pressed={day.iso === value}
+                  aria-current={day.iso === today ? 'date' : undefined}
+                  onClick={() => pick(day.iso)}
+                  className={cn(
+                    'h-7 rounded-md text-xs tabular-nums hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
+                    dayOff && 'text-destructive',
+                    holidayOff && 'bg-status-success-background',
+                    !day.inMonth && 'opacity-50',
+                    day.iso === today && 'font-semibold ring-1 ring-border ring-inset',
+                    day.iso === value && 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  )}
+                >
+                  {parseIsoDate(day.iso).getDate()}
+                </button>
+              )
+            })}
+          </div>
+          {value ? (
+            <div className="mt-2 border-t border-border pt-2">
+              <Button type="button" variant="ghost" size="xs" onClick={() => pick(null)}>
+                <X />
+                {translate('auto.components.todoPanel.details.clearDue', 'Clear due date')}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}

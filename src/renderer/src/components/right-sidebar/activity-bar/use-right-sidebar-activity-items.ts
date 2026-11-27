@@ -52,7 +52,6 @@ export function useRightSidebarActivityItems({
   const languageRevision = useUiLanguageRevision()
   const explorerShortcut = useShortcutLabel('sidebar.explorer.toggle')
   const sourceControlShortcut = useShortcutLabel('sidebar.sourceControl.toggle')
-  const checksShortcut = useShortcutLabel('sidebar.checks.toggle')
   const portsShortcut = useShortcutLabel('sidebar.ports.toggle')
   const activeWorktreeId = useAppStore((s) => (rightSidebarOpen ? s.activeWorktreeId : null))
   // Hide Git-only tabs for folder workspaces.
@@ -110,7 +109,6 @@ export function useRightSidebarActivityItems({
       t,
       explorerShortcut,
       sourceControlShortcut,
-      checksShortcut,
       portsShortcut,
       isBot,
       showsHomeTab,
@@ -132,7 +130,6 @@ export function useRightSidebarActivityItems({
     ]
     // oxlint-disable-next-line react-hooks/exhaustive-deps -- translate() reads the UI language implicitly.
   }, [
-    checksShortcut,
     explorerShortcut,
     pluginPanelErrors,
     visiblePluginPanels,
