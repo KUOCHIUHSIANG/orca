@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { cn } from '@/lib/class-names'
 import type { ForkBuildProgress } from '../../../../shared/fork-build-progress-types'
 import { describeForkBuildProgress } from './fork-build-progress-view'
+import './fork-build-status.css'
 
 const TICK_MS = 10_000
 

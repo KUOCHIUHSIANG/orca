@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { cn } from '@/lib/class-names'
+import './pane-resize-handle.css'
 
 const KEYBOARD_STEP = 16
 

@@ -12,6 +12,7 @@ import { dueLabel } from './todo-due-dates'
 import type { TodoTaskChanges } from './todo-task-edits'
 import type { TodoSettlePhase } from './use-todo-completion-settle'
 import { useTodoTaskDraft } from './use-todo-task-draft'
+import './todo-task-title.css'
 
 function RowIconButton(props: {
   label: string

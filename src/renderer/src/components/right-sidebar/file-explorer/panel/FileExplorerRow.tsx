@@ -19,6 +19,7 @@ import { CLOSE_ALL_CONTEXT_MENUS_EVENT } from '@/lib/overlay-interaction/close-a
 import type { RuntimeFileOperationArgs } from '@/runtime/files/runtime-file-client-types'
 import { createMultiSelectDragGhost } from '../mutations/file-explorer-multi-drag-image'
 import { FileExplorerRowContextMenu } from './file-explorer-row-context-menu'
+import './file-explorer-reveal-flash.css'
 
 export type FileExplorerRowProps = {
   node: TreeNode

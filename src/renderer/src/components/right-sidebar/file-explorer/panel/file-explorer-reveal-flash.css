@@ -1,0 +1,22 @@
+/* Why: animation values outrank main.css's unlayered selection rules, so each pulse starts and
+   ends on the row's own selected look; this file loads after main.css, so the reduced-motion
+   look also wins their ties. */
+[data-file-explorer-row][data-flashing='true'] {
+  animation: file-explorer-reveal-flash 600ms ease-in-out 3;
+}
+
+@keyframes file-explorer-reveal-flash {
+  50% {
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-file-explorer-row][data-flashing='true'],
+  .dark [data-file-explorer-row][data-flashing='true'] {
+    animation: none;
+    background-color: color-mix(in srgb, var(--color-amber-400) 20%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-amber-400) 70%, transparent);
+  }
+}

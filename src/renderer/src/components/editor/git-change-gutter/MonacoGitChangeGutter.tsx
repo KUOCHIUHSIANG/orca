@@ -11,6 +11,7 @@ import type { GitChangeHunk } from './git-change-hunks'
 import { GitChangePeekHeader } from './GitChangePeekHeader'
 import { useGitChangeBaseline, useGitChangeHunks } from './use-git-change-hunks'
 import { useGitChangePeek } from './use-git-change-peek'
+import './git-change-gutter.css'
 
 // Why: the overview ruler and minimap paint on canvas, which cannot resolve CSS variables.
 function readGitChangeColors(): GitChangeColors {
